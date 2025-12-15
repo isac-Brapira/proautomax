@@ -5,6 +5,8 @@ from selenium.webdriver.support import expected_conditions as EC
 import pygetwindow as gw
 from function.aceitar_alertas import aceitar_alertas
 from function.abrir_rotinas import abrir_rotinas
+from rotinas.loader import carregar_rotinas
+from rotinas.executor import executar_rotinas
 
 from dotenv import load_dotenv
 import os
@@ -79,4 +81,5 @@ btn.click()
 aceitar_alertas(driver)
 # driver.quit()
 
-abrir_rotinas(driver, "0111")
+rotinas = carregar_rotinas()
+executar_rotinas(driver, rotinas, "rotinas.json")
