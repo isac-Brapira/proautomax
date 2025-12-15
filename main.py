@@ -4,8 +4,11 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import pygetwindow as gw
 from function.aceitar_alertas import aceitar_alertas
+from function.abrir_rotinas import abrir_rotinas
+
 from dotenv import load_dotenv
 import os
+
 
 # Carrega as variáveis de ambiente do arquivo .env
 load_dotenv()
@@ -75,3 +78,5 @@ btn.click()
 # Chama a função de aceitar alertas
 aceitar_alertas(driver)
 # driver.quit()
+
+abrir_rotinas(driver, "0111")
