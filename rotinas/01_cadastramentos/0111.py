@@ -17,25 +17,19 @@ import pyautogui
 CODIGO_ROTINA = "0111"
 
 
-
-
 def executar(driver, **kwargs):
     """
     Função principal da rotina.
     Tudo começa por aqui.
     """
-
     abrir_rotinas(driver, CODIGO_ROTINA)
 
-    iframes = driver.find_elements(By.TAG_NAME, "iframe")
-    print("iframes encontrados:", len(iframes))
     print("Janelas abertas:", driver.window_handles)
     print("Janela atual:", driver.current_window_handle)
 
     trocar_para_nova_janela(driver)
 
     print("Janela depois da troca:", driver.current_window_handle)
-
 
     driver.maximize_window()
 
@@ -45,20 +39,21 @@ def executar(driver, **kwargs):
 
     time.sleep(2)
 
-    atalho_alt('v')  # Abre o menu Exportar
+    # Exporta o CSV
+    print("📤 Exportando para CSV...")
+    atalho_alt('v')  # Abre o menu Exportar / gera CSV
 
+    # Espera a barra de download aparecer
+    print("⏳ Aguardando barra de download...")
+    time.sleep(5)  # Tempo para a barra aparecer
 
+    # Aqui o executor.py vai chamar confirmar_download_com_retry()
+    # que usa o sistema de estratégias automaticamente
 
 
 # ========================
 # Funções auxiliares
 # ========================
-
-def scroll_ate_elemento(driver, elemento):
-    driver.execute_script(
-        "arguments[0].scrollIntoView({block: 'center'});",
-        elemento
-    )
 
 def _aguardar_tela_carregar(wait):
     """
@@ -69,9 +64,8 @@ def _aguardar_tela_carregar(wait):
 
 
 def atalho_alt(tecla):
+    """Helper para atalhos Alt+Tecla"""
     time.sleep(0.5)
     pyautogui.keyDown('alt')
     pyautogui.press(tecla.lower())
     pyautogui.keyUp('alt')
-
-

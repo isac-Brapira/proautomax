@@ -1,30 +1,34 @@
-import os
+import subprocess
 import time
-import shutil
-
-DOWNLOAD_PADRAO = r"E:\Code\proautomax\downloads\_temp"
-
-
-def configurar_download(timeout=60):
-    inicio = time.time()
-
-    while time.time() - inicio < timeout:
-        arquivos = [
-            f for f in os.listdir(DOWNLOAD_PADRAO)
-            if f.endswith(".csv")
-        ]
-        if arquivos:
-            return arquivos[0]
-        time.sleep(1)
-
-    raise TimeoutError("Download não apareceu")
+from pywinauto import Desktop
+from pywinauto.keyboard import send_keys
 
 
-def mover_arquivo(nome_base, destino):
-    os.makedirs(destino, exist_ok=True)
+def salvar_arquivo():
+    print("⌨ Navegando até a opção de Salvar...")
 
-    arquivo = esperar_download()
-    origem = os.path.join(DOWNLOAD_PADRAO, arquivo)
+    time.sleep(10)  # Espera a janela abrir
+    # TAB > TAB > TAB
+    send_keys("{TAB}")
+    time.sleep(0.2)
 
-    novo = f"{nome_base}.csv"
-    shutil.move(origem, os.path.join(destino, novo))
+    send_keys("{TAB}")
+    time.sleep(0.2)
+
+    send_keys("{TAB}")
+    time.sleep(0.2)
+
+    # ↓ > ↓
+    send_keys("{DOWN}")
+    time.sleep(0.2)
+
+    send_keys("{DOWN}")
+    time.sleep(0.2)
+
+    # ENTER (executa salvar como)
+    send_keys("{ENTER}")
+    time.sleep(0.5)
+
+    print("💾 Opção 'Salvar como' acionada!")
+
+    time.sleep(10)  # Espera a janela abrir
