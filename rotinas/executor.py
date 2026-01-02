@@ -1,7 +1,8 @@
 import json
-from time import time
-from function.download import salvar_arquivo
-
+import os
+# Importa a função completa de salvar, não apenas a que abre a janela
+# Se o arquivo download.py estiver numa pasta "function", mude para: from function.download import salvar_arquivo
+from function.download import salvar_arquivo 
 
 def executar_rotinas(driver, rotinas_registradas, caminho_json):
     """
@@ -12,15 +13,28 @@ def executar_rotinas(driver, rotinas_registradas, caminho_json):
         rotinas_registradas: Dicionário com as rotinas carregadas
         caminho_json: Caminho do arquivo rotinas.json
     """
-    with open(caminho_json, encoding="utf-8") as f:
-        config = json.load(f)
+    # Verifica se o arquivo existe antes de tentar abrir
+    if not os.path.exists(caminho_json):
+        print(f"❌ Erro: Arquivo de configuração não encontrado: {caminho_json}")
+        return
+
+    try:
+        with open(caminho_json, encoding="utf-8") as f:
+            config = json.load(f)
+    except json.JSONDecodeError as e:
+        print(f"❌ Erro ao ler JSON: {e}")
+        return
 
     total = len(config["execucao"])
     print(f"📋 {total} rotina(s) para executar\n")
 
     for idx, item in enumerate(config["execucao"], 1):
         codigo = item["codigo"]
-        destino = item["destino"]
+        
+        # CORREÇÃO: Removidas as vírgulas que transformavam strings em tuplas
+        destino = item["destino"] 
+        nome = item.get("nome", f"{codigo}.csv")
+        
         descricao = item.get("descricao", codigo)
         params = item.get("params", {})
 
@@ -30,24 +44,26 @@ def executar_rotinas(driver, rotinas_registradas, caminho_json):
 
         print("="*60)
         print(f"▶ [{idx}/{total}] {descricao} (Código: {codigo})")
+        print(f"📄 Arquivo: {nome}")
+        print(f"📂 Destino: {destino}")
         print("="*60)
 
         try:
-            # Executa a rotina (ela vai gerar o CSV e deixar pronto pra salvar)
+            # 1. Executa a rotina (gera o relatório no navegador)
             print("📤 Executando rotina...")
             rotinas_registradas[codigo](driver, **params)
-              # Pequena pausa antes de salvar
-
-            # Agora usa "Salvar Como" pra salvar direto no destino
-            arquivo_final = salvar_arquivo()
-
             
+            # 2. Salva o arquivo usando a função completa do download.py
+            # Ela cuida de abrir o diálogo, digitar o caminho e validar o arquivo
+            arquivo_final = salvar_arquivo(destino, nome)
 
             print(f"✓ Concluído: {arquivo_final}\n")
 
         except Exception as e:
             print(f"❌ Erro ao executar rotina {codigo}: {e}\n")
-            # Continua com as próximas rotinas mesmo se uma falhar
+            # Importante: traceback ajuda muito a debugar
+            import traceback
+            traceback.print_exc()
             continue
 
     print("="*60)
