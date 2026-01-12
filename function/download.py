@@ -1,241 +1,326 @@
+"""
+Sistema de download híbrido - combina o melhor das duas abordagens.
+Monitora Downloads padrão + PyWinAuto pra confirmar.
+"""
+
 import os
 import time
-from pywinauto import Desktop
+import shutil
+from pathlib import Path
 from pywinauto.keyboard import send_keys
+import pyautogui
+
+# Pasta Downloads padrão do Windows
+PASTA_DOWNLOADS =  "E:\\Users\\Isac\\Downloads" #str(Path.home() / "Downloads")
 
 
-def abrir_salvar_como():
+def confirmar_download():
+    """
+    Confirma o download usando Tab 3x + Enter.
+    Esse é o fluxo que você já testou e funciona.
+    """
+    """ print("🔽 Confirmando download...")
+    
+    time.sleep(2)  # Espera a barra de download aparecer
+    
+    # Tab 3x (navega até o botão Salvar)
+    print("   Tab 3x...")
+    send_keys("{TAB 3}")
+    time.sleep(0.5)
+    
+    # Enter (clica em Salvar)
+    print("   Enter...")
+    send_keys("{ENTER}")
+    time.sleep(1)
+    
+    print("✓ Download confirmado")
 
-    print("⌨️ Navegando até 'Salvar como'...")
-    time.sleep(10)  # Espera a janela abrir
+    """
+    time.sleep(5)
+
+    print("⏳ Procurando botão Salvar...")
+
+    while True:
+        try:
+            pos = pyautogui.locateOnScreen('./images/download_bar.png')
+            if pos:
+                print("✅ Botão encontrado!")
+                # Clica na imagem para garantir o foco na janela antes de enviar teclas
+                pyautogui.click(pyautogui.center(pos))
+                break
+        except pyautogui.ImageNotFoundException:
+            pass  # imagem ainda não apareceu
+
+    time.sleep(0.5)
+
+    print("🎯 Continuando execução...")
+
+    time.sleep(2)
+
+
+
     # TAB > TAB > TAB
     send_keys("{TAB}")
     time.sleep(0.2)
+
     send_keys("{TAB}")
     time.sleep(0.2)
+
     send_keys("{TAB}")
     time.sleep(0.2)
+
+    print(" Apertou TAB 3x")
+
     # ↓ > ↓
     send_keys("{DOWN}")
     time.sleep(0.2)
+
     send_keys("{DOWN}")
     time.sleep(0.2)
+
+    print(" Apertou SETA PARA BAIXO 2x")
+
     # ENTER (executa salvar como)
     send_keys("{ENTER}")
     time.sleep(0.5)
-    print("💾 Opção 'Salvar como' acionada!")
-    time.sleep(10)  # Espera a janela abrir"
 
-def preencher_dialogo_salvar(caminho_completo, timeout=30):
+    print(" Apertou ENTER")
+
+    print("💾 Opção 'Salvar como' acionada!")
+def aguardar_novo_arquivo(timeout=120):
     """
-    Preenche o diálogo 'Salvar Como' do Windows com o caminho do arquivo.
-    
-    Args:
-        caminho_completo: Caminho completo incluindo nome do arquivo
-        timeout: Tempo máximo para encontrar o diálogo
+    Aguarda até que um novo arquivo CSV apareça na pasta Downloads.
+    Ignora arquivos parciais (.crdownload, .tmp, .partial).
     
     Returns:
-        True se conseguiu salvar, False caso contrário
+        Nome do arquivo CSV completo que apareceu
+    
+    Raises:
+        TimeoutError: Se nenhum arquivo aparecer no tempo limite
     """
-    print(f"💾 Salvando em: {caminho_completo}")
+    print(f"⏳ Aguardando arquivo CSV...")
+    print(f"📂 Monitorando: {PASTA_DOWNLOADS}")
     
     inicio = time.time()
-    dialogo_encontrado = False
+    ultimo_log = 0
     
-    # Tenta encontrar o diálogo "Salvar Como"
+    # Captura o estado inicial (arquivos que JÁ existem)
+    try:
+        arquivos_iniciais = set(
+            f for f in os.listdir(PASTA_DOWNLOADS)
+            if os.path.isfile(os.path.join(PASTA_DOWNLOADS, f))
+        )
+        print(f"   📋 {len(arquivos_iniciais)} arquivo(s) já existente(s)")
+    except Exception as e:
+        print(f"   ⚠️ Erro ao listar arquivos iniciais: {e}")
+        arquivos_iniciais = set()
+    
     while time.time() - inicio < timeout:
         try:
-            # Tenta conectar no diálogo (vários títulos possíveis)
-            # O título pode variar: "Salvar como", "Salvar Como", "Save As"
-            desktop = Desktop(backend="uia")
+            # Lista arquivos atuais
+            arquivos_atuais = set(
+                f for f in os.listdir(PASTA_DOWNLOADS)
+                if os.path.isfile(os.path.join(PASTA_DOWNLOADS, f))
+            )
             
-            # Procura por qualquer janela com "Salvar" no título
-            dialogo = None
-            for janela in desktop.windows():
-                titulo = janela.window_text().lower()
-                if "salvar" in titulo or "save" in titulo:
-                    dialogo = janela
-                    dialogo_encontrado = True
-                    print(f"✓ Diálogo encontrado: {janela.window_text()}")
-                    break
+            # Detecta arquivos NOVOS (que não estavam antes)
+            arquivos_novos = arquivos_atuais - arquivos_iniciais
             
-            if dialogo_encontrado:
-                break
+            # Filtra só CSVs completos (ignora parciais)
+            csvs_completos = [
+                f for f in arquivos_novos
+                if f.lower().endswith('.csv')
+                and not f.endswith('.crdownload')
+                and not f.endswith('.tmp')
+                and not f.endswith('.partial')
+                and not f.endswith('.inf')
+            ]
+            
+            # Log periódico
+            tempo_decorrido = time.time() - inicio
+            if tempo_decorrido - ultimo_log >= 5:
+                if arquivos_novos:
+                    print(f"   ⏱️ {int(tempo_decorrido)}s - {len(arquivos_novos)} arquivo(s) novo(s) detectado(s)")
+                else:
+                    print(f"   ⏱️ {int(tempo_decorrido)}s - Aguardando...")
+                ultimo_log = tempo_decorrido
+            
+            # Se encontrou CSV completo, verifica se está pronto
+            for csv in csvs_completos:
+                caminho = os.path.join(PASTA_DOWNLOADS, csv)
                 
+                if _arquivo_esta_pronto(caminho):
+                    print(f"✓ Arquivo detectado e pronto: {csv}")
+                    return csv
+                else:
+                    print(f"   📝 Arquivo ainda sendo escrito: {csv}")
+        
         except Exception as e:
-            pass
+            print(f"   ⚠️ Erro ao monitorar: {e}")
+        
+        time.sleep(1)
+    
+    raise TimeoutError(f"Nenhum arquivo CSV apareceu após {timeout}s")
+
+
+def _arquivo_esta_pronto(caminho, verificacoes=3):
+    """
+    Verifica se o arquivo terminou de ser baixado.
+    Faz múltiplas verificações pra garantir.
+    
+    Args:
+        caminho: Caminho completo do arquivo
+        verificacoes: Número de verificações a fazer
+    
+    Returns:
+        True se o arquivo está pronto, False caso contrário
+    """
+    for _ in range(verificacoes):
+        try:
+            # Verifica se o tamanho é estável
+            tamanho1 = os.path.getsize(caminho)
+            time.sleep(0.5)
+            tamanho2 = os.path.getsize(caminho)
+            
+            # Se tá crescendo, não tá pronto
+            if tamanho1 != tamanho2:
+                return False
+            
+            # Tenta abrir pra leitura/escrita
+            with open(caminho, 'r+b') as f:
+                pass
+            
+            # Se chegou aqui e tamanho > 0, tá pronto
+            if tamanho2 > 0:
+                return True
+                
+        except (OSError, PermissionError):
+            # Se não consegue abrir, ainda tá em uso
+            return False
         
         time.sleep(0.5)
     
-    if not dialogo_encontrado:
-        print("❌ Não foi possível encontrar o diálogo 'Salvar Como'")
-        return False
+    return False
+
+
+def mover_arquivo_com_retry(origem, destino, max_tentativas=5):
+    """
+    Move o arquivo com retry em caso de erro de permissão.
     
-    try:
-        # Método 1: Tenta encontrar o campo "Nome do arquivo" diretamente
-        print("📝 Preenchendo campo de nome...")
-        
+    Args:
+        origem: Caminho do arquivo de origem
+        destino: Caminho do arquivo de destino
+        max_tentativas: Número máximo de tentativas
+    
+    Returns:
+        True se conseguiu mover, False caso contrário
+    """
+    for tentativa in range(max_tentativas):
         try:
-            # Procura pelo campo de edição (geralmente é o primeiro Edit visível)
-            campo_nome = dialogo.child_window(class_name="Edit", found_index=0)
-            campo_nome.wait('visible', timeout=5)
+            if tentativa > 0:
+                print(f"   🔄 Tentativa {tentativa + 1}/{max_tentativas}")
+                time.sleep(2)
             
-            # Limpa o campo e preenche com o caminho completo
-            campo_nome.set_focus()
-            time.sleep(0.2)
+            shutil.move(origem, destino)
+            return True
             
-            # Seleciona tudo e substitui
-            send_keys("^a")  # Ctrl+A
-            time.sleep(0.2)
-            
-            # Digita o caminho
-            campo_nome.type_keys(caminho_completo, with_spaces=True)
-            time.sleep(0.5)
-            
-            print("✓ Caminho preenchido")
-            
-        except Exception as e:
-            print(f"⚠️ Método 1 falhou: {e}")
-            print("💡 Tentando método alternativo...")
-            
-            # Método 2: Usa keyboard pra preencher
-            send_keys("^a")  # Ctrl+A
-            time.sleep(0.2)
-            send_keys(caminho_completo, with_spaces=True)
-            time.sleep(0.5)
-        
-        # Procura e clica no botão "Salvar"
-        print("🔘 Clicando em 'Salvar'...")
-        
-        try:
-            # Tenta encontrar o botão Salvar (pode ter vários nomes)
-            botao_salvar = None
-            
-            # Procura por diferentes variações do botão
-            for nome_botao in ["Salvar", "Save", "&Salvar", "OK"]:
+        except PermissionError as e:
+            if tentativa == max_tentativas - 1:
+                # Última tentativa: copia em vez de mover
+                print(f"   💡 Erro de permissão, tentando copiar...")
                 try:
-                    botao_salvar = dialogo.child_window(title=nome_botao, control_type="Button")
-                    if botao_salvar.exists(timeout=1):
-                        break
+                    shutil.copy2(origem, destino)
+                    os.remove(origem)
+                    return True
                 except:
-                    pass
-            
-            if botao_salvar and botao_salvar.exists():
-                botao_salvar.click()
-                time.sleep(1)
-                print("✓ Botão 'Salvar' clicado")
-            else:
-                # Fallback: aperta Enter
-                print("⚠️ Botão não encontrado, usando Enter...")
-                send_keys("{ENTER}")
-                time.sleep(1)
+                    print(f"   ⚠️ Arquivo mantido em: {origem}")
+                    return False
         
         except Exception as e:
-            print(f"⚠️ Erro ao clicar no botão: {e}")
-            print("💡 Usando Enter como fallback...")
-            send_keys("{ENTER}")
-            time.sleep(1)
-        
-        # Se pedir confirmação de substituição, aceita
-        time.sleep(1)
-        try:
-            desktop = Desktop(backend="uia")
-            for janela in desktop.windows():
-                titulo = janela.window_text().lower()
-                if "substituir" in titulo or "replace" in titulo or "confirmar" in titulo:
-                    print("⚠️ Confirmando substituição...")
-                    send_keys("{ENTER}")
-                    time.sleep(1)
-                    break
-        except:
-            pass
-        
-        print("✓ Salvamento concluído")
-        return True
-        
-    except Exception as e:
-        print(f"❌ Erro ao preencher diálogo: {e}")
-        import traceback
-        traceback.print_exc()
-        return False
+            print(f"   ❌ Erro ao mover: {e}")
+            if tentativa == max_tentativas - 1:
+                return False
+    
+    return False
 
 
 def salvar_arquivo(destino, nome_arquivo):
     """
-    Fluxo completo: abre o diálogo e salva o arquivo.
+    Fluxo completo de salvamento.
     
     Args:
-        destino: Caminho da pasta de destino
-        nome_arquivo: Nome do arquivo (ex: "0111.csv")
+        destino: Pasta de destino final
+        nome_arquivo: Nome final do arquivo (ex: "0111.csv")
     
     Returns:
         Caminho completo do arquivo salvo
+    
+    Raises:
+        Exception: Se não conseguir salvar o arquivo
     """
-    print("💾 Iniciando salvamento com PyWinAuto...")
+    print("💾 Iniciando salvamento...")
     
-    # Monta o caminho completo
-    caminho_completo = os.path.join(destino, nome_arquivo)
-    print(f"📂 Caminho: {caminho_completo}")
+    # 1. Confirma o download (Tab 3x + Enter)
+    confirmar_download()
     
-    # 1. Abre o diálogo "Salvar Como"
-    abrir_salvar_como()
+    # 2. Aguarda o arquivo aparecer
+    try:
+        arquivo_baixado = aguardar_novo_arquivo(timeout=120)
+    except TimeoutError as e:
+        print(f"❌ {e}")
+        raise Exception("Timeout: arquivo não foi baixado")
     
-    # 2. Preenche e confirma
-    sucesso = preencher_dialogo_salvar(caminho_completo)
+    # 3. Move para o destino final
+    origem = os.path.join(PASTA_DOWNLOADS, arquivo_baixado)
     
-    if not sucesso:
-        raise Exception("Não foi possível salvar o arquivo")
+    # Garante que a pasta de destino existe
+    os.makedirs(destino, exist_ok=True)
     
-    # 3. Verifica se o arquivo foi salvo
-    if _verificar_arquivo_salvo(caminho_completo, timeout=30):
+    # Caminho final
+    caminho_final = os.path.join(destino, nome_arquivo)
+    
+    print(f"📦 Movendo arquivo...")
+    print(f"   De: {origem}")
+    print(f"   Para: {caminho_final}")
+    
+    # Remove arquivo antigo se existir
+    if os.path.exists(caminho_final):
+        try:
+            os.remove(caminho_final)
+            print(f"   🗑️ Arquivo antigo removido")
+        except Exception as e:
+            print(f"   ⚠️ Não foi possível remover arquivo antigo: {e}")
+    
+    # Move o arquivo
+    if mover_arquivo_com_retry(origem, caminho_final):
         print(f"✓ Arquivo salvo com sucesso!")
-        return caminho_completo
+        return caminho_final
     else:
-        raise Exception(f"Arquivo não foi encontrado em: {caminho_completo}")
+        raise Exception("Não foi possível mover o arquivo para o destino")
 
 
-def _verificar_arquivo_salvo(caminho, timeout=30):
-    """
-    Verifica se o arquivo foi salvo e está pronto.
-    """
-    print(f"⏳ Verificando arquivo (timeout: {timeout}s)...")
-    inicio = time.time()
-    
-    while time.time() - inicio < timeout:
-        if os.path.exists(caminho):
-            try:
-                # Verifica se está pronto
-                with open(caminho, 'r+b'):
-                    pass
-                
-                tamanho = os.path.getsize(caminho)
-                if tamanho > 0:
-                    print(f"   ✓ Arquivo encontrado ({tamanho} bytes)")
-                    return True
-            except (OSError, PermissionError):
-                print(f"   ⏳ Arquivo ainda sendo escrito...")
-        else:
-            tempo_decorrido = int(time.time() - inicio)
-            if tempo_decorrido % 5 == 0 and tempo_decorrido > 0:
-                print(f"   ⏱️ {tempo_decorrido}s - Aguardando...")
-        
-        time.sleep(1)
-    
-    print(f"   ❌ Timeout: arquivo não foi encontrado")
-    return False
-
-
-# Funções de compatibilidade
 def limpar_pasta_temp():
-    """Não necessário no modo Salvar Como"""
+    """
+    Função de compatibilidade - não necessária nessa abordagem.
+    """
     pass
 
 
 def confirmar_download_com_retry(tentativas=3):
-    """Não necessário no modo Salvar Como"""
-    pass
+    """
+    Função de compatibilidade - chama confirmar_download().
+    """
+    confirmar_download()
 
 
 def mover_arquivo(destino, nome_arquivo):
-    """Wrapper para compatibilidade com executor.py"""
+    """
+    Função de compatibilidade com o executor.py.
+    Apenas chama salvar_arquivo().
+    """
     return salvar_arquivo(destino, nome_arquivo)
+
+
+# Inicialização
+print(f"✓ Sistema de download carregado")
+print(f"📂 Pasta de downloads: {PASTA_DOWNLOADS}")
