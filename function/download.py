@@ -92,6 +92,7 @@ def confirmar_download():
     print(" Apertou ENTER")
 
     print("💾 Opção 'Salvar como' acionada!")
+
 def aguardar_novo_arquivo(timeout=120):
     """
     Aguarda até que um novo arquivo CSV apareça na pasta Downloads.
@@ -131,7 +132,7 @@ def aguardar_novo_arquivo(timeout=120):
             # Detecta arquivos NOVOS (que não estavam antes)
             arquivos_novos = arquivos_atuais - arquivos_iniciais
             
-            # Filtra só CSVs completos (ignora parciais)
+            # Filtra arquivos .INF
             csvs_completos = [
                 f for f in arquivos_novos
                 if f.lower().endswith('.inf')
