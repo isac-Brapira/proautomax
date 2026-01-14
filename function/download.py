@@ -94,79 +94,47 @@ def confirmar_download():
     print("💾 Opção 'Salvar como' acionada!")
 
 def aguardar_novo_arquivo(timeout=120):
-    """
-    Aguarda até que um novo arquivo CSV apareça na pasta Downloads.
-    Ignora arquivos parciais (.crdownload, .tmp, .partial).
-    
-    Returns:
-        Nome do arquivo CSV completo que apareceu
-    
-    Raises:
-        TimeoutError: Se nenhum arquivo aparecer no tempo limite
-    """
-    print(f"⏳ Aguardando arquivo CSV...")
+    print(f"⏳ Aguardando arquivo INF...")
     print(f"📂 Monitorando: {PASTA_DOWNLOADS}")
-    
+
     inicio = time.time()
     ultimo_log = 0
-    
-    # Captura o estado inicial (arquivos que JÁ existem)
-    try:
-        arquivos_iniciais = set(
-            f for f in os.listdir(PASTA_DOWNLOADS)
-            if os.path.isfile(os.path.join(PASTA_DOWNLOADS, f))
-        )
-        print(f"   📋 {len(arquivos_iniciais)} arquivo(s) já existente(s)")
-    except Exception as e:
-        print(f"   ⚠️ Erro ao listar arquivos iniciais: {e}")
-        arquivos_iniciais = set()
-    
+
     while time.time() - inicio < timeout:
         try:
-            # Lista arquivos atuais
-            arquivos_atuais = set(
+            arquivos = [
                 f for f in os.listdir(PASTA_DOWNLOADS)
-                if os.path.isfile(os.path.join(PASTA_DOWNLOADS, f))
-            )
-            
-            # Detecta arquivos NOVOS (que não estavam antes)
-            arquivos_novos = arquivos_atuais - arquivos_iniciais
-            
-            # Filtra arquivos .INF
-            csvs_completos = [
-                f for f in arquivos_novos
-                if f.lower().endswith('.inf')
-                and not f.endswith('.crdownload')
-                and not f.endswith('.tmp')
-                and not f.endswith('.partial')
-                and not f.endswith('.csv')
+                if f.lower().endswith(".inf")
+                and not f.endswith((".crdownload", ".tmp", ".partial"))
+                and os.path.isfile(os.path.join(PASTA_DOWNLOADS, f))
             ]
-            
-            # Log periódico
-            tempo_decorrido = time.time() - inicio
-            if tempo_decorrido - ultimo_log >= 5:
-                if arquivos_novos:
-                    print(f"   ⏱️ {int(tempo_decorrido)}s - {len(arquivos_novos)} arquivo(s) novo(s) detectado(s)")
-                else:
-                    print(f"   ⏱️ {int(tempo_decorrido)}s - Aguardando...")
-                ultimo_log = tempo_decorrido
-            
-            # Se encontrou CSV completo, verifica se está pronto
-            for csv in csvs_completos:
-                caminho = os.path.join(PASTA_DOWNLOADS, csv)
-                
+
+            if arquivos:
+                # pega o mais recente
+                arquivo_mais_recente = max(
+                    arquivos,
+                    key=lambda f: os.path.getmtime(os.path.join(PASTA_DOWNLOADS, f))
+                )
+
+                caminho = os.path.join(PASTA_DOWNLOADS, arquivo_mais_recente)
+
                 if _arquivo_esta_pronto(caminho):
-                    print(f"✓ Arquivo detectado e pronto: {csv}")
-                    return csv
-                else:
-                    print(f"   📝 Arquivo ainda sendo escrito: {csv}")
-        
+                    print(f"✓ Arquivo detectado e pronto: {arquivo_mais_recente}")
+                    return arquivo_mais_recente
+
+            # log a cada 5s
+            tempo = time.time() - inicio
+            if tempo - ultimo_log >= 5:
+                print(f"   ⏱️ {int(tempo)}s - Aguardando arquivo...")
+                ultimo_log = tempo
+
         except Exception as e:
             print(f"   ⚠️ Erro ao monitorar: {e}")
-        
+
         time.sleep(1)
-    
-    raise TimeoutError(f"Nenhum arquivo CSV apareceu após {timeout}s")
+
+    raise TimeoutError(f"Nenhum arquivo INF apareceu após {timeout}s")
+
 
 
 def _arquivo_esta_pronto(caminho, verificacoes=3):
