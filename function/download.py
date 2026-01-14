@@ -9,9 +9,11 @@ import shutil
 from pathlib import Path
 from pywinauto.keyboard import send_keys
 import pyautogui
+from dotenv import load_dotenv
 
+load_dotenv()
 # Pasta Downloads padrão do Windows
-PASTA_DOWNLOADS =  "E:\\Users\\Isac\\Downloads" #str(Path.home() / "Downloads")
+PASTA_DOWNLOADS =  os.getenv("PATH_USER") #str(Path.home() / "Downloads")
 
 
 def confirmar_download():
@@ -36,17 +38,20 @@ def confirmar_download():
     print("✓ Download confirmado")
 
     """
-    time.sleep(5)
+    time.sleep(2)
 
     print("⏳ Procurando botão Salvar...")
 
     while True:
         try:
-            pos = pyautogui.locateOnScreen('./images/download_bar.png')
+            pos = pyautogui.locateOnScreen('./images/download_salvar.png', confidence= 0.8)
             if pos:
                 print("✅ Botão encontrado!")
+                print(pos)
                 # Clica na imagem para garantir o foco na janela antes de enviar teclas
                 pyautogui.click(pyautogui.center(pos))
+                # Clica bem no começo da imagem para conseguir dar o tab
+                # pyautogui.click(pos.left + 2, pos.top + 2)
                 break
         except pyautogui.ImageNotFoundException:
             pass  # imagem ainda não apareceu
@@ -60,25 +65,25 @@ def confirmar_download():
 
 
     # TAB > TAB > TAB
-    send_keys("{TAB}")
-    time.sleep(0.2)
+    # send_keys("{TAB}")
+    # time.sleep(0.2)
 
-    send_keys("{TAB}")
-    time.sleep(0.2)
+    # send_keys("{TAB}")
+    # time.sleep(0.2)
 
-    send_keys("{TAB}")
-    time.sleep(0.2)
+    # send_keys("{TAB}")
+    # time.sleep(0.2)
 
-    print(" Apertou TAB 3x")
+    # print(" Apertou TAB 3x")
 
     # ↓ > ↓
-    send_keys("{DOWN}")
-    time.sleep(0.2)
+    # send_keys("{DOWN}")
+    # time.sleep(0.2)
 
-    send_keys("{DOWN}")
-    time.sleep(0.2)
+    # send_keys("{DOWN}")
+    # time.sleep(0.2)
 
-    print(" Apertou SETA PARA BAIXO 2x")
+    # print(" Apertou SETA PARA BAIXO 2x")
 
     # ENTER (executa salvar como)
     send_keys("{ENTER}")
@@ -129,11 +134,11 @@ def aguardar_novo_arquivo(timeout=120):
             # Filtra só CSVs completos (ignora parciais)
             csvs_completos = [
                 f for f in arquivos_novos
-                if f.lower().endswith('.csv')
+                if f.lower().endswith('.inf')
                 and not f.endswith('.crdownload')
                 and not f.endswith('.tmp')
                 and not f.endswith('.partial')
-                and not f.endswith('.inf')
+                and not f.endswith('.csv')
             ]
             
             # Log periódico
