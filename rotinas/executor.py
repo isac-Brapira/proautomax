@@ -37,11 +37,16 @@ def executar_rotinas(driver, rotinas_registradas, caminho_json):
         
         descricao = item.get("descricao", codigo)
         params = item.get("params", {})
+        
+        print(f"'{codigo}'")
+        for r in rotinas_registradas:
+                print(f"'{r}'")
 
         if codigo not in rotinas_registradas:
             print(f"❌ Erro: Rotina {codigo} não registrada")
             continue
-
+        
+        
         print("="*60)
         print(f"▶ [{idx}/{total}] {descricao} (Código: {codigo})")
         print(f"📄 Arquivo: {nome}")
