@@ -29,6 +29,7 @@ def executar(driver, **kwargs):
 
     wait = WebDriverWait(driver, 30)
     _aguardar_tela_carregar(wait)
+    time.sleep(5)
 
     print("⚙️ Configurando parâmetros da rotina 030237...")
 
