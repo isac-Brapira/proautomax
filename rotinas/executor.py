@@ -59,6 +59,8 @@ def executar_rotinas(driver, rotinas_registradas, caminho_json):
 
             print(f"✓ Concluído: {arquivo_final}\n")
 
+            driver.close()
+
         except Exception as e:
             print(f"❌ Erro ao executar rotina {codigo}: {e}\n")
             # Importante: traceback ajuda muito a debugar
