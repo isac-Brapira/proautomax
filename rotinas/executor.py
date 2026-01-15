@@ -14,6 +14,9 @@ def executar_rotinas(driver, rotinas_registradas, caminho_json):
         caminho_json: Caminho do arquivo rotinas.json
     """
     # Verifica se o arquivo existe antes de tentar abrir
+
+    promaxPrimeiraJanela = driver.current_window_handle
+
     if not os.path.exists(caminho_json):
         print(f"❌ Erro: Arquivo de configuração não encontrado: {caminho_json}")
         return
@@ -65,6 +68,8 @@ def executar_rotinas(driver, rotinas_registradas, caminho_json):
             print(f"✓ Concluído: {arquivo_final}\n")
 
             driver.close()
+
+            driver.switch_to.window(promaxPrimeiraJanela)
 
         except Exception as e:
             print(f"❌ Erro ao executar rotina {codigo}: {e}\n")
