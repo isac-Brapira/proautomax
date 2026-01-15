@@ -44,7 +44,7 @@ def confirmar_download():
 
     while True:
         try:
-            pos = pyautogui.locateOnScreen('./images/download_salvar.png', confidence= 0.8)
+            pos = pyautogui.locateOnScreen(os.getenv("PATH_IMAGE"), confidence= 0.8)
             if pos:
                 print("✅ Botão encontrado!")
                 print(pos)
