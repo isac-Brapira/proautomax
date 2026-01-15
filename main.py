@@ -77,7 +77,6 @@ btn = wait.until(EC.presence_of_element_located((By.NAME, "cmdConfirma")))
 btn.click()
 
 
-# Chama a função de aceitar alertas
 aceitar_alertas(driver)
 # driver.quit()
 

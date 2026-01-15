@@ -27,7 +27,7 @@ def executar(driver, **kwargs):
     trocar_para_nova_janela(driver)
     driver.maximize_window()
 
-    wait = WebDriverWait(driver, 30)
+    wait = WebDriverWait(driver, 60)
     _aguardar_tela_carregar(wait)
     time.sleep(5)
 
@@ -93,9 +93,15 @@ def executar(driver, **kwargs):
     atalho_alt("v")
 
     # Uma nova janela vai abrir quando apertar Alt+V. É preciso esperar ela fechar sozinha para continuar
-    _aguardar_tela_carregar(wait)
-
     print("⏳ Aguardando download...")
+    
+    wait.until(EC.visibility_of_element_located((By.NAME, "GerExcel")))
+
+
+    time.sleep(2)
+    
+    atalho_alt("c")
+
 
 
 # ========================
