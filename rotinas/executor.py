@@ -1,8 +1,10 @@
 import json
 import os
+import pyautogui
 # Importa a função completa de salvar, não apenas a que abre a janela
 # Se o arquivo download.py estiver numa pasta "function", mude para: from function.download import salvar_arquivo
 from function.download import salvar_arquivo 
+
 
 def executar_rotinas(driver, rotinas_registradas, caminho_json):
     """
@@ -67,6 +69,9 @@ def executar_rotinas(driver, rotinas_registradas, caminho_json):
 
             print(f"✓ Concluído: {arquivo_final}\n")
 
+            pyautogui.moveTo(0, 0)
+
+
             driver.close()
 
             driver.switch_to.window(promaxPrimeiraJanela)
@@ -78,6 +83,8 @@ def executar_rotinas(driver, rotinas_registradas, caminho_json):
             traceback.print_exc()
             continue
 
+    
+    driver.quit()
     print("="*60)
     print("✓ EXECUÇÃO FINALIZADA")
     print("="*60)

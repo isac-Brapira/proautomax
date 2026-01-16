@@ -1,18 +1,18 @@
 {
     "execucao": [
         {
-            "codigo": "030237",
-            "params": {},
-            "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
-            "nome": "030237.csv",
-            "descricao": "03.02.37 - Rel. Notas Fiscais Plus"
-        },
-        {
             "codigo": "0111",
             "params": {},
             "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
             "nome": "0111.csv",
             "descricao": "01.11 - Produtos"
+        },
+        {
+            "codigo": "030237",
+            "params": {},
+            "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
+            "nome": "030237.csv",
+            "descricao": "03.02.37 - Rel. Notas Fiscais Plus"
         }
     ]
 }
