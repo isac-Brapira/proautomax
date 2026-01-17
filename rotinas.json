@@ -1,6 +1,13 @@
 {
     "execucao": [
         {
+            "codigo": "120601",
+            "params": {},
+            "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
+            "nome": "120601.csv",
+            "descricao": "12.06.01 - Rel. Títulos Pendentes"
+        },
+        {
             "codigo": "0111",
             "params": {},
             "destino": "E:\\Users\\Isac\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\Tecnoologia da Informação - Brapira - DB_VENDAS",
@@ -13,13 +20,6 @@
             "destino": "E:\\Users\\Isac\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\Tecnoologia da Informação - Brapira - DB_VENDAS",
             "nome": "030237.csv",
             "descricao": "03.02.37 - Rel. Notas Fiscais Plus"
-        },
-        {
-            "codigo": "0105070402",
-            "params": {},
-            "destino": "E:\\Users\\Isac\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\Tecnoologia da Informação - Brapira - DB_VENDAS",
-            "nome": "0105070402.csv",
-            "descricao": "01.05.07.04.02 - Cliente Plus"
         }
     ]
 }
