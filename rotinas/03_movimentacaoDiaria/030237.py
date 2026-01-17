@@ -1,7 +1,7 @@
 """
 Rotina: 03.02.37 - Rel. Notas Fiscais Plus
 Descrição: Relatório com quebra por Operação e Vendedor.
-Autor: Isac
+Autor: Carol e Isac
 """
 
 from function.abrir_rotinas import abrir_rotinas

@@ -13,6 +13,13 @@
             "destino": "E:\\Users\\Isac\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\Tecnoologia da Informação - Brapira - DB_VENDAS",
             "nome": "030237.csv",
             "descricao": "03.02.37 - Rel. Notas Fiscais Plus"
+        },
+        {
+            "codigo": "0105070402",
+            "params": {},
+            "destino": "E:\\Users\\Isac\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\Tecnoologia da Informação - Brapira - DB_VENDAS",
+            "nome": "0105070402.csv",
+            "descricao": "01.05.07.04.02 - Cliente Plus"
         }
     ]
 }
