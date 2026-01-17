@@ -12,6 +12,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime
 import time
 import pyautogui
+from function.data_func import data_hoje, data_ontem, primeiro_dia_mes
 
 
 # Código da rotina no Promax
@@ -74,20 +75,13 @@ def executar(driver, **kwargs):
     # -------------------------
     # Data inicial = primeiro dia do mês atual
     # Data final = hoje
-    # -------------------------
-    hoje = datetime.today()
-
-    primeiro_dia_mes_vigente = hoje.replace(day=1)
-
-    data_formatada = primeiro_dia_mes_vigente.strftime('%d/%m/%Y')
-
-   
+    # -------------------------   
 
 
     data_inicial = wait.until(EC.presence_of_element_located((By.NAME, "dataInicial")))
 
-    driver.execute_script(f"arguments[0].value = '{data_formatada}';", data_inicial)
-    print(f"ROTINA {CODIGO_ROTINA}:⚙️ Data inicial configurada para {data_formatada}")
+    driver.execute_script(f"arguments[0].value = '{primeiro_dia_mes()}';", data_inicial)
+    print(f"ROTINA {CODIGO_ROTINA}:⚙️ Data inicial configurada para {primeiro_dia_mes()}")
 
  
 
