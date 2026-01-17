@@ -4,6 +4,7 @@ Descrição: Baixa um CSV com relatório de pedidos do dia em caixa do Promax.
 Autor: Carol
 """
 
+import os
 from function.abrir_rotinas import abrir_rotinas
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -45,14 +46,14 @@ def executar(driver, **kwargs):
     
     while True:
         try:
-            pos = pyautogui.locateOnScreen("images/CSV.png", confidence= 0.8)
+            pos = pyautogui.locateOnScreen(os.getenv("PATH_IMAGE_CSV"), confidence= 0.8)
             if pos:
                 print("✅ Botão encontrado!")
                 print(pos)
                 # Clica na imagem para garantir o foco na janela antes de enviar teclas
                 time.sleep(2)
                 pyautogui.click(pyautogui.center(pos))
-                
+
                 break
         except pyautogui.ImageNotFoundException:
             pass  # imagem ainda não apareceu
