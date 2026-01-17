@@ -78,7 +78,6 @@ btn.click()
 
 
 aceitar_alertas(driver)
-# driver.quit()
 
 rotinas = carregar_rotinas()
 executar_rotinas(driver, rotinas, "rotinas.json")
