@@ -5,6 +5,7 @@ Autor: Carol
 """
 
 from datetime import datetime, timedelta
+import os
 from function.abrir_rotinas import abrir_rotinas
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -59,7 +60,7 @@ def executar(driver, **kwargs):
     #wait.until(EC.visibility_of_element_located((By.NAME, "GerExcel")))
     while True:
         try:
-            pos = pyautogui.locateOnScreen("images/csv_carol.png", confidence= 0.8)
+            pos = pyautogui.locateOnScreen(os.getenv("PATH_IMAGE_CSV"), confidence= 0.8)
             if pos:
                 print("✅ Botão encontrado!")
                 print(pos)
