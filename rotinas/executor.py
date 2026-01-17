@@ -1,8 +1,10 @@
 import json
 import os
+import pyautogui
 # Importa a função completa de salvar, não apenas a que abre a janela
 # Se o arquivo download.py estiver numa pasta "function", mude para: from function.download import salvar_arquivo
 from function.download import salvar_arquivo 
+
 
 def executar_rotinas(driver, rotinas_registradas, caminho_json):
     """
@@ -14,6 +16,9 @@ def executar_rotinas(driver, rotinas_registradas, caminho_json):
         caminho_json: Caminho do arquivo rotinas.json
     """
     # Verifica se o arquivo existe antes de tentar abrir
+
+    promaxPrimeiraJanela = driver.current_window_handle
+
     if not os.path.exists(caminho_json):
         print(f"❌ Erro: Arquivo de configuração não encontrado: {caminho_json}")
         return
@@ -37,11 +42,16 @@ def executar_rotinas(driver, rotinas_registradas, caminho_json):
         
         descricao = item.get("descricao", codigo)
         params = item.get("params", {})
+        
+        print(f"'{codigo}'")
+        for r in rotinas_registradas:
+                print(f"'{r}'")
 
         if codigo not in rotinas_registradas:
             print(f"❌ Erro: Rotina {codigo} não registrada")
             continue
-
+        
+        
         print("="*60)
         print(f"▶ [{idx}/{total}] {descricao} (Código: {codigo})")
         print(f"📄 Arquivo: {nome}")
@@ -59,7 +69,12 @@ def executar_rotinas(driver, rotinas_registradas, caminho_json):
 
             print(f"✓ Concluído: {arquivo_final}\n")
 
+            pyautogui.moveTo(0, 0)
+
+
             driver.close()
+
+            driver.switch_to.window(promaxPrimeiraJanela)
 
         except Exception as e:
             print(f"❌ Erro ao executar rotina {codigo}: {e}\n")
@@ -68,6 +83,8 @@ def executar_rotinas(driver, rotinas_registradas, caminho_json):
             traceback.print_exc()
             continue
 
+    
+    driver.quit()
     print("="*60)
     print("✓ EXECUÇÃO FINALIZADA")
     print("="*60)

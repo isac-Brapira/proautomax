@@ -18,6 +18,8 @@ import pyautogui
 CODIGO_ROTINA = "030237"
 
 
+
+
 def executar(driver, **kwargs):
     """
     Função principal da rotina.
@@ -27,66 +29,96 @@ def executar(driver, **kwargs):
     trocar_para_nova_janela(driver)
     driver.maximize_window()
 
-    wait = WebDriverWait(driver, 30)
+    wait = WebDriverWait(driver, 60)
     _aguardar_tela_carregar(wait)
+    time.sleep(5)
 
     print("⚙️ Configurando parâmetros da rotina 030237...")
+
+    wait.until(EC.frame_to_be_available_and_switch_to_it((By.NAME, "rotina")))
+    print("Janelas abertas:", driver.window_handles)
+    print("Janela atual:", driver.current_window_handle)
 
     # -------------------------
     # Quebra 1 = Operação (14)
     # -------------------------
-    quebra1 = Select(wait.until(
-        EC.presence_of_element_located((By.NAME, "quebra1"))
-    ))
-    quebra1.select_by_value("14")
-    time.sleep(1)
+    select_quebra1 = wait.until(EC.presence_of_element_located((By.NAME, "quebra1")))
+
+    driver.execute_script("arguments[0].value = '14'; arguments[0].onchange();", select_quebra1)
+
+    print(f"ROTINA {CODIGO_ROTINA}:⚙️ Quebra 1 configurada para Operação (14)")
 
     # -------------------------
     # Quebra 2 = Vendedor (06)
     # -------------------------
-    quebra2 = Select(wait.until(
-        EC.presence_of_element_located((By.NAME, "quebra2"))
-    ))
-    quebra2.select_by_value("06")
-    time.sleep(1)
+    select_quebra2 = wait.until(EC.presence_of_element_located((By.NAME, "quebra2")))
+
+    driver.execute_script("arguments[0].value = '06'; arguments[0].onchange();", select_quebra2)
+
+    print(f"ROTINA {CODIGO_ROTINA}:⚙️ Quebra 2 configurada para Vendedor (06)")
 
     # -------------------------
     # Itens = Sim
     # -------------------------
-    itens_sim = wait.until(
-        EC.element_to_be_clickable((By.XPATH, "//input[@name='itens' and @value='S']"))
-    )
-    driver.execute_script("arguments[0].click();", itens_sim)
+    radio_itens = wait.until(
 
+      EC.presence_of_element_located((By.CSS_SELECTOR, "input[type='radio'][name='itens'][value='S']"))
+
+    )
+
+    if not radio_itens.is_selected():
+
+      radio_itens.click()
+
+    print(f"ROTINA {CODIGO_ROTINA}:⚙️ Itens configurados para Sim")
     # -------------------------
     # Data inicial = primeiro dia do mês atual
     # Data final = hoje
     # -------------------------
-    hoje = datetime.now()
-    primeiro_dia = hoje.replace(day=1)
+    hoje = datetime.today()
 
-    data_ini = primeiro_dia.strftime("%d/%m/%Y")
-    data_fim = hoje.strftime("%d/%m/%Y")
+    primeiro_dia_mes_vigente = hoje.replace(day=1)
 
-    campo_data_ini = wait.until(
-        EC.presence_of_element_located((By.NAME, "dataInicial"))
-    )
-    campo_data_fim = wait.until(
-        EC.presence_of_element_located((By.NAME, "dataFinal"))
-    )
+    data_formatada = primeiro_dia_mes_vigente.strftime('%d/%m/%Y')
 
-    campo_data_ini.clear()
-    campo_data_ini.send_keys(data_ini)
+   
 
-    campo_data_fim.clear()
-    campo_data_fim.send_keys(data_fim)
+
+    data_inicial = wait.until(EC.presence_of_element_located((By.NAME, "dataInicial")))
+
+    driver.execute_script(f"arguments[0].value = '{data_formatada}';", data_inicial)
+    print(f"ROTINA {CODIGO_ROTINA}:⚙️ Data inicial configurada para {data_formatada}")
+
+ 
 
     time.sleep(1)
 
     print("📤 Exportando CSV...")
     atalho_alt("v")
 
+    # Uma nova janela vai abrir quando apertar Alt+V. É preciso esperar ela fechar sozinha para continuar
     print("⏳ Aguardando download...")
+    
+    #wait.until(EC.visibility_of_element_located((By.NAME, "GerExcel")))
+    while True:
+        try:
+            pos = pyautogui.locateOnScreen("images/CSV.png", confidence= 0.8)
+            if pos:
+                print("✅ Botão encontrado!")
+                print(pos)
+                # Clica na imagem para garantir o foco na janela antes de enviar teclas
+                time.sleep(2)
+                pyautogui.click(pyautogui.center(pos))
+                # Clica bem no começo da imagem para conseguir dar o tab
+                # pyautogui.click(pos.left + 2, pos.top + 2)
+                break
+        except pyautogui.ImageNotFoundException:
+            pass  # imagem ainda não apareceu
+
+
+
+    time.sleep(2)
+
 
 
 # ========================
