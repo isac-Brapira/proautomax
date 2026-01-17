@@ -4,6 +4,13 @@
             "codigo": "03013604",
             "params": {},
             "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
+            "nome": "03013604HE.csv",
+            "descricao": "03.01.36.04 - Rel. Pedidos do dia em HECTOLITRO"
+        },
+        {
+            "codigo": "03013604",
+            "params": {},
+            "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
             "nome": "03013604.csv",
             "descricao": "03.01.36.04 - Rel. Pedidos do dia em CAIXA"
         },
