@@ -12,7 +12,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from function.troca_janela import trocar_para_nova_janela
 import time
 import pyautogui
-
+from function.data_func import data_ontem
 
 # Código da rotina no Promax
 CODIGO_ROTINA = "120601"
@@ -44,17 +44,10 @@ def executar(driver, **kwargs):
 
     print(f"ROTINA {CODIGO_ROTINA}:⚙️ Quebra 1 configurada para classificação numérica")
 
-
-    hoje = datetime.today()
-
-    dia_anterior = hoje - timedelta(days=1)
-    
-    data_formatada = dia_anterior.strftime('%d/%m/%Y')
-
     vencimento_final = wait.until(EC.presence_of_element_located((By.NAME, "fimVencimento")))
 
-    driver.execute_script(f"arguments[0].value = '{data_formatada}';", vencimento_final)
-    print(f"ROTINA {CODIGO_ROTINA}:⚙️ Data inicial configurada para {data_formatada}")
+    driver.execute_script(f"arguments[0].value = '{data_ontem()}';", vencimento_final)
+    print(f"ROTINA {CODIGO_ROTINA}:⚙️ Data inicial configurada para {data_ontem()}")
 
     # Exporta o CSV
     print("📤 Exportando para CSV...")
