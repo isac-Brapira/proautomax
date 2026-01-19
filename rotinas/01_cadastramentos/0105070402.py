@@ -12,6 +12,8 @@ from function.troca_janela import trocar_para_nova_janela
 import time
 import pyautogui
 
+    # ======================= Acessando a rotina e focando a janela ======================== #
+
 
 # Código da rotina no Promax
 CODIGO_ROTINA = "0105070402"
@@ -39,9 +41,75 @@ def executar(driver, **kwargs):
 
     time.sleep(2)
 
-    # Exporta o CSV
-    print("📤 Exportando para CSV...")
-    atalho_alt('v')  # Abre o menu Exportar / gera CSV
+    
+    # =========================== Navegação dentro da rotina =============================== #
+
+    while True:
+        try:
+            pos = pyautogui.locateOnScreen("images/0105070402_images/Todos.png", confidence= 0.8)
+            if pos:
+                print("✅ Marcando checkbox TODOS...")
+                print(pos)
+                # Clica na imagem para garantir o foco na janela antes de enviar teclas
+                time.sleep(1)
+                pyautogui.click(pyautogui.center(pos))
+                # Clica bem no começo da imagem para conseguir dar o tab
+                # pyautogui.click(pos.left + 2, pos.top + 2)
+                break
+        except pyautogui.ImageNotFoundException:
+            pass  # imagem ainda não apareceu
+
+    while True:
+        try:
+            pos = pyautogui.locateOnScreen("images/0105070402_images/AS.png", confidence= 0.8)
+            if pos:
+                print("✅ Marcando o checkbox AS...")
+                print(pos)
+                # Clica na imagem para garantir o foco na janela antes de enviar teclas
+                time.sleep(1)
+                # Clica no lado esquerdo da imagem (onde deve estar o checkbox)
+                pyautogui.click(pos.left + 10, pos.top + pos.height / 2)
+                break
+        except pyautogui.ImageNotFoundException:
+            pass  # imagem ainda não apareceu
+
+    while True:
+        try:
+            pos = pyautogui.locateOnScreen("images/0105070402_images/Gerar_CSV.png", confidence= 0.8)
+            if pos:
+                print("✅ Gerando CSV...")
+                print(pos)
+                # Clica na imagem para garantir o foco na janela antes de enviar teclas
+                time.sleep(1)
+                # Clica no lado esquerdo da imagem (onde deve estar o checkbox)
+                pyautogui.click(pos.left + 10, pos.top + pos.height / 2)
+                
+                break
+        except pyautogui.ImageNotFoundException:
+            pass  # imagem ainda não apareceu
+
+    while True:
+        try:
+            pos = pyautogui.locateOnScreen("images/0105070402_images/CSV_gerado.png", confidence= 0.8)
+            if pos:
+                print("✅ CSV Gerado!")
+                print(pos)
+                # Clica na imagem para garantir o foco na janela antes de enviar teclas
+                time.sleep(2)
+                # Clica no lado esquerdo da imagem (onde deve estar o checkbox)
+                pyautogui.keyDown("enter")
+                pyautogui.keyUp("enter")
+                break
+        except pyautogui.ImageNotFoundException:
+            pass  # imagem ainda não apareceu   
+
+    time.sleep(3)
+    pyautogui.click(pyautogui.center(pos))
+    # =========================== Exportando para CSV ===================================== #
+
+   
+
+
 
     # Espera a barra de download aparecer
     print("⏳ Aguardando barra de download...")
