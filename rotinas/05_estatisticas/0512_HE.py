@@ -1,6 +1,6 @@
 """
-Rotina: 03.01.36.04
-Descrição: Baixa um CSV com relatório de pedidos do dia em hectolitro do Promax.
+Rotina: 05.12
+Descrição: Baixa um CSV com relatório de vendas no ano em hectolitro com quebra de setor/cliente do Promax.
 Autor: Carol
 """
 
@@ -15,7 +15,7 @@ import pyautogui
 
 
 # Código da rotina no Promax
-CODIGO_ROTINA = "03013604"
+CODIGO_ROTINA = "0512"
 
 
 def executar(driver, **kwargs):
@@ -31,15 +31,23 @@ def executar(driver, **kwargs):
     _aguardar_tela_carregar(wait)
     time.sleep(5)
 
-    print("⚙️ Configurando parâmetros da rotina 03013604 em hectolitro ...")
+    print("⚙️ Configurando parâmetros da rotina 0512 em hectolitro ...")
 
     wait.until(EC.frame_to_be_available_and_switch_to_it((By.NAME, "rotina")))
     print("Janelas abertas:", driver.window_handles)
     print("Janela atual:", driver.current_window_handle)
+    
+    #Selecionando selected box
+    select_quebra1 = wait.until(EC.presence_of_element_located((By.NAME, "opcaoRel")))
 
+    driver.execute_script("arguments[0].value = '01'; arguments[0].onchange();", select_quebra1)
+
+    print(f"ROTINA {CODIGO_ROTINA}:⚙️ Quebra 1 configurada para Setor/Cliente (06)")
+
+    #Selecionando checkbox
     checkbox = wait.until(
     EC.presence_of_element_located(
-        (By.CSS_SELECTOR, "input[type='checkbox'][name='idQtdeHecto'][value='S']")
+        (By.CSS_SELECTOR, "input[type='checkbox'][name='idConverteHecto'][value='S']")
         )
     )
 
@@ -51,6 +59,8 @@ def executar(driver, **kwargs):
     # Exporta o CSV
     print("📤 Clicando em visualizar...")
     atalho_alt('v')  # Abre o menu Exportar / gera CSV
+    
+    time.sleep(1)
 
     # Espera a barra de download aparecer
     print("⏳ Aguardando download...")

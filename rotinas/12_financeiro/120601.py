@@ -1,7 +1,7 @@
 """
 Rotina: 12.06.01 - Títulos Pendentes
 Descrição: Baixa um CSV com os títulos em atraso do Promax.
-Autor: Carol
+Autor: Carol e Isac
 """
 
 from datetime import datetime, timedelta
