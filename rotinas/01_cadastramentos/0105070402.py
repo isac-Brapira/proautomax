@@ -40,7 +40,11 @@ def executar(driver, **kwargs):
     _aguardar_tela_carregar(wait)
 
     time.sleep(2)
-
+    
+    width, height = pyautogui.size()
+    pyautogui.FAILSAFE = False
+    pyautogui.moveTo(width / 2, height / 2)
+    pyautogui.FAILSAFE = True
     
     # =========================== Navegação dentro da rotina =============================== #
 
@@ -58,6 +62,21 @@ def executar(driver, **kwargs):
                 break
         except pyautogui.ImageNotFoundException:
             pass  # imagem ainda não apareceu
+
+    while True:
+        try:
+            pos = pyautogui.locateOnScreen("images/0105070402_images/Duplicados.png", confidence= 0.8)
+            if pos:
+                print("✅ Marcando checkbox Duplicados...")
+                print(pos)
+                # Clica na imagem para garantir o foco na janela antes de enviar teclas
+                time.sleep(1)
+                pyautogui.click(pyautogui.center(pos))
+                # Clica bem no começo da imagem para conseguir dar o tab
+                # pyautogui.click(pos.left + 2, pos.top + 2)
+                break
+        except pyautogui.ImageNotFoundException:
+            pass  # imagem ainda não apareceu        
 
     while True:
         try:

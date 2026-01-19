@@ -34,6 +34,12 @@ def executar(driver, **kwargs):
     _aguardar_tela_carregar(wait)
     time.sleep(5)
 
+    width, height = pyautogui.size()
+    pyautogui.FAILSAFE = False
+    pyautogui.moveTo(width / 2, height / 2)
+    pyautogui.FAILSAFE = True
+    
+
     print("⚙️ Configurando parâmetros da rotina 030237...")
 
     wait.until(EC.frame_to_be_available_and_switch_to_it((By.NAME, "rotina")))

@@ -33,7 +33,10 @@ def executar(driver, **kwargs):
     time.sleep(5)
     # Reseta a posição do mouse para o centro da tela para evitar FailSafe
     width, height = pyautogui.size()
+    pyautogui.FAILSAFE = False
     pyautogui.moveTo(width / 2, height / 2)
+    pyautogui.FAILSAFE = True
+    
 
     print("⚙️ Configurando parâmetros da rotina 0512 em hectolitro ...")
 

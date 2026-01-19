@@ -39,6 +39,12 @@ def executar(driver, **kwargs):
 
     time.sleep(2)
 
+    width, height = pyautogui.size()
+    pyautogui.FAILSAFE = False
+    pyautogui.moveTo(width / 2, height / 2)
+    pyautogui.FAILSAFE = True
+    
+
     # Exporta o CSV
     print("📤 Exportando para CSV...")
     atalho_alt('v')  # Abre o menu Exportar / gera CSV
