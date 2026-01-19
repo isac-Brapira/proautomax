@@ -34,8 +34,12 @@ def executar_rotinas(driver, rotinas_registradas, caminho_json):
     print(f"📋 {total} rotina(s) para executar\n")
 
     for idx, item in enumerate(config["execucao"], 1):
+
         codigo = item["codigo"]
         
+        if not item.get("ativo", True): # Default to True if missing for backward compatibility
+            print(f"⏭️ Rotina {codigo} ignorada (ativo=False)")
+            continue
         # CORREÇÃO: Removidas as vírgulas que transformavam strings em tuplas
         destino = item["destino"] 
         nome = item.get("nome", f"{codigo}.csv")
