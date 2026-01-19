@@ -1,18 +1,18 @@
 {
     "execucao": [
         {
-            "codigo": "0105070402",
-            "params": {},
-            "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
-            "nome": "0105070402.csv",
-            "descricao": "01.05.07.04.02.04.02 - Cliente Plus"
-        },
-        {
             "codigo": "0512",
             "params": {},
             "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
             "nome": "0512.csv",
             "descricao": "05.12 - Rel. Vendas no ano em HECTOLITRO"
+        },
+        {
+            "codigo": "0105070402",
+            "params": {},
+            "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
+            "nome": "0105070402.csv",
+            "descricao": "01.05.07.04.02.04.02 - Cliente Plus"
         },
         {
             "codigo": "03013604",

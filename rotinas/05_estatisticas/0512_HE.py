@@ -26,10 +26,14 @@ def executar(driver, **kwargs):
     abrir_rotinas(driver, CODIGO_ROTINA)
     trocar_para_nova_janela(driver)
     driver.maximize_window()
+    
 
     wait = WebDriverWait(driver, 60)
     _aguardar_tela_carregar(wait)
     time.sleep(5)
+    # Reseta a posição do mouse para o centro da tela para evitar FailSafe
+    width, height = pyautogui.size()
+    pyautogui.moveTo(width / 2, height / 2)
 
     print("⚙️ Configurando parâmetros da rotina 0512 em hectolitro ...")
 
