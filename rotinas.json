@@ -5,49 +5,56 @@
             "params": {},
             "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
             "nome": "0111.csv",
-            "descricao": "01.11 - Produtos"
+            "descricao": "01.11 - Produtos",
+            "ativo": true
         },
         {
             "codigo": "0105070402",
             "params": {},
             "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
             "nome": "0105070402.csv",
-            "descricao": "01.05.07.04.02.04.02 - Cliente Plus"
+            "descricao": "01.05.07.04.02.04.02 - Cliente Plus",
+            "ativo": true
         },
         {
             "codigo": "03013604",
             "params": {},
             "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
             "nome": "03013604HE.csv",
-            "descricao": "03.01.36.04 - Rel. Pedidos do dia em HECTOLITRO"
+            "descricao": "03.01.36.04 - Rel. Pedidos do dia em HECTOLITRO",
+            "ativo": true
         },
         {
             "codigo": "03013604",
             "params": {},
             "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
             "nome": "03013604.csv",
-            "descricao": "03.01.36.04 - Rel. Pedidos do dia em CAIXA"
+            "descricao": "03.01.36.04 - Rel. Pedidos do dia em CAIXA",
+            "ativo": true
         },
         {
             "codigo": "030237",
             "params": {},
             "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
             "nome": "030237.csv",
-            "descricao": "03.02.37 - Rel. Notas Fiscais Plus"
+            "descricao": "03.02.37 - Rel. Notas Fiscais Plus",
+            "ativo": true
         },
         {
             "codigo": "0512",
             "params": {},
             "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
             "nome": "0512.csv",
-            "descricao": "05.12 - Rel. Vendas no ano em HECTOLITRO"
+            "descricao": "05.12 - Rel. Vendas no ano em HECTOLITRO",
+            "ativo": true
         },
         {
             "codigo": "120601",
             "params": {},
             "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
             "nome": "120601.csv",
-            "descricao": "12.06.01 - Rel. Títulos Pendentes"
+            "descricao": "12.06.01 - Rel. Títulos Pendentes",
+            "ativo": true
         }
     ]
 }
