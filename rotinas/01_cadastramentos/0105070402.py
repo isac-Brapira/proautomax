@@ -103,8 +103,17 @@ def executar(driver, **kwargs):
         except pyautogui.ImageNotFoundException:
             pass  # imagem ainda não apareceu   
 
-    time.sleep(3)
-    pyautogui.click(pyautogui.center(pos))
+
+    time.sleep(2)
+    # Garante que a janela principal esteja em foco novamente
+    try:
+        driver.switch_to.window(driver.current_window_handle)
+    except Exception:
+        pass
+    
+    # Clica no centro da tela para garantir o foco no sistema operacional
+    screen_w, screen_h = pyautogui.size()
+    pyautogui.click(screen_w / 2, screen_h / 2)
     # =========================== Exportando para CSV ===================================== #
 
    
