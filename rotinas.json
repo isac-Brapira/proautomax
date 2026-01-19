@@ -44,7 +44,7 @@
             "codigo": "0512",
             "params": {},
             "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
-            "nome": "0512.csv",
+            "nome": "0512HE.csv",
             "descricao": "05.12 - Rel. Vendas no ano em HECTOLITRO",
             "ativo": true
         },
