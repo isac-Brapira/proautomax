@@ -14,7 +14,7 @@
             "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
             "nome": "0105070402.csv",
             "descricao": "01.05.07.04.02.04.02 - Cliente Plus",
-            "ativo": true
+            "ativo": false
         },
         {
             "codigo": "03013604",
@@ -30,7 +30,7 @@
             "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
             "nome": "03013604.csv",
             "descricao": "03.01.36.04 - Rel. Pedidos do dia em CAIXA",
-            "ativo": true
+            "ativo": false
         },
         {
             "codigo": "030237",
@@ -38,13 +38,13 @@
             "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
             "nome": "030237.csv",
             "descricao": "03.02.37 - Rel. Notas Fiscais Plus",
-            "ativo": true
+            "ativo": false
         },
         {
             "codigo": "0512",
             "params": {},
             "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
-            "nome": "0512.csv",
+            "nome": "0512HE.csv",
             "descricao": "05.12 - Rel. Vendas no ano em HECTOLITRO",
             "ativo": true
         },
@@ -54,7 +54,7 @@
             "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
             "nome": "120601.csv",
             "descricao": "12.06.01 - Rel. Títulos Pendentes",
-            "ativo": true
+            "ativo": false
         }
     ]
 }
