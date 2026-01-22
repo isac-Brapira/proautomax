@@ -6,7 +6,7 @@
             "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
             "nome": "0111.csv",
             "descricao": "01.11 - Produtos",
-            "ativo": true
+            "ativo": false
         },
         {
             "codigo": "0105070402",
@@ -22,7 +22,7 @@
             "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
             "nome": "03013604HE.csv",
             "descricao": "03.01.36.04 - Rel. Pedidos do dia em HECTOLITRO",
-            "ativo": true
+            "ativo": false
         },
         {
             "codigo": "03013604",
@@ -46,7 +46,7 @@
             "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
             "nome": "0512HE.csv",
             "descricao": "05.12 - Rel. Vendas no ano em HECTOLITRO",
-            "ativo": true
+            "ativo": false
         },
         {
             "codigo": "120601",
@@ -55,6 +55,14 @@
             "nome": "120601.csv",
             "descricao": "12.06.01 - Rel. Títulos Pendentes",
             "ativo": false
+        },
+        {
+            "codigo": "020304",
+            "params": {},
+            "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
+            "nome": "020304.csv",
+            "descricao": "02.03.04 - Rel. Saldo da Grade",
+            "ativo": true
         }
     ]
 }
