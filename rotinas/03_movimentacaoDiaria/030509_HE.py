@@ -1,9 +1,10 @@
 """
-Rotina: 02.03.04
-Descrição: Baixa um CSV com relatório de saldo da grade.
+Rotina: 03.05.09 - Preço Médio
+Descrição: Baixa um CSV com o relatório de de preço médio em hectolitro.
 Autor: Carol
 """
 
+from datetime import datetime, timedelta
 import os
 from function.abrir_rotinas import abrir_rotinas
 from selenium.webdriver.common.by import By
@@ -12,17 +13,17 @@ from selenium.webdriver.support import expected_conditions as EC
 from function.troca_janela import trocar_para_nova_janela
 import time
 import pyautogui
-
+from function.data_func import data_ontem
 
 # Código da rotina no Promax
-CODIGO_ROTINA = "020304"
+CODIGO_ROTINA = "030509"
 
 
 def executar(driver, **kwargs):
     """
-    Função principal da rotina.    
+    Função principal da rotina.
+    Tudo começa por aqui.
     """
-
     abrir_rotinas(driver, CODIGO_ROTINA)
     trocar_para_nova_janela(driver)
     driver.maximize_window()
@@ -37,11 +38,19 @@ def executar(driver, **kwargs):
     pyautogui.FAILSAFE = True
     
 
-    print("⚙️ Configurando parâmetros da rotina 02.03.04 ...")
+    print("⚙️ Configurando parâmetros da rotina 030509 em hectolitro ...")
 
     wait.until(EC.frame_to_be_available_and_switch_to_it((By.NAME, "rotina")))
     print("Janelas abertas:", driver.window_handles)
     print("Janela atual:", driver.current_window_handle)
+
+    #TODO
+    select_quebra1 = wait.until(EC.presence_of_element_located((By.NAME, "opcaoRel")))
+
+    driver.execute_script("arguments[0].value = '07'; arguments[0].onchange();", select_quebra1)
+
+    print(f"ROTINA {CODIGO_ROTINA}:⚙️ Quebra 1 configurada para classificação Cliente")
+
 
     # Exporta o CSV
     print("📤 Exportando para CSV...")
@@ -50,6 +59,7 @@ def executar(driver, **kwargs):
     # Espera a barra de download aparecer
     print("⏳ Aguardando download...")
     
+    #wait.until(EC.visibility_of_element_located((By.NAME, "GerExcel")))
     while True:
         try:
             pos = pyautogui.locateOnScreen(os.getenv("PATH_IMAGE_CSV"), confidence= 0.8)
@@ -59,12 +69,18 @@ def executar(driver, **kwargs):
                 # Clica na imagem para garantir o foco na janela antes de enviar teclas
                 time.sleep(2)
                 pyautogui.click(pyautogui.center(pos))
-
+                # Clica bem no começo da imagem para conseguir dar o tab
+                # pyautogui.click(pos.left + 2, pos.top + 2)
                 break
         except pyautogui.ImageNotFoundException:
             pass  # imagem ainda não apareceu
 
+
+
     time.sleep(2)
+
+    # Aqui o executor.py vai chamar confirmar_download_com_retry()
+    # que usa o sistema de estratégias automaticamente
 
 
 # ========================
