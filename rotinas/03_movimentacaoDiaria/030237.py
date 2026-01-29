@@ -6,7 +6,7 @@ Autor: Carol e Isac
 
 from function.abrir_rotinas import abrir_rotinas
 from function.troca_janela import trocar_para_nova_janela
-from function.clicar_imagem import clicar_imagem
+from function.img_func import clicar_imagem, encontrar_imagem, CSV_BTN, SALVAR_BTN, VISUALIZAR_BTN
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
@@ -14,6 +14,8 @@ from datetime import datetime
 import time
 import pyautogui
 from function.data_func import data_hoje, data_ontem, primeiro_dia_mes
+
+
 
 # Código da rotina no Promax
 CODIGO_ROTINA = "030237"
@@ -88,15 +90,36 @@ def executar(driver, **kwargs):
 
     time.sleep(1)
 
-    print("📤 Procurando botão visualizar...")
+    print("📤 Tentando usar o atalho Alt+V para visualizar...")
+    atalho_alt("v")
 
-    clicar_imagem("images/visualizar_carol.png")
+    # Verifica se o botão do CSV aparece (sucesso do Alt+V)
+    # Se não aparecer em 300s (5 min), assume falha e tenta clicar no visualizar manualmente
+    try:
+        # Tenta encontrar o botão CSV que indica que o relatório carregou
+        print("⏳ Aguardando processamento do relatório (Até 2 min)...")
+        encontrar_imagem(CSV_BTN, timeout=120) 
+    except TimeoutError:
+        print("❌ Atalho Alt+V falhou ou demorou demais. Tentando clicar em Visualizar manualmente...")
+        clicar_imagem(VISUALIZAR_BTN, timeout=10) # Tenta clicar no botão visualizar
+        
+        # Espera novamente pelo resultado
+        print("⏳ Aguardando processamento (2ª tentativa)...")
+        try:
+            encontrar_imagem(CSV_BTN, timeout=300)
+        except TimeoutError:
+            print("❌ Falha crítica: Relatório não carregou.")
+            return
+
+    print("⏳ Relatório gerado! Iniciando download...")
+
+    # Clica no CSV para baixar
+    clicar_imagem(CSV_BTN)
     
-    # atalho_alt("v")
 
     print("⏳ Aguardando download...")
 
-    clicar_imagem("images/csv_carol.png")
+    #clicar_imagem("images/csv_carol.png")
 
     time.sleep(2)
 

@@ -34,6 +34,5 @@ def primeiro_dia_mes():
 
 def gerar_nome_mes_vigente():
     hoje = datetime.today()
-    numero = hoje.month
-    nome = MESES[numero]
-    return f"{numero:02d.{nome}}"
+    # Dict lookup is safer than locale on Windows to avoid 'MARÇO' (encoding) issues
+    return f"{hoje.month:02d}.{MESES[hoje.month]}"
