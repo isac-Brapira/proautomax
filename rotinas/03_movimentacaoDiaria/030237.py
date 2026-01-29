@@ -6,6 +6,7 @@ Autor: Carol e Isac
 
 from function.abrir_rotinas import abrir_rotinas
 from function.troca_janela import trocar_para_nova_janela
+from function.clicar_imagem import clicar_imagem
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
@@ -14,12 +15,8 @@ import time
 import pyautogui
 from function.data_func import data_hoje, data_ontem, primeiro_dia_mes
 
-
 # Código da rotina no Promax
 CODIGO_ROTINA = "030237"
-
-
-
 
 def executar(driver, **kwargs):
     """
@@ -78,48 +75,30 @@ def executar(driver, **kwargs):
       radio_itens.click()
 
     print(f"ROTINA {CODIGO_ROTINA}:⚙️ Itens configurados para Sim")
+
     # -------------------------
     # Data inicial = primeiro dia do mês atual
     # Data final = hoje
     # -------------------------   
-
 
     data_inicial = wait.until(EC.presence_of_element_located((By.NAME, "dataInicial")))
 
     driver.execute_script(f"arguments[0].value = '{primeiro_dia_mes()}';", data_inicial)
     print(f"ROTINA {CODIGO_ROTINA}:⚙️ Data inicial configurada para {primeiro_dia_mes()}")
 
- 
-
     time.sleep(1)
 
-    print("📤 Exportando CSV...")
-    atalho_alt("v")
+    print("📤 Procurando botão visualizar...")
 
-    # Uma nova janela vai abrir quando apertar Alt+V. É preciso esperar ela fechar sozinha para continuar
-    print("⏳ Aguardando download...")
+    clicar_imagem("images/visualizar_carol.png")
     
-    #wait.until(EC.visibility_of_element_located((By.NAME, "GerExcel")))
-    while True:
-        try:
-            pos = pyautogui.locateOnScreen("images/CSV.png", confidence= 0.8)
-            if pos:
-                print("✅ Botão encontrado!")
-                print(pos)
-                # Clica na imagem para garantir o foco na janela antes de enviar teclas
-                time.sleep(2)
-                pyautogui.click(pyautogui.center(pos))
-                # Clica bem no começo da imagem para conseguir dar o tab
-                # pyautogui.click(pos.left + 2, pos.top + 2)
-                break
-        except pyautogui.ImageNotFoundException:
-            pass  # imagem ainda não apareceu
+    # atalho_alt("v")
 
+    print("⏳ Aguardando download...")
 
+    clicar_imagem("images/csv_carol.png")
 
     time.sleep(2)
-
-
 
 # ========================
 # Funções auxiliares
@@ -139,4 +118,4 @@ def atalho_alt(tecla):
     time.sleep(0.5)
     pyautogui.keyDown("alt")
     pyautogui.press(tecla.lower())
-    pyautogui.keyUp("alt")
+    pyautogui.keyUp("alt")    

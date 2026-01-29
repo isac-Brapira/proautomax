@@ -34,11 +34,13 @@
         },
         {
             "codigo": "030237",
-            "params": {},
+            "params": {
+                "nomeMes": "{MES_ATUAL}"
+            },
             "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
             "nome": "030237.csv",
             "descricao": "03.02.37 - Rel. Notas Fiscais Plus",
-            "ativo": false
+            "ativo": true
         },
         {
             "codigo": "0512",
@@ -62,7 +64,7 @@
             "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
             "nome": "020304.csv",
             "descricao": "02.03.04 - Rel. Saldo da Grade",
-            "ativo": true
+            "ativo": false
         }
     ]
 }
