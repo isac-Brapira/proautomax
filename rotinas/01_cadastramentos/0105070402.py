@@ -80,6 +80,7 @@ def executar(driver, **kwargs):
 
     while True:
         try:
+            pyautogui.screenshot()
             pos = pyautogui.locateOnScreen("images/0105070402_images/AS.png", confidence= 0.8)
             if pos:
                 print("✅ Marcando o checkbox AS...")

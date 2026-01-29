@@ -1,9 +1,10 @@
 """
-Rotina: 01.11 - Produtos
-Descrição: Baixa um CSV com os produtos cadastrados no Promax.
-Autor: Isac
+Rotina: 02.03.04
+Descrição: Baixa um CSV com relatório de saldo da grade.
+Autor: Carol
 """
 
+import os
 from function.abrir_rotinas import abrir_rotinas
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -14,47 +15,56 @@ import pyautogui
 
 
 # Código da rotina no Promax
-CODIGO_ROTINA = "0111"
+CODIGO_ROTINA = "020304"
 
 
 def executar(driver, **kwargs):
     """
-    Função principal da rotina.
-    Tudo começa por aqui.
+    Função principal da rotina.    
     """
+
     abrir_rotinas(driver, CODIGO_ROTINA)
-
-    print("Janelas abertas:", driver.window_handles)
-    print("Janela atual:", driver.current_window_handle)
-
     trocar_para_nova_janela(driver)
-
-    print("Janela depois da troca:", driver.current_window_handle)
-
     driver.maximize_window()
 
-    wait = WebDriverWait(driver, 20)
-
+    wait = WebDriverWait(driver, 60)
     _aguardar_tela_carregar(wait)
-
-    time.sleep(2)
+    time.sleep(5)
 
     width, height = pyautogui.size()
     pyautogui.FAILSAFE = False
     pyautogui.moveTo(width / 2, height / 2)
     pyautogui.FAILSAFE = True
     
-    
+
+    print("⚙️ Configurando parâmetros da rotina 02.03.04 ...")
+
+    wait.until(EC.frame_to_be_available_and_switch_to_it((By.NAME, "rotina")))
+    print("Janelas abertas:", driver.window_handles)
+    print("Janela atual:", driver.current_window_handle)
+
     # Exporta o CSV
     print("📤 Exportando para CSV...")
     atalho_alt('v')  # Abre o menu Exportar / gera CSV
 
     # Espera a barra de download aparecer
-    print("⏳ Aguardando barra de download...")
-    time.sleep(5)  # Tempo para a barra aparecer
+    print("⏳ Aguardando download...")
+    
+    while True:
+        try:
+            pos = pyautogui.locateOnScreen(os.getenv("PATH_IMAGE_CSV"), confidence= 0.8)
+            if pos:
+                print("✅ Botão encontrado!")
+                print(pos)
+                # Clica na imagem para garantir o foco na janela antes de enviar teclas
+                time.sleep(2)
+                pyautogui.click(pyautogui.center(pos))
 
-    # Aqui o executor.py vai chamar confirmar_download_com_retry()
-    # que usa o sistema de estratégias automaticamente
+                break
+        except pyautogui.ImageNotFoundException:
+            pass  # imagem ainda não apareceu
+
+    time.sleep(2)
 
 
 # ========================

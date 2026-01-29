@@ -137,43 +137,54 @@ def aguardar_novo_arquivo(timeout=120):
 
 
 
-def _arquivo_esta_pronto(caminho, verificacoes=3):
+def _arquivo_esta_pronto(caminho, tempo_estabilidade=2.0):
     """
-    Verifica se o arquivo terminou de ser baixado.
-    Faz múltiplas verificações pra garantir.
+    Verifica se o arquivo terminou de ser baixado monitorando a estabilidade do tamanho
+    e se o arquivo está acessível para escrita.
     
     Args:
         caminho: Caminho completo do arquivo
-        verificacoes: Número de verificações a fazer
+        tempo_estabilidade: Tempo (segundos) que o tamanho deve permanecer inalterado
     
     Returns:
         True se o arquivo está pronto, False caso contrário
     """
-    for _ in range(verificacoes):
-        try:
-            # Verifica se o tamanho é estável
-            tamanho1 = os.path.getsize(caminho)
-            time.sleep(0.5)
-            tamanho2 = os.path.getsize(caminho)
-            
-            # Se tá crescendo, não tá pronto
-            if tamanho1 != tamanho2:
-                return False
-            
-            # Tenta abrir pra leitura/escrita
-            with open(caminho, 'r+b') as f:
-                pass
-            
-            # Se chegou aqui e tamanho > 0, tá pronto
-            if tamanho2 > 0:
-                return True
-                
-        except (OSError, PermissionError):
-            # Se não consegue abrir, ainda tá em uso
-            return False
-        
-        time.sleep(0.5)
+    start_stable = None
+    last_size = -1
     
+    # Tenta monitorar por no máximo 15 segundos (timeout interno de segurança)
+    max_check_time = 15 
+    check_start = time.time()
+
+    while (time.time() - check_start) < max_check_time:
+        try:
+            if not os.path.exists(caminho):
+                return False
+                
+            current_size = os.path.getsize(caminho)
+            
+            if current_size == last_size and current_size > 0:
+                if start_stable is None:
+                    start_stable = time.time()
+                elif (time.time() - start_stable) >= tempo_estabilidade:
+                    # Tamanho estável pelo tempo necessário. Tenta abrir.
+                    try:
+                        with open(caminho, 'r+b') as f:
+                            return True
+                    except (OSError, PermissionError):
+                        # Arquivo bloqueado, reseta estabilidade
+                        start_stable = None 
+            else:
+                # Tamanho mudou ou é 0, reseta contagem
+                last_size = current_size
+                start_stable = None
+                
+            time.sleep(0.5)
+            
+        except Exception:
+            # Erro ao acessar arquivo (talvez sumiu momentaneamente)
+            return False
+
     return False
 
 
