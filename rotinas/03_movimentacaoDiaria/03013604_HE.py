@@ -55,27 +55,32 @@ def executar(driver, **kwargs):
     print(f"ROTINA {CODIGO_ROTINA}:⚙️ Checkbox selecionada")
 
     # Exporta o CSV
-    print("📤 Clicando em visualizar...")
-    atalho_alt('v')  # Abre o menu Exportar / gera CSV
+    print("📤 Tentando usar o atalho Alt+V para visualizar...")
+    atalho_alt("v")
 
-    # Espera a barra de download aparecer
-    print("⏳ Aguardando download...")
-    
-    while True:
+    # Verifica se o botão do CSV aparece (sucesso do Alt+V)
+    # Se não aparecer em 300s (5 min), assume falha e tenta clicar no visualizar manualmente
+    try:
+        # Tenta encontrar o botão CSV que indica que o relatório carregou
+        print("⏳ Aguardando processamento do relatório (Até 2 min)...")
+        encontrar_imagem(CSV_BTN, timeout=120) 
+    except TimeoutError:
+        print("❌ Atalho Alt+V falhou ou demorou demais. Tentando clicar em Visualizar manualmente...")
+        clicar_imagem(VISUALIZAR_BTN, timeout=10) # Tenta clicar no botão visualizar
+        
+        # Espera novamente pelo resultado
+        print("⏳ Aguardando processamento (2ª tentativa)...")
         try:
-            pos = pyautogui.locateOnScreen(os.getenv("PATH_IMAGE_CSV"), confidence= 0.8)
-            if pos:
-                print("✅ Botão encontrado!")
-                print(pos)
-                # Clica na imagem para garantir o foco na janela antes de enviar teclas
-                time.sleep(2)
-                pyautogui.click(pyautogui.center(pos))
+            encontrar_imagem(CSV_BTN, timeout=300)
+        except TimeoutError:
+            print("❌ Falha crítica: Relatório não carregou.")
+            return
 
-                break
-        except pyautogui.ImageNotFoundException:
-            pass  # imagem ainda não apareceu
+    print("⏳ Relatório gerado! Iniciando download...")
 
+    # Clica no CSV para baixar
     time.sleep(2)
+    clicar_imagem(CSV_BTN)
 
 # ========================
 # Funções auxiliares
