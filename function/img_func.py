@@ -4,6 +4,7 @@ import os
 
 # Variaveis de imagens
 CSV_BTN = os.getenv("PATH_IMAGE_CSV")
+CSV_BTN_2 = os.getenv("PATH_IMAGE_CSV_2")
 SALVAR_BTN = os.getenv("PATH_IMAGE_SAVE")
 VISUALIZAR_BTN = os.getenv("PATH_IMAGE_VISUALIZAR")
 
