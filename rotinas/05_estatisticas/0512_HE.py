@@ -64,6 +64,10 @@ def executar(driver, **kwargs):
 
     print(f"ROTINA {CODIGO_ROTINA}:⚙️ Checkbox selecionada")
 
+    # Exporta o CSV
+    print("📤 Tentando usar o atalho Alt+V para visualizar...")
+    atalho_alt("v")
+
     try:
         # Tenta encontrar o botão CSV que indica que o relatório carregou
         print("⏳ Aguardando processamento do relatório (Até 2 min)...")
