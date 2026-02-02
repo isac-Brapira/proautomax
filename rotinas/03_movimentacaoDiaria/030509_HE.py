@@ -10,6 +10,7 @@ from function.abrir_rotinas import abrir_rotinas
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from function.img_func import encontrar_imagem, clicar_imagem, CSV_BTN, SALVAR_BTN
 from function.troca_janela import trocar_para_nova_janela
 import time
 import pyautogui

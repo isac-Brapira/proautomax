@@ -10,6 +10,7 @@ from function.abrir_rotinas import abrir_rotinas
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from function.img_func import encontrar_imagem, clicar_imagem, CSV_BTN, VISUALIZAR_BTN
 from function.troca_janela import trocar_para_nova_janela
 import time
 import pyautogui
@@ -56,28 +57,27 @@ def executar(driver, **kwargs):
     driver.execute_script(f"arguments[0].value = '{data_ontem()}';", vencimento_final)
     print(f"ROTINA {CODIGO_ROTINA}:⚙️ Data inicial configurada para {data_ontem()}")
 
-    # Exporta o CSV
-    print("📤 Exportando para CSV...")
-    atalho_alt('v')  # Abre o menu Exportar / gera CSV
-
-    # Espera a barra de download aparecer
-    print("⏳ Aguardando download...")
-    
-    #wait.until(EC.visibility_of_element_located((By.NAME, "GerExcel")))
-    while True:
+    try:
+        # Tenta encontrar o botão CSV que indica que o relatório carregou
+        print("⏳ Aguardando processamento do relatório (Até 2 min)...")
+        encontrar_imagem(CSV_BTN, timeout=120) 
+    except TimeoutError:
+        print("❌ Atalho Alt+V falhou ou demorou demais. Tentando clicar em Visualizar manualmente...")
+        clicar_imagem(VISUALIZAR_BTN, timeout=10) # Tenta clicar no botão visualizar
+        
+        # Espera novamente pelo resultado
+        print("⏳ Aguardando processamento (2ª tentativa)...")
         try:
-            pos = pyautogui.locateOnScreen(os.getenv("PATH_IMAGE_CSV"), confidence= 0.8)
-            if pos:
-                print("✅ Botão encontrado!")
-                print(pos)
-                # Clica na imagem para garantir o foco na janela antes de enviar teclas
-                time.sleep(2)
-                pyautogui.click(pyautogui.center(pos))
-                # Clica bem no começo da imagem para conseguir dar o tab
-                # pyautogui.click(pos.left + 2, pos.top + 2)
-                break
-        except pyautogui.ImageNotFoundException:
-            pass  # imagem ainda não apareceu
+            encontrar_imagem(CSV_BTN, timeout=300)
+        except TimeoutError:
+            print("❌ Falha crítica: Relatório não carregou.")
+            return
+
+    print("⏳ Relatório gerado! Iniciando download...")
+
+    # Clica no CSV para baixar
+    time.sleep(2)
+    clicar_imagem(CSV_BTN)
 
 
 
