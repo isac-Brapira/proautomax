@@ -39,7 +39,17 @@
             },
             "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
             "nome": "030237.csv",
-            "descricao": "03.02.37 - Rel. Notas Fiscais Plus",
+            "descricao": "03.02.37 - Rel. Notas Fiscais Plus de SAÍDA",
+            "ativo": false
+        },        
+        {
+            "codigo": "030237",
+            "params": {
+                "nomeMes": "MES_ATUAL"
+            },
+            "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
+            "nome": "030237ENTRADA.csv",
+            "descricao": "03.02.37 - Rel. Notas Fiscais Plus de ENTRADA",
             "ativo": true
         },
         {

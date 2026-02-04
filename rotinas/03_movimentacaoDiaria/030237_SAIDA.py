@@ -1,6 +1,6 @@
 """
 Rotina: 03.02.37 - Rel. Notas Fiscais Plus
-Descrição: Relatório com quebra por Operação e Vendedor.
+Descrição: Relatório de notas fiscais de SAIDA com quebra por Operação e Vendedor.
 Autor: Carol e Isac
 """
 
@@ -18,7 +18,7 @@ from function.data_func import data_hoje, data_ontem, primeiro_dia_mes
 
 
 # Código da rotina no Promax
-CODIGO_ROTINA = "030237"
+# CODIGO_ROTINA = "030237"
 
 def executar(driver, **kwargs):
     """
