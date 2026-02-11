@@ -95,8 +95,8 @@ def executar(driver, **kwargs):
         )
 
     if not checkbox.is_selected():
-            driver.execute_script("arguments[0].click();", checkbox)
-            print(f"ROTINA {CODIGO_ROTINA}:⚙️ Checkbox de HECTOLITRO flagada...")
+        driver.execute_script("arguments[0].click();", checkbox)
+        print(f"ROTINA {CODIGO_ROTINA}:⚙️ Checkbox de Lista NFs de Compra flagada...")
 
     # -------------------------
     # Data inicial = primeiro dia do mês atual
@@ -138,8 +138,6 @@ def executar(driver, **kwargs):
     
 
     print("⏳ Aguardando download...")
-
-    #clicar_imagem("images/csv_carol.png")
 
     time.sleep(2)
 
