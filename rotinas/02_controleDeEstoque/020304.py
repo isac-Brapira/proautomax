@@ -9,6 +9,7 @@ from function.abrir_rotinas import abrir_rotinas
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from function.data_func import data_ontem
 from function.troca_janela import trocar_para_nova_janela
 import time
 import pyautogui
@@ -43,6 +44,11 @@ def executar(driver, **kwargs):
     print("Janelas abertas:", driver.window_handles)
     print("Janela atual:", driver.current_window_handle)
 
+    data = wait.until(EC.presence_of_element_located((By.NAME, "data")))
+
+    driver.execute_script(f"arguments[0].value = '{data_ontem()}';", data)
+    print(f"ROTINA {CODIGO_ROTINA}:⚙️ Data inicial configurada para {data_ontem()}")
+    
     # Exporta o CSV
     print("📤 Exportando para CSV...")
     atalho_alt('v')  # Abre o menu Exportar / gera CSV
