@@ -55,7 +55,7 @@ def executar(driver, **kwargs):
     time.sleep(1)
 
     print("📤 Tentando usar o atalho Alt+V para visualizar...")
-    atalho_alt("v")
+    atalho_alt("V")
 
     # Verifica se o botão do CSV aparece (sucesso do Alt+V)
     # Se não aparecer em 300s (5 min), assume falha e tenta clicar no visualizar manualmente
