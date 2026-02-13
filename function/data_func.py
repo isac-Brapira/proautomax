@@ -30,6 +30,11 @@ def primeiro_dia_mes():
     data_formatada = primeiro_dia.strftime('%d/%m/%Y')
     return data_formatada
 
+def primeiro_dia_ano():
+    primeiro_dia_ano = hoje.replace(month=1, day=1)
+    data_formatada = primeiro_dia_ano.strftime('%d/%m/%Y')
+    return data_formatada
+
 def gerar_nome_mes_vigente():
     # Dict lookup is safer than locale on Windows to avoid 'MARÇO' (encoding) issues
     return f"{hoje.month:02d}.{MESES[hoje.month]}"
