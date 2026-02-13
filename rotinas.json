@@ -39,8 +39,18 @@
             },
             "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
             "nome": "030237.csv",
-            "descricao": "03.02.37 - Rel. Notas Fiscais Plus",
-            "ativo": true
+            "descricao": "03.02.37 - Rel. Notas Fiscais Plus de SAÍDA",
+            "ativo": false
+        },        
+        {
+            "codigo": "030237",
+            "params": {
+                "nomeMes": "MES_ATUAL"
+            },
+            "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
+            "nome": "030237ENTRADA.csv",
+            "descricao": "03.02.37 - Rel. Notas Fiscais Plus de ENTRADA",
+            "ativo": false
         },
         {
             "codigo": "0512",
@@ -64,6 +74,14 @@
             "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
             "nome": "020304.csv",
             "descricao": "02.03.04 - Rel. Saldo da Grade",
+            "ativo": true
+        },
+        {
+            "codigo": "150501",
+            "params": {},
+            "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
+            "nome": "150501.csv",
+            "descricao": "15.05.01 - Rel. Lançamentos detalhados OBZ",
             "ativo": false
         }
     ]

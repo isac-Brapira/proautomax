@@ -8,6 +8,7 @@ from function.abrir_rotinas import abrir_rotinas
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from function.img_func import encontrar_imagem, clicar_imagem, CSV_BTN_2, SALVAR_BTN
 from function.troca_janela import trocar_para_nova_janela
 import time
 import pyautogui
@@ -43,11 +44,31 @@ def executar(driver, **kwargs):
     pyautogui.FAILSAFE = False
     pyautogui.moveTo(width / 2, height / 2)
     pyautogui.FAILSAFE = True
+
+
+    # Tenta usar o atalho Alt+V para abrir o menu Exportar / gera CSV
+    time.sleep(2)
+    atalho_alt('v')
+    print("Tentando usar o atalho Alt+V para abrir o menu Exportar / gera CSV...")
+ 
     
-    
-    # Exporta o CSV
-    print("📤 Exportando para CSV...")
-    atalho_alt('v')  # Abre o menu Exportar / gera CSV
+    try:
+        # Tenta encontrar o botão CSV que indica que o relatório carregou
+        print("⏳ Aguardando processamento do relatório (Até 2 min)...")
+        encontrar_imagem(SALVAR_BTN, timeout=120) 
+    except TimeoutError:
+        print("❌ Atalho Alt+V falhou ou demorou demais. Tentando clicar em Visualizar manualmente...")
+        clicar_imagem(CSV_BTN_2, timeout=10) # Tenta clicar no botão visualizar
+        
+        # Espera novamente pelo resultado
+        print("⏳ Aguardando processamento (2ª tentativa)...")
+        try:
+            encontrar_imagem(SALVAR_BTN, timeout=300)
+        except TimeoutError:
+            print("❌ Falha crítica: Relatório não carregou.")
+            return
+
+    print("⏳ Relatório gerado! Iniciando download...")
 
     # Espera a barra de download aparecer
     print("⏳ Aguardando barra de download...")
