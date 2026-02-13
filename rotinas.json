@@ -92,6 +92,22 @@
             "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
             "nome": "020512.csv",
             "descricao": "02.05.12 Compras por fornecedor",
+            "ativo": false
+        },
+        {
+            "codigo": "0421",
+            "params": {},
+            "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
+            "nome": "0421.csv",
+            "descricao": "04.21 Rel. Registro de Inventário",
+            "ativo": false
+        },
+        {
+            "codigo": "03014701",
+            "params": {},
+            "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
+            "nome": "03014701.csv",
+            "descricao": "04.21 Rel. Apuração CDP",
             "ativo": true
         }
     ]
