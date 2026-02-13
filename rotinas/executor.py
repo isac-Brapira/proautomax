@@ -4,7 +4,7 @@ import pyautogui
 # Importa a função completa de salvar, não apenas a que abre a janela
 # Se o arquivo download.py estiver numa pasta "function", mude para: from function.download import salvar_arquivo
 from function.download import salvar_arquivo 
-from function.data_func import gerar_nome_mes_vigente
+from function.data_func import ano_vigente, gerar_nome_mes_vigente
 
 
 def executar_rotinas(driver, rotinas_registradas, caminho_json):
@@ -49,6 +49,10 @@ def executar_rotinas(driver, rotinas_registradas, caminho_json):
         if params.get("nomeMes") == "MES_ATUAL":
             nome_mes_vigente = gerar_nome_mes_vigente()
             nome = f"{nome_mes_vigente}.csv"
+
+        elif params.get("anoVigente") == "ANO_VIGENTE":
+            nome = f"{codigo}_{ano_vigente()}.csv"
+
         else:
             nome = item.get("nome", f"{codigo}.csv")
         
