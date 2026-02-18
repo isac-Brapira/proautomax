@@ -100,7 +100,7 @@
             "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
             "nome": "0421.csv",
             "descricao": "04.21 Rel. Registro de Inventário",
-            "ativo": true
+            "ativo": false
         },
         {
             "codigo": "03014701",
@@ -109,6 +109,14 @@
             "nome": "03014701.csv",
             "descricao": "03.01.47.01 Rel. Apuração CDP",
             "ativo": false
+        },
+        {
+            "codigo": "01250802",
+            "params": {},
+            "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
+            "nome": "01250802.csv",
+            "descricao": "01.25.08.02 Faixa de Preços",
+            "ativo": true
         }
     ]
 }
