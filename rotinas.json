@@ -100,15 +100,15 @@
             "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
             "nome": "0421.csv",
             "descricao": "04.21 Rel. Registro de Inventário",
-            "ativo": false
+            "ativo": true
         },
         {
             "codigo": "03014701",
             "params": {},
             "destino": "\\\\192.168.1.213\\Arquivos\\Administrativo\\TecInfo\\DB_VENDAS\\testeProauto",
             "nome": "03014701.csv",
-            "descricao": "04.21 Rel. Apuração CDP",
-            "ativo": true
+            "descricao": "03.01.47.01 Rel. Apuração CDP",
+            "ativo": false
         }
     ]
 }
