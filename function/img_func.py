@@ -6,6 +6,7 @@ import os
 CSV_BTN = os.getenv("PATH_IMAGE_CSV")
 CSV_BTN_2 = os.getenv("PATH_IMAGE_CSV_2")
 SALVAR_BTN = os.getenv("PATH_IMAGE_SAVE")
+SALVAR_BTN_2 = os.getenv("PATH_IMAGE_SAVE_2")
 VISUALIZAR_BTN = os.getenv("PATH_IMAGE_VISUALIZAR")
 
 # Só procura a imagem e retorna a posição se encontrar. Timeout em segundos.

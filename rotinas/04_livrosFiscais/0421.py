@@ -3,17 +3,13 @@ Rotina: 04.21
 Descrição: Baixa um CSV com relatório de registro de inventário.
 Autor: Carol
 """
-
 import os
-
 from function.abrir_rotinas import abrir_rotinas
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait, Select
+from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from function.data_func import primeiro_dia_ano
-from function.img_func import CSV_BTN, VISUALIZAR_BTN, clicar_imagem, encontrar_imagem
+from function.img_func import CSV_BTN, SALVAR_BTN_2, VISUALIZAR_BTN, clicar_imagem, encontrar_imagem
 from function.troca_janela import trocar_para_nova_janela
-from function.funcoes_rotina import desmarcar_item, marcar_item, selecionar_selectedbox
 import time
 import pyautogui
 
@@ -110,8 +106,8 @@ def executar(driver, **kwargs):
 
     print("⏳ Relatório gerado! Iniciando download...")
     
-    # Clica no CSV para baixar
-    clicar_imagem(CSV_BTN)
+    # Clica no botão salvar para baixar
+    clicar_imagem(SALVAR_BTN_2)
 
     time.sleep(2)
 
