@@ -18,14 +18,14 @@ from function.data_func import data_hoje, data_ontem, primeiro_dia_mes
 
 
 # Código da rotina no Promax
-CODIGO_ROTINA = "030237"
+CODIGO_ROTINA = "030237_ENTRADA"
 
 def executar(driver, **kwargs):
     """
     Função principal da rotina.
     """
 
-    abrir_rotinas(driver, CODIGO_ROTINA)
+    abrir_rotinas(driver, '030237')
     trocar_para_nova_janela(driver)
     driver.maximize_window()
 
@@ -38,7 +38,6 @@ def executar(driver, **kwargs):
     pyautogui.moveTo(width / 2, height / 2)
     pyautogui.FAILSAFE = True
     
-
     print("⚙️ Configurando parâmetros da rotina 030237 de entrada...")
 
     wait.until(EC.frame_to_be_available_and_switch_to_it((By.NAME, "rotina")))

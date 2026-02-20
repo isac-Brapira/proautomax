@@ -57,6 +57,9 @@ def executar(driver, **kwargs):
     driver.execute_script(f"arguments[0].value = '{data_ontem()}';", vencimento_final)
     print(f"ROTINA {CODIGO_ROTINA}:⚙️ Data inicial configurada para {data_ontem()}")
 
+    print("📤 Tentando usar o atalho Alt+V para visualizar...")
+    atalho_alt("v")
+
     try:
         # Tenta encontrar o botão CSV que indica que o relatório carregou
         print("⏳ Aguardando processamento do relatório (Até 2 min)...")

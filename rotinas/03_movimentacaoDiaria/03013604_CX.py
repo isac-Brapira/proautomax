@@ -9,14 +9,14 @@ from function.abrir_rotinas import abrir_rotinas
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from function.img_func import encontrar_imagem, clicar_imagem, CSV_BTN, SALVAR_BTN
+from function.img_func import VISUALIZAR_BTN, encontrar_imagem, clicar_imagem, CSV_BTN, SALVAR_BTN
 from function.troca_janela import trocar_para_nova_janela
 import time
 import pyautogui
 
 
 # Código da rotina no Promax
-CODIGO_ROTINA = "03013604"
+CODIGO_ROTINA = "03013604_CX"
 
 
 def executar(driver, **kwargs):
@@ -24,7 +24,7 @@ def executar(driver, **kwargs):
     Função principal da rotina.    
     """
 
-    abrir_rotinas(driver, CODIGO_ROTINA)
+    abrir_rotinas(driver, '03013604')
     trocar_para_nova_janela(driver)
     driver.maximize_window()
 

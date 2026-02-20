@@ -18,14 +18,14 @@ from function.data_func import data_hoje, data_ontem, primeiro_dia_mes
 
 
 # Código da rotina no Promax
-CODIGO_ROTINA = "030237"
+CODIGO_ROTINA = "030237_SAIDA"
 
 def executar(driver, **kwargs):
     """
     Função principal da rotina.
     """
 
-    abrir_rotinas(driver, CODIGO_ROTINA)
+    abrir_rotinas(driver, '030237')
     trocar_para_nova_janela(driver)
     driver.maximize_window()
 
