@@ -18,7 +18,7 @@ from function.data_func import data_hoje, data_ontem, primeiro_dia_mes
 
 
 # Código da rotina no Promax
-# CODIGO_ROTINA = "030237"
+CODIGO_ROTINA = "030237"
 
 def executar(driver, **kwargs):
     """
