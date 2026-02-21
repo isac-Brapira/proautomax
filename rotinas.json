@@ -134,6 +134,14 @@
             "destino": "C:\\Users\\Macros\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\DataBeer - Documentos\\03 Movimentacao Diaria",
             "nome": "03.01.11.csv",
             "descricao": "03.01.11 Rel. Crítica/Resumo de Pedido",
+            "ativo": false
+        },
+        {
+            "codigo": "020253",
+            "params": {},
+            "destino": "C:\\Users\\Macros\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\DataBeer - Documentos\\02 Controle de Estoque",
+            "nome": "02.02.53.csv",
+            "descricao": "02.02.53 Rel. Giro das Garrafeiras",
             "ativo": true
         }
     ]
