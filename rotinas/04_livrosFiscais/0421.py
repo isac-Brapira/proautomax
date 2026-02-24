@@ -8,7 +8,7 @@ from function.abrir_rotinas import abrir_rotinas
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from function.img_func import CSV_BTN, SALVAR_BTN_2, VISUALIZAR_BTN, clicar_imagem, encontrar_imagem
+from function.img_func import SALVAR_BTN_2, VISUALIZAR_BTN, clicar_imagem, encontrar_imagem
 from function.troca_janela import trocar_para_nova_janela
 import time
 import pyautogui
@@ -21,7 +21,6 @@ def executar(driver, **kwargs):
     """
     Função principal da rotina.    
     """
-
     abrir_rotinas(driver, CODIGO_ROTINA)
     trocar_para_nova_janela(driver)
     driver.maximize_window()
@@ -50,7 +49,7 @@ def executar(driver, **kwargs):
             select.onchange();
         }
     """, combo)
-    print("⚙️ Selecionando opção de custo ...")
+    print("⚙️ Selecionando opção de preço médio de reposição...")
 
     checkbox_vasilhame = driver.find_element("name", "checkVasilhame")
 
@@ -60,6 +59,7 @@ def executar(driver, **kwargs):
         if (cb.onclick) cb.onclick();
         if (cb.onchange) cb.onchange();
     """, checkbox_vasilhame)
+    print("⚙️ Revomendo flag de Vasilhame...")
 
     checkbox_garrafeira = driver.find_element("name", "checkGarrafeira")
 
@@ -69,6 +69,7 @@ def executar(driver, **kwargs):
         if (cb.onclick) cb.onclick();
         if (cb.onchange) cb.onchange();
     """, checkbox_garrafeira)
+    print("⚙️ Revomendo flag de Garrafeira...")
 
     checkbox_material = driver.find_element("name", "checkMaterial")
 
@@ -78,11 +79,13 @@ def executar(driver, **kwargs):
         if (cb.onclick) cb.onclick();
         if (cb.onchange) cb.onchange();
     """, checkbox_material)
+    print("⚙️ Revomendo flag de Material...")
 
     driver.execute_script("""
         document.getElementsByName('cdDeposito')[0].value = '01';
         AdicionaDeposito();
     """)
+    print("⚙️ Selecionando Depósito opção 01 Central...")
 
     print("📤 Tentando usar o atalho Alt+V para visualizar...")
     atalho_alt("v")
