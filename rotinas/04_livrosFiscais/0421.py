@@ -50,6 +50,7 @@ def executar(driver, **kwargs):
             select.onchange();
         }
     """, combo)
+    print("⚙️ Selecionando opção de custo ...")
 
     checkbox_vasilhame = driver.find_element("name", "checkVasilhame")
 
@@ -91,7 +92,7 @@ def executar(driver, **kwargs):
     try:
         # Tenta encontrar o botão CSV que indica que o relatório carregou
         print("⏳ Aguardando processamento do relatório (Até 2 min)...")
-        encontrar_imagem(CSV_BTN, timeout=120) 
+        encontrar_imagem(SALVAR_BTN_2, timeout=120) 
     except TimeoutError:
         print("❌ Atalho Alt+V falhou ou demorou demais. Tentando clicar em Visualizar manualmente...")
         clicar_imagem(VISUALIZAR_BTN, timeout=10) # Tenta clicar no botão visualizar
@@ -99,7 +100,7 @@ def executar(driver, **kwargs):
         # Espera novamente pelo resultado
         print("⏳ Aguardando processamento (2ª tentativa)...")
         try:
-            encontrar_imagem(CSV_BTN, timeout=300)
+            encontrar_imagem(SALVAR_BTN_2, timeout=300)
         except TimeoutError:
             print("❌ Falha crítica: Relatório não carregou.")
             return
