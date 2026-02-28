@@ -17,6 +17,64 @@
             "ativo": true
         },
         {
+            "codigo": "012011",
+            "params": {},
+            "destino": "C:\\Users\\Macros\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\DataBeer - Documentos\\01 Cadastramentos",
+            "nome": "01.20.11.csv",
+            "descricao": "01.20.11 Visita do Vendedor",
+            "ativo": true
+        },
+        {
+            "codigo": "01250802",
+            "params": {},
+            "destino": "C:\\Users\\Macros\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\DataBeer - Documentos\\01 Cadastramentos",
+            "nome": "01.25.08.02.csv",
+            "descricao": "01.25.08.02 Faixa de Preços",
+            "ativo": true
+        },
+        {
+            "codigo": "020304",
+            "params": {},
+            "destino": "C:\\Users\\Macros\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\DataBeer - Documentos\\02 Controle de Estoque",
+            "nome": "02.03.04.csv",
+            "descricao": "02.03.04 - Rel. Saldo da Grade",
+            "ativo": true
+        },
+        {
+            "codigo": "020512",
+            "params": {
+                "anoVigente": "ANO_VIGENTE"
+            },
+            "destino": "C:\\Users\\Macros\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\DataBeer - Documentos\\02 Controle de Estoque\\020512",
+            "nome": "02.05.12.csv",
+            "descricao": "02.05.12 Compras por fornecedor",
+            "ativo": true
+        },
+        {
+            "codigo": "020229",
+            "params": {},
+            "destino": "C:\\Users\\Macros\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\DataBeer - Documentos\\02 Controle de Estoque",
+            "nome": "02.02.29.csv",
+            "descricao": "02.02.29 Rel. Posição recolhas",
+            "ativo": true
+        },
+        {
+            "codigo": "020253",
+            "params": {},
+            "destino": "C:\\Users\\Macros\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\DataBeer - Documentos\\02 Controle de Estoque",
+            "nome": "02.02.53.csv",
+            "descricao": "02.02.53 Rel. Giro das Garrafeiras",
+            "ativo": true
+        },
+        {
+            "codigo": "030111",
+            "params": {},
+            "destino": "C:\\Users\\Macros\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\DataBeer - Documentos\\03 Movimentacao Diaria",
+            "nome": "03.01.11.csv",
+            "descricao": "03.01.11 Rel. Crítica/Resumo de Pedido",
+            "ativo": true
+        },
+        {
             "codigo": "03013604_HE",
             "params": {},
             "destino": "C:\\Users\\Macros\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\DataBeer - Documentos\\03 Movimentacao Diaria",
@@ -39,7 +97,17 @@
             },
             "destino": "C:\\Users\\Macros\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\DataBeer - Documentos\\03 Movimentacao Diaria\\03013604",
             "nome": "03.01.36.04.csv",
-            "descricao": "03.01.36.04 - Rel. Pedidos do dia em CAIXA",
+            "descricao": "03.01.36.04 - Rel. Pedidos do dia em CAIXA acumulado do mês",
+            "ativo": true
+        },
+        {
+            "codigo": "03014701",
+            "params": {
+                "anoVigente": "ANO_VIGENTE"
+            },
+            "destino": "C:\\Users\\Macros\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\DataBeer - Documentos\\03 Movimentacao Diaria\\03014701",
+            "nome": "03.01.47.01.csv",
+            "descricao": "03.01.47.01 Rel. Apuração CDP",
             "ativo": true
         },
         {
@@ -63,9 +131,27 @@
             "ativo": true
         },
         {
-            "codigo": "0512",
+            "codigo": "030509",
             "params": {},
-            "destino": "C:\\Users\\Macros\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\DataBeer - Documentos\\05 Estatisticas",
+            "destino": "C:\\Users\\Macros\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\DataBeer - Documentos\\03 Movimentacao Diaria",
+            "nome": "03.05.09.csv",
+            "descricao": "03.05.09 - Rel. Preço médio",
+            "ativo": true
+        },
+        {
+            "codigo": "0421",
+            "params": {},
+            "destino": "C:\\Users\\Macros\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\DataBeer - Documentos\\04 Livros Fiscais",
+            "nome": "04.21.csv",
+            "descricao": "04.21 Rel. Registro de Inventário",
+            "ativo": true
+        },
+        {
+            "codigo": "0512",
+            "params": {
+                "anoVigente": "ANO_VIGENTE"
+            },
+            "destino": "C:\\Users\\Macros\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\DataBeer - Documentos\\05 Estatisticas\\0512",
             "nome": "05.12_HE.csv",
             "descricao": "05.12 - Rel. Vendas no ano em HECTOLITRO",
             "ativo": true
@@ -79,85 +165,13 @@
             "ativo": true
         },
         {
-            "codigo": "020304",
-            "params": {},
-            "destino": "C:\\Users\\Macros\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\DataBeer - Documentos\\02 Controle de Estoque",
-            "nome": "02.03.04.csv",
-            "descricao": "02.03.04 - Rel. Saldo da Grade",
-            "ativo": true
-        },
-        {
             "codigo": "150501",
-            "params": {},
-            "destino": "C:\\Users\\Macros\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\DataBeer - Documentos\\15 OBZ",
-            "nome": "15.05.01.csv",
-            "descricao": "15.05.01 - Rel. Lançamentos detalhados OBZ",
-            "ativo": true
-        },
-        {
-            "codigo": "020512",
             "params": {
                 "anoVigente": "ANO_VIGENTE"
             },
-            "destino": "C:\\Users\\Macros\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\DataBeer - Documentos\\02 Controle de Estoque\\020512",
-            "nome": "02.05.12.csv",
-            "descricao": "02.05.12 Compras por fornecedor",
-            "ativo": true
-        },
-        {
-            "codigo": "0421",
-            "params": {},
-            "destino": "C:\\Users\\Macros\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\DataBeer - Documentos\\04 Livros Fiscais",
-            "nome": "04.21.csv",
-            "descricao": "04.21 Rel. Registro de Inventário",
-            "ativo": true
-        },
-        {
-            "codigo": "03014701",
-            "params": {},
-            "destino": "C:\\Users\\Macros\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\DataBeer - Documentos\\03 Movimentacao Diaria",
-            "nome": "03.01.47.01.csv",
-            "descricao": "03.01.47.01 Rel. Apuração CDP",
-            "ativo": true
-        },
-        {
-            "codigo": "01250802",
-            "params": {},
-            "destino": "C:\\Users\\Macros\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\DataBeer - Documentos\\01 Cadastramentos",
-            "nome": "01.25.08.02.csv",
-            "descricao": "01.25.08.02 Faixa de Preços",
-            "ativo": true
-        },
-        {
-            "codigo": "030111",
-            "params": {},
-            "destino": "C:\\Users\\Macros\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\DataBeer - Documentos\\03 Movimentacao Diaria",
-            "nome": "03.01.11.csv",
-            "descricao": "03.01.11 Rel. Crítica/Resumo de Pedido",
-            "ativo": true
-        },
-        {
-            "codigo": "020253",
-            "params": {},
-            "destino": "C:\\Users\\Macros\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\DataBeer - Documentos\\02 Controle de Estoque",
-            "nome": "02.02.53.csv",
-            "descricao": "02.02.53 Rel. Giro das Garrafeiras",
-            "ativo": true
-        },
-        {
-            "codigo": "020229",
-            "params": {},
-            "destino": "C:\\Users\\Macros\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\DataBeer - Documentos\\02 Controle de Estoque",
-            "nome": "02.02.29.csv",
-            "descricao": "02.02.29 Rel. Posição recolhas",
-            "ativo": true
-        },
-        {
-            "codigo": "012011",
-            "params": {},
-            "destino": "C:\\Users\\Macros\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\DataBeer - Documentos\\01 Cadastramentos",
-            "nome": "01.20.11.csv",
-            "descricao": "01.20.11 Visita do Vendedor",
+            "destino": "C:\\Users\\Macros\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\DataBeer - Documentos\\15 OBZ\\150501",
+            "nome": "15.05.01.csv",
+            "descricao": "15.05.01 - Rel. Lançamentos detalhados OBZ",
             "ativo": true
         }
     ]
