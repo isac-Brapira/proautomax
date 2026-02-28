@@ -49,8 +49,8 @@ def executar(driver, **kwargs):
 
     data_inicial = wait.until(EC.presence_of_element_located((By.NAME, "dataInicial")))
 
-    driver.execute_script(f"arguments[0].value = '{primeiro_dia_mes()}';", data_inicial)
-    print(f"ROTINA {CODIGO_ROTINA}:⚙️ Data inicial configurada para {primeiro_dia_mes()}")
+    driver.execute_script(f"arguments[0].value = '{primeiro_dia_ano()}';", data_inicial)
+    print(f"ROTINA {CODIGO_ROTINA}:⚙️ Data inicial configurada para {primeiro_dia_ano()}")
 
     time.sleep(1)
 
