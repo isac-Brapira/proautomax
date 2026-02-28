@@ -48,7 +48,7 @@ def executar(driver, **kwargs):
     #Selecionando selected box
     select_quebra1 = wait.until(EC.presence_of_element_located((By.NAME, "opcaoRel")))
 
-    driver.execute_script("arguments[0].value = '01'; arguments[0].onchange();", select_quebra1)
+    driver.execute_script("arguments[0].value = '06'; arguments[0].onchange();", select_quebra1)
 
     print(f"ROTINA {CODIGO_ROTINA}:⚙️ Quebra 1 configurada para Setor/Cliente (06)")
 
