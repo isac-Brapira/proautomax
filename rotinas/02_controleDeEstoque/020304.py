@@ -9,6 +9,7 @@ from function.abrir_rotinas import abrir_rotinas
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from function.aceitar_alertas import aceitar_alertas
 from function.data_func import data_ontem
 from function.troca_janela import trocar_para_nova_janela
 import time
@@ -46,16 +47,21 @@ def executar(driver, **kwargs):
 
     data = wait.until(EC.presence_of_element_located((By.NAME, "data")))
 
-    driver.execute_script(f"arguments[0].value = '{data_ontem()}';", data)
+    driver.execute_script(f"arguments[0].value = '22/02/2026';", data)
     print(f"ROTINA {CODIGO_ROTINA}:⚙️ Data inicial configurada para {data_ontem()}")
     
     # Exporta o CSV
     print("📤 Exportando para CSV...")
     atalho_alt('v')  # Abre o menu Exportar / gera CSV
 
+    time.sleep(15)
+
+    if aceitar_alertas(driver):
+        print("⚠️  Alerta de erro detectado!")
+        return "skip"
+
     # Espera a barra de download aparecer
     print("⏳ Aguardando download...")
-    
     while True:
         try:
             pos = pyautogui.locateOnScreen(os.getenv("PATH_IMAGE_CSV"), confidence= 0.8)

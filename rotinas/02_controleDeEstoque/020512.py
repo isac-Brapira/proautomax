@@ -9,6 +9,7 @@ from function.abrir_rotinas import abrir_rotinas
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from function.aceitar_alertas import aceitar_alertas
 from function.data_func import primeiro_dia_ano
 from function.img_func import CSV_BTN, VISUALIZAR_BTN, clicar_imagem, encontrar_imagem
 from function.troca_janela import trocar_para_nova_janela
@@ -62,6 +63,7 @@ def executar(driver, **kwargs):
 
     # Verifica se o botão do CSV aparece (sucesso do Alt+V)
     # Se não aparecer em 300s (5 min), assume falha e tenta clicar no visualizar manualmente
+
     try:
         # Tenta encontrar o botão CSV que indica que o relatório carregou
         print("⏳ Aguardando processamento do relatório (Até 2 min)...")
@@ -69,7 +71,11 @@ def executar(driver, **kwargs):
     except TimeoutError:
         print("❌ Atalho Alt+V falhou ou demorou demais. Tentando clicar em Visualizar manualmente...")
         clicar_imagem(VISUALIZAR_BTN, timeout=10) # Tenta clicar no botão visualizar
-        
+
+        if aceitar_alertas(driver):
+            print("⚠️  Alerta de erro detectado!")
+        return "skip"
+    
         # Espera novamente pelo resultado
         print("⏳ Aguardando processamento (2ª tentativa)...")
         try:

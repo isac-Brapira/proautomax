@@ -8,12 +8,11 @@ from function.abrir_rotinas import abrir_rotinas
 from function.troca_janela import trocar_para_nova_janela
 from function.img_func import clicar_imagem, encontrar_imagem, CSV_BTN, SALVAR_BTN, VISUALIZAR_BTN
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait, Select
+from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from datetime import datetime
 import time
 import pyautogui
-from function.data_func import data_hoje, data_ontem, primeiro_dia_mes
+from function.data_func import primeiro_dia_mes
 
 
 

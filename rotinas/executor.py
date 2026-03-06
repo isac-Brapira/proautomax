@@ -76,8 +76,11 @@ def executar_rotinas(driver, rotinas_registradas, caminho_json):
         try:
             # 1. Executa a rotina (gera o relatório no navegador)
             print("📤 Executando rotina...")
-            rotinas_registradas[codigo](driver, **params)
-            
+            resultado = rotinas_registradas[codigo](driver, **params)
+            # Adicionado retorno caso apareça caixa de diálogo "sem informações para listar"
+            if resultado == "skip":
+                print('⏭️ Pulando rotina... \n')
+                continue
             # 2. Salva o arquivo usando a função completa do download.py
             # Ela cuida de abrir o diálogo, digitar o caminho e validar o arquivo
             arquivo_final = salvar_arquivo(destino, nome)

@@ -4,7 +4,7 @@ hoje = datetime.today()
 MESES = {
     1: "JANEIRO",
     2: "FEVEREIRO",
-    3: "MARCO",
+    3: "MARÇO",
     4: "ABRIL",
     5: "MAIO",
     6: "JUNHO",

@@ -83,7 +83,6 @@ def executar(driver, **kwargs):
     print("⏳ Relatório gerado! Iniciando download...")
 
     # Clica no CSV para baixar
-
     time.sleep(2)
     clicar_imagem(CSV_BTN)
 
