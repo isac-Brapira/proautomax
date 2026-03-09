@@ -58,11 +58,12 @@ def executar(driver, **kwargs):
 
     print(f"ROTINA {CODIGO_ROTINA}:⚙️ Data inicial configurada para {primeiro_dia_ano()}")
 
+    time.sleep(2)
+
     print("📤 Tentando usar o atalho Alt+V para visualizar...")
     atalho_alt("v")
     
     if aceitar_alertas(driver):
-            print("⚠️  Alerta de erro detectado!")
             return "skip"
     # Verifica se o botão do CSV aparece (sucesso do Alt+V)
     # Se não aparecer em 300s (5 min), assume falha e tenta clicar no visualizar manualmente

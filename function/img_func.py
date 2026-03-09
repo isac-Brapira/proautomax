@@ -1,3 +1,4 @@
+import logging
 import time
 import pyautogui
 import os
@@ -16,12 +17,13 @@ def encontrar_imagem(caminhoImagem, timeout=None):
         try:
             pos = pyautogui.locateOnScreen(caminhoImagem, confidence=0.8)
             if pos:
-                print("✅ Botão encontrado!")
+                logging.info("✅ Botão encontrado!")
                 return pos
         except:
             pass
             
         if timeout and (time.time() - inicio > timeout):
+            logging.error(f"❌ Imagem não encontrada após {timeout} segundos.")
             raise TimeoutError(f"❌ Imagem não encontrada após {timeout} segundos.")
             
         time.sleep(0.5)
@@ -31,10 +33,10 @@ def clicar_imagem(caminhoImagem, timeout=60):
     try:
         pos = encontrar_imagem(caminhoImagem, timeout=timeout)
         if pos:
-            print("Clicando no botão...")
+            logging.info("Clicando no botão...")
             time.sleep(1)
             pyautogui.click(pyautogui.center(pos))
-            print("Botão clicado!")
+            logging.info("Botão clicado!")
     except TimeoutError:
-        print(f"❌ Não foi possível encontrar/clicar na imagem: {caminhoImagem}")
+        logging.error(f"❌ Não foi possível encontrar/clicar na imagem: {caminhoImagem}")
     

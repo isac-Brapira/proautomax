@@ -1,4 +1,7 @@
 
+import time
+
+import pyautogui
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 
@@ -30,3 +33,18 @@ def selecionar_selectedbox(wait, driver, name, value, quebra, label, CODIGO_ROTI
     driver.execute_script(f"arguments[0].value = '{value}'; arguments[0].onchange();", select)
 
     print(f"ROTINA {CODIGO_ROTINA}:⚙️ A quebra {quebra} foi configurada para {label}")
+
+def aguardar_tela_carregar(wait):
+    """
+    Garante que a tela da rotina abriu.
+    Ajuste o elemento para cada rotina.
+    """
+    wait.until(EC.invisibility_of_element_located((By.ID, "imgWait")))
+
+
+def atalho_alt(tecla):
+    """Helper para atalhos Alt+Tecla"""
+    time.sleep(0.5)
+    pyautogui.keyDown('alt')
+    pyautogui.press(tecla.lower())
+    pyautogui.keyUp('alt')

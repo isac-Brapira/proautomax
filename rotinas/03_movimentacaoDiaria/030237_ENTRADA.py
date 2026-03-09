@@ -4,9 +4,12 @@ Descrição: Relatório de notas fiscais de ENTRADA com quebra por Operação e 
 Autor: Carol e Isac
 """
 
+import logging
+
 from function.abrir_rotinas import abrir_rotinas
+from function.funcoes_rotina import aguardar_tela_carregar, atalho_alt
 from function.troca_janela import trocar_para_nova_janela
-from function.img_func import clicar_imagem, encontrar_imagem, CSV_BTN, SALVAR_BTN, VISUALIZAR_BTN
+from function.img_func import clicar_imagem, encontrar_imagem, CSV_BTN, VISUALIZAR_BTN
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -29,7 +32,7 @@ def executar(driver, **kwargs):
     driver.maximize_window()
 
     wait = WebDriverWait(driver, 60)
-    _aguardar_tela_carregar(wait)
+    aguardar_tela_carregar(wait)
     time.sleep(5)
 
     width, height = pyautogui.size()
@@ -37,11 +40,11 @@ def executar(driver, **kwargs):
     pyautogui.moveTo(width / 2, height / 2)
     pyautogui.FAILSAFE = True
     
-    print("⚙️ Configurando parâmetros da rotina 030237 de entrada...")
+    logging.info("⚙️ Configurando parâmetros da rotina 03.02.37 de entrada...")
 
     wait.until(EC.frame_to_be_available_and_switch_to_it((By.NAME, "rotina")))
-    print("Janelas abertas:", driver.window_handles)
-    print("Janela atual:", driver.current_window_handle)
+    logging.info(f"Janelas abertas: {driver.window_handles}")
+    logging.info(f"Janela atual: {driver.current_window_handle}")
 
     # -------------------------
     # Quebra 1 = Operação (14)
@@ -50,7 +53,7 @@ def executar(driver, **kwargs):
 
     driver.execute_script("arguments[0].value = '14'; arguments[0].onchange();", select_quebra1)
 
-    print(f"ROTINA {CODIGO_ROTINA}:⚙️ Quebra 1 configurada para Operação (14)")
+    logging.info(f"ROTINA {CODIGO_ROTINA}:⚙️ Quebra 1 configurada para Operação (14)")
 
     # -------------------------
     # Quebra 2 = Código Fiscal (29)
@@ -59,7 +62,7 @@ def executar(driver, **kwargs):
 
     driver.execute_script("arguments[0].value = '29'; arguments[0].onchange();", select_quebra2)
 
-    print(f"ROTINA {CODIGO_ROTINA}:⚙️ Quebra 2 configurada para Código Fiscal (29)")
+    logging.info(f"ROTINA {CODIGO_ROTINA}:⚙️ Quebra 2 configurada para Código Fiscal (29)")
 
     # -------------------------
     # Itens = Sim
@@ -73,7 +76,7 @@ def executar(driver, **kwargs):
     if not radio_itens.is_selected():
 
       radio_itens.click()
-      print(f"ROTINA {CODIGO_ROTINA}:⚙️ Itens configurados para Sim")
+      logging.info(f"ROTINA {CODIGO_ROTINA}:⚙️ Itens configurados para Sim")
     
     radio_itens2 = wait.until(
 
@@ -83,7 +86,7 @@ def executar(driver, **kwargs):
     if not radio_itens2.is_selected():
 
         radio_itens2.click()
-        print(f"ROTINA {CODIGO_ROTINA}:⚙️ Notas de entrada configurado para Sim")
+        logging.info(f"ROTINA {CODIGO_ROTINA}:⚙️ Notas de entrada configurado para Sim")
     
     
     checkbox = wait.until(
@@ -94,7 +97,7 @@ def executar(driver, **kwargs):
 
     if not checkbox.is_selected():
         driver.execute_script("arguments[0].click();", checkbox)
-        print(f"ROTINA {CODIGO_ROTINA}:⚙️ Checkbox de Lista NFs de Compra flagada...")
+        logging.info(f"ROTINA {CODIGO_ROTINA}:⚙️ Checkbox de Lista NFs de Compra flagada...")
 
     # -------------------------
     # Data inicial = primeiro dia do mês atual
@@ -104,57 +107,35 @@ def executar(driver, **kwargs):
     data_inicial = wait.until(EC.presence_of_element_located((By.NAME, "dataInicial")))
 
     driver.execute_script(f"arguments[0].value = '{primeiro_dia_mes()}';", data_inicial)
-    print(f"ROTINA {CODIGO_ROTINA}:⚙️ Data inicial configurada para {primeiro_dia_mes()}")
+    logging.info(f"ROTINA {CODIGO_ROTINA}:⚙️ Data inicial configurada para {primeiro_dia_mes()}")
 
-    time.sleep(1)
+    time.sleep(2)
 
-    print("📤 Tentando usar o atalho Alt+V para visualizar...")
+    logging.info("📤 Tentando usar o atalho Alt+V para visualizar...")
     atalho_alt("v")
 
     # Verifica se o botão do CSV aparece (sucesso do Alt+V)
     # Se não aparecer em 300s (5 min), assume falha e tenta clicar no visualizar manualmente
     try:
         # Tenta encontrar o botão CSV que indica que o relatório carregou
-        print("⏳ Aguardando processamento do relatório (Até 2 min)...")
+        logging.info("⏳ Aguardando processamento do relatório (Até 2 min)...")
         encontrar_imagem(CSV_BTN, timeout=120) 
     except TimeoutError:
-        print("❌ Atalho Alt+V falhou ou demorou demais. Tentando clicar em Visualizar manualmente...")
+        logging.warning("❌ Atalho Alt+V falhou ou demorou demais. Tentando clicar em Visualizar manualmente...")
         clicar_imagem(VISUALIZAR_BTN, timeout=10) # Tenta clicar no botão visualizar
         
         # Espera novamente pelo resultado
-        print("⏳ Aguardando processamento (2ª tentativa)...")
+        logging.info("⏳ Aguardando processamento (2ª tentativa)...")
         try:
             encontrar_imagem(CSV_BTN, timeout=300)
         except TimeoutError:
-            print("❌ Falha crítica: Relatório não carregou.")
+            logging.error("❌ Falha crítica: Relatório não carregou.")
             return
 
-    print("⏳ Relatório gerado! Iniciando download...")
+    logging.info("⏳ Relatório gerado! Iniciando download...")
 
     # Clica no CSV para baixar
-    clicar_imagem(CSV_BTN)
-    
-
-    print("⏳ Aguardando download...")
-
     time.sleep(2)
+    clicar_imagem(CSV_BTN)
 
-# ========================
-# Funções auxiliares
-# ========================
-
-def _aguardar_tela_carregar(wait):
-    """
-    Aguarda o loading da rotina desaparecer.
-    """
-    wait.until(EC.invisibility_of_element_located((By.ID, "imgWait")))
-
-
-def atalho_alt(tecla):
-    """
-    Helper para atalhos Alt+Tecla
-    """
-    time.sleep(0.5)
-    pyautogui.keyDown("alt")
-    pyautogui.press(tecla.lower())
-    pyautogui.keyUp("alt")    
+    logging.info("⏳ Aguardando download...")

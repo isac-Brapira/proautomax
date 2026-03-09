@@ -4,6 +4,7 @@ Descrição: Baixa um CSV com relatório de saldo da grade.
 Autor: Carol
 """
 
+import logging
 import os
 from function.abrir_rotinas import abrir_rotinas
 from selenium.webdriver.common.by import By
@@ -11,6 +12,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from function.aceitar_alertas import aceitar_alertas
 from function.data_func import data_ontem
+from function.funcoes_rotina import aguardar_tela_carregar, atalho_alt
+from function.img_func import CSV_BTN, VISUALIZAR_BTN, clicar_imagem, encontrar_imagem
 from function.troca_janela import trocar_para_nova_janela
 import time
 import pyautogui
@@ -30,7 +33,7 @@ def executar(driver, **kwargs):
     driver.maximize_window()
 
     wait = WebDriverWait(driver, 60)
-    _aguardar_tela_carregar(wait)
+    aguardar_tela_carregar(wait)
     time.sleep(5)
 
     width, height = pyautogui.size()
@@ -39,61 +42,49 @@ def executar(driver, **kwargs):
     pyautogui.FAILSAFE = True
     
 
-    print("⚙️ Configurando parâmetros da rotina 02.03.04 ...")
+    logging.info("⚙️ Configurando parâmetros da rotina 02.03.04 ...")
 
     wait.until(EC.frame_to_be_available_and_switch_to_it((By.NAME, "rotina")))
-    print("Janelas abertas:", driver.window_handles)
-    print("Janela atual:", driver.current_window_handle)
+    logging.info(f"Janelas abertas: {driver.window_handles}")
+    logging.info(f"Janela atual: {driver.current_window_handle}")
 
     data = wait.until(EC.presence_of_element_located((By.NAME, "data")))
 
     driver.execute_script(f"arguments[0].value = '{data_ontem()}';", data)
-    print(f"ROTINA {CODIGO_ROTINA}:⚙️ Data inicial configurada para {data_ontem()}")
+    logging.info(f"ROTINA {CODIGO_ROTINA}:⚙️ Data inicial configurada para {data_ontem()}")
     
+    time.sleep(2)
+
     # Exporta o CSV
-    print("📤 Exportando para CSV...")
+    logging.info("📤 Exportando para CSV...")
     atalho_alt('v')  # Abre o menu Exportar / gera CSV
 
     time.sleep(15)
 
     if aceitar_alertas(driver):
-        print("⚠️  Alerta de erro detectado!")
         return "skip"
-
-    # Espera a barra de download aparecer
-    print("⏳ Aguardando download...")
-    while True:
+# Verifica se o botão do CSV aparece (sucesso do Alt+V)
+    # Se não aparecer em 300s (5 min), assume falha e tenta clicar no visualizar manualmente
+    try:
+        # Tenta encontrar o botão CSV que indica que o relatório carregou
+        logging.info("⏳ Aguardando processamento do relatório (Até 2 min)...")
+        encontrar_imagem(CSV_BTN, timeout=120) 
+    except TimeoutError:
+        logging.error("❌ Atalho Alt+V falhou ou demorou demais. Tentando clicar em Visualizar manualmente...")
+        clicar_imagem(VISUALIZAR_BTN, timeout=10) # Tenta clicar no botão visualizar
+        
+        # Espera novamente pelo resultado
+        logging.info("⏳ Aguardando processamento (2ª tentativa)...")
         try:
-            pos = pyautogui.locateOnScreen(os.getenv("PATH_IMAGE_CSV"), confidence= 0.8)
-            if pos:
-                print("✅ Botão encontrado!")
-                print(pos)
-                # Clica na imagem para garantir o foco na janela antes de enviar teclas
-                time.sleep(2)
-                pyautogui.click(pyautogui.center(pos))
+            encontrar_imagem(CSV_BTN, timeout=300)
+        except TimeoutError:
+            logging.error("❌ Falha crítica: Relatório não carregou.")
+            return
 
-                break
-        except pyautogui.ImageNotFoundException:
-            pass  # imagem ainda não apareceu
-
+    logging.info("⏳ Relatório gerado! Iniciando download...")
+    
+    # Clica no CSV para baixar
     time.sleep(2)
+    clicar_imagem(CSV_BTN)
 
-
-# ========================
-# Funções auxiliares
-# ========================
-
-def _aguardar_tela_carregar(wait):
-    """
-    Garante que a tela da rotina abriu.
-    Ajuste o elemento para cada rotina.
-    """
-    wait.until(EC.invisibility_of_element_located((By.ID, "imgWait")))
-
-
-def atalho_alt(tecla):
-    """Helper para atalhos Alt+Tecla"""
-    time.sleep(0.5)
-    pyautogui.keyDown('alt')
-    pyautogui.press(tecla.lower())
-    pyautogui.keyUp('alt')
+    logging.info("⏳ Aguardando download...")

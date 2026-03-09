@@ -4,13 +4,13 @@ Descrição: Baixa um CSV com relatório de Visitas do vendedor
 Autor: Carol
 """
 
-import os
+import logging
 from function.abrir_rotinas import abrir_rotinas
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from function.data_func import primeiro_dia_mes
-from function.img_func import VISUALIZAR_BTN, encontrar_imagem, clicar_imagem, CSV_BTN, SALVAR_BTN
+from function.funcoes_rotina import aguardar_tela_carregar, atalho_alt
+from function.img_func import VISUALIZAR_BTN, encontrar_imagem, clicar_imagem, CSV_BTN
 from function.troca_janela import trocar_para_nova_janela
 import time
 import pyautogui
@@ -30,7 +30,7 @@ def executar(driver, **kwargs):
     driver.maximize_window()
 
     wait = WebDriverWait(driver, 60)
-    _aguardar_tela_carregar(wait)
+    aguardar_tela_carregar(wait)
     time.sleep(5)
 
     width, height = pyautogui.size()
@@ -39,12 +39,13 @@ def executar(driver, **kwargs):
     pyautogui.FAILSAFE = True
     
 
-    print("⚙️ Configurando parâmetros da rotina 01.20.11...")
+    logging.info("⚙️ Configurando parâmetros da rotina 01.20.11...")
 
     wait.until(EC.frame_to_be_available_and_switch_to_it((By.NAME, "rotina")))
-    print("Janelas abertas:", driver.window_handles)
-    print("Janela atual:", driver.current_window_handle)
+    logging.info(f"Janelas abertas: {driver.window_handles}")
+    logging.info(f"Janela atual: {driver.current_window_handle}")
 
+    # Não me pergunte o porque, é o promax...
     driver.execute_script("""
         var sel = document.getElementsByName('grPerfilVenda')[0];
         if (sel) {
@@ -53,7 +54,7 @@ def executar(driver, **kwargs):
         }
     """)
 
-    print(f"ROTINA {CODIGO_ROTINA}:⚙️ Grupo perfil de vendas configurado para 05 - Segmentada")
+    logging.info(f"ROTINA {CODIGO_ROTINA}:⚙️ Grupo perfil de vendas configurado para 05 - Segmentada")
 
     driver.execute_script("""
         var cb = document.getElementsByName('todos')[0];
@@ -63,54 +64,36 @@ def executar(driver, **kwargs):
         }
     """)
 
-    print(f"ROTINA {CODIGO_ROTINA}:⚙️ Checkbox de situação Todos marcada...")
+    logging.info(f"ROTINA {CODIGO_ROTINA}:⚙️ Checkbox de situação Todos marcada...")
 
     time.sleep(2)
 
     # Exporta o CSV
-    print("📤 Tentando usar o atalho Alt+V para visualizar...")
+    logging.info("📤 Tentando usar o atalho Alt+V para visualizar...")
     atalho_alt("v")
 
     # Verifica se o botão do CSV aparece (sucesso do Alt+V)
     # Se não aparecer em 300s (5 min), assume falha e tenta clicar no visualizar manualmente
     try:
         # Tenta encontrar o botão CSV que indica que o relatório carregou
-        print("⏳ Aguardando processamento do relatório (Até 2 min)...")
+        logging.info("⏳ Aguardando processamento do relatório (Até 2 min)...")
         encontrar_imagem(CSV_BTN, timeout=120) 
     except TimeoutError:
-        print("❌ Atalho Alt+V falhou ou demorou demais. Tentando clicar em Visualizar manualmente...")
+        logging.error("❌ Atalho Alt+V falhou ou demorou demais. Tentando clicar em Visualizar manualmente...")
         clicar_imagem(VISUALIZAR_BTN, timeout=10) # Tenta clicar no botão visualizar
         
         # Espera novamente pelo resultado
-        print("⏳ Aguardando processamento (2ª tentativa)...")
+        logging.info("⏳ Aguardando processamento (2ª tentativa)...")
         try:
             encontrar_imagem(CSV_BTN, timeout=300)
         except TimeoutError:
-            print("❌ Falha crítica: Relatório não carregou.")
+            logging.error("❌ Falha crítica: Relatório não carregou.")
             return
 
-    print("⏳ Relatório gerado! Iniciando download...")
+    logging.info("⏳ Relatório gerado! Iniciando download...")
 
     # Clica no CSV para baixar
     time.sleep(2)
     clicar_imagem(CSV_BTN)
 
-
-# ========================
-# Funções auxiliares
-# ========================
-
-def _aguardar_tela_carregar(wait):
-    """
-    Garante que a tela da rotina abriu.
-    Ajuste o elemento para cada rotina.
-    """
-    wait.until(EC.invisibility_of_element_located((By.ID, "imgWait")))
-
-
-def atalho_alt(tecla):
-    """Helper para atalhos Alt+Tecla"""
-    time.sleep(0.5)
-    pyautogui.keyDown('alt')
-    pyautogui.press(tecla.lower())
-    pyautogui.keyUp('alt')
+    logging.info("⏳ Aguardando download...")

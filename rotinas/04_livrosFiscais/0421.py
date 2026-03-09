@@ -3,11 +3,12 @@ Rotina: 04.21
 Descrição: Baixa um CSV com relatório de registro de inventário.
 Autor: Carol
 """
-import os
+import logging
 from function.abrir_rotinas import abrir_rotinas
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from function.funcoes_rotina import aguardar_tela_carregar, atalho_alt
 from function.img_func import SALVAR_BTN_2, VISUALIZAR_BTN, clicar_imagem, encontrar_imagem
 from function.troca_janela import trocar_para_nova_janela
 import time
@@ -21,12 +22,13 @@ def executar(driver, **kwargs):
     """
     Função principal da rotina.    
     """
+
     abrir_rotinas(driver, CODIGO_ROTINA)
     trocar_para_nova_janela(driver)
     driver.maximize_window()
 
     wait = WebDriverWait(driver, 60)
-    _aguardar_tela_carregar(wait)
+    aguardar_tela_carregar(wait)
     time.sleep(5)
 
     width, height = pyautogui.size()
@@ -34,11 +36,11 @@ def executar(driver, **kwargs):
     pyautogui.moveTo(width / 2, height / 2)
     pyautogui.FAILSAFE = True    
 
-    print("⚙️ Configurando parâmetros da rotina 04.21...")
+    logging.info("⚙️ Configurando parâmetros da rotina 04.21...")
 
     wait.until(EC.frame_to_be_available_and_switch_to_it((By.NAME, "rotina")))
-    print("Janelas abertas:", driver.window_handles)
-    print("Janela atual:", driver.current_window_handle)
+    logging.info(f"Janelas abertas: {driver.window_handles}")
+    logging.info(f"Janela atual: {driver.current_window_handle}")
 
     combo = driver.find_element("name", "opcaoCusto")
 
@@ -49,7 +51,7 @@ def executar(driver, **kwargs):
             select.onchange();
         }
     """, combo)
-    print("⚙️ Selecionando opção de preço médio de reposição...")
+    logging.info("⚙️ Selecionando opção de preço médio de reposição...")
 
     checkbox_vasilhame = driver.find_element("name", "checkVasilhame")
 
@@ -59,7 +61,7 @@ def executar(driver, **kwargs):
         if (cb.onclick) cb.onclick();
         if (cb.onchange) cb.onchange();
     """, checkbox_vasilhame)
-    print("⚙️ Revomendo flag de Vasilhame...")
+    logging.info("⚙️ Revomendo flag de Vasilhame...")
 
     checkbox_garrafeira = driver.find_element("name", "checkGarrafeira")
 
@@ -69,7 +71,7 @@ def executar(driver, **kwargs):
         if (cb.onclick) cb.onclick();
         if (cb.onchange) cb.onchange();
     """, checkbox_garrafeira)
-    print("⚙️ Revomendo flag de Garrafeira...")
+    logging.info("⚙️ Revomendo flag de Garrafeira...")
 
     checkbox_material = driver.find_element("name", "checkMaterial")
 
@@ -79,58 +81,41 @@ def executar(driver, **kwargs):
         if (cb.onclick) cb.onclick();
         if (cb.onchange) cb.onchange();
     """, checkbox_material)
-    print("⚙️ Revomendo flag de Material...")
+    logging.info("⚙️ Revomendo flag de Material...")
 
     driver.execute_script("""
         document.getElementsByName('cdDeposito')[0].value = '01';
         AdicionaDeposito();
     """)
-    print("⚙️ Selecionando Depósito opção 01 Central...")
+    logging.info("⚙️ Selecionando Depósito opção 01 Central...")
 
-    print("📤 Tentando usar o atalho Alt+V para visualizar...")
+    time.sleep(2)
+    
+    logging.info("📤 Tentando usar o atalho Alt+V para visualizar...")
     atalho_alt("v")
 
     # Verifica se o botão do CSV aparece (sucesso do Alt+V)
     # Se não aparecer em 300s (5 min), assume falha e tenta clicar no visualizar manualmente
     try:
         # Tenta encontrar o botão CSV que indica que o relatório carregou
-        print("⏳ Aguardando processamento do relatório (Até 2 min)...")
+        logging.info("⏳ Aguardando processamento do relatório (Até 2 min)...")
         encontrar_imagem(SALVAR_BTN_2, timeout=120) 
     except TimeoutError:
-        print("❌ Atalho Alt+V falhou ou demorou demais. Tentando clicar em Visualizar manualmente...")
+        logging.warning("❌ Atalho Alt+V falhou ou demorou demais. Tentando clicar em Visualizar manualmente...")
         clicar_imagem(VISUALIZAR_BTN, timeout=10) # Tenta clicar no botão visualizar
         
         # Espera novamente pelo resultado
-        print("⏳ Aguardando processamento (2ª tentativa)...")
+        logging.info("⏳ Aguardando processamento (2ª tentativa)...")
         try:
             encontrar_imagem(SALVAR_BTN_2, timeout=300)
         except TimeoutError:
-            print("❌ Falha crítica: Relatório não carregou.")
+            logging.error("❌ Falha crítica: Relatório não carregou.")
             return
 
-    print("⏳ Relatório gerado! Iniciando download...")
+    logging.info("⏳ Relatório gerado! Iniciando download...")
     
     # Clica no botão salvar para baixar
+    time.sleep(2)
     clicar_imagem(SALVAR_BTN_2)
 
-    time.sleep(2)
-
-
-# ========================
-# Funções auxiliares
-# ========================
-
-def _aguardar_tela_carregar(wait):
-    """
-    Garante que a tela da rotina abriu.
-    Ajuste o elemento para cada rotina.
-    """
-    wait.until(EC.invisibility_of_element_located((By.ID, "imgWait")))
-
-
-def atalho_alt(tecla):
-    """Helper para atalhos Alt+Tecla"""
-    time.sleep(0.5)
-    pyautogui.keyDown('alt')
-    pyautogui.press(tecla.lower())
-    pyautogui.keyUp('alt')
+    logging.info("⏳ Aguardando download...")

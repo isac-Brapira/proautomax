@@ -3,6 +3,7 @@ Sistema de download híbrido - combina o melhor das duas abordagens.
 Monitora Downloads padrão + PyWinAuto pra confirmar.
 """
 
+import logging
 import os
 import time
 import shutil
@@ -40,14 +41,14 @@ def confirmar_download():
     """
     time.sleep(2)
 
-    print("⏳ Procurando botão Salvar...")
+    logging.info("⏳ Procurando botão Salvar...")
 
     while True:
         try:
             pos = pyautogui.locateOnScreen(os.getenv("PATH_IMAGE_SAVE"), confidence= 0.8)
             if pos:
-                print("✅ Botão encontrado!")
-                print(pos)
+                logging.info("✅ Botão encontrado!")
+                # print(pos)
                 # Clica na imagem para garantir o foco na janela antes de enviar teclas
                 pyautogui.click(pyautogui.center(pos))
                 # Clica bem no começo da imagem para conseguir dar o tab
@@ -58,7 +59,7 @@ def confirmar_download():
 
     time.sleep(0.5)
 
-    print("🎯 Continuando execução...")
+    logging.info("🎯 Continuando execução...")
 
     time.sleep(2)
 
@@ -89,13 +90,13 @@ def confirmar_download():
     send_keys("{ENTER}")
     time.sleep(0.5)
 
-    print(" Apertou ENTER")
+    logging.info(" Apertou ENTER")
 
-    print("💾 Opção 'Salvar como' acionada!")
+    logging.info("💾 Opção 'Salvar como' acionada!")
 
 def aguardar_novo_arquivo(timeout=120):
-    print(f"⏳ Aguardando arquivo INF...")
-    print(f"📂 Monitorando: {PASTA_DOWNLOADS}")
+    logging.info(f"⏳ Aguardando arquivo INF...")
+    logging.info(f"📂 Monitorando: {PASTA_DOWNLOADS}")
 
     inicio = time.time()
     ultimo_log = 0
@@ -119,17 +120,17 @@ def aguardar_novo_arquivo(timeout=120):
                 caminho = os.path.join(PASTA_DOWNLOADS, arquivo_mais_recente)
 
                 if _arquivo_esta_pronto(caminho):
-                    print(f"✓ Arquivo detectado e pronto: {arquivo_mais_recente}")
+                    logging.info(f"✓ Arquivo detectado e pronto: {arquivo_mais_recente}")
                     return arquivo_mais_recente
 
             # log a cada 5s
             tempo = time.time() - inicio
             if tempo - ultimo_log >= 5:
-                print(f"   ⏱️ {int(tempo)}s - Aguardando arquivo...")
+                logging.info(f"   ⏱️ {int(tempo)}s - Aguardando arquivo...")
                 ultimo_log = tempo
 
         except Exception as e:
-            print(f"   ⚠️ Erro ao monitorar: {e}")
+            logging.error(f"   ⚠️ Erro ao monitorar: {e}")
 
         time.sleep(1)
 
@@ -203,7 +204,7 @@ def mover_arquivo_com_retry(origem, destino, max_tentativas=5):
     for tentativa in range(max_tentativas):
         try:
             if tentativa > 0:
-                print(f"   🔄 Tentativa {tentativa + 1}/{max_tentativas}")
+                logging.warning(f"   🔄 Tentativa {tentativa + 1}/{max_tentativas}")
                 time.sleep(2)
             
             shutil.move(origem, destino)
@@ -212,17 +213,17 @@ def mover_arquivo_com_retry(origem, destino, max_tentativas=5):
         except PermissionError as e:
             if tentativa == max_tentativas - 1:
                 # Última tentativa: copia em vez de mover
-                print(f"   💡 Erro de permissão, tentando copiar...")
+                logging.error(f"   💡 Erro de permissão, tentando copiar...")
                 try:
                     shutil.copy2(origem, destino)
                     os.remove(origem)
                     return True
                 except:
-                    print(f"   ⚠️ Arquivo mantido em: {origem}")
+                    logging.warning(f"   ⚠️ Arquivo mantido em: {origem}")
                     return False
         
         except Exception as e:
-            print(f"   ❌ Erro ao mover: {e}")
+            logging.error(f"   ❌ Erro ao mover: {e}")
             if tentativa == max_tentativas - 1:
                 return False
     
@@ -243,7 +244,7 @@ def salvar_arquivo(destino, nome_arquivo):
     Raises:
         Exception: Se não conseguir salvar o arquivo
     """
-    print("💾 Iniciando salvamento...")
+    logging.info("💾 Iniciando salvamento...")
     
     # 1. Confirma o download (Tab 3x + Enter)
     confirmar_download()
@@ -252,7 +253,7 @@ def salvar_arquivo(destino, nome_arquivo):
     try:
         arquivo_baixado = aguardar_novo_arquivo(timeout=120)
     except TimeoutError as e:
-        print(f"❌ {e}")
+        logging.error(f"❌ {e}")
         raise Exception("Timeout: arquivo não foi baixado")
     
     # 3. Move para o destino final
@@ -264,21 +265,21 @@ def salvar_arquivo(destino, nome_arquivo):
     # Caminho final
     caminho_final = os.path.join(destino, nome_arquivo)
     
-    print(f"📦 Movendo arquivo...")
-    print(f"   De: {origem}")
-    print(f"   Para: {caminho_final}")
+    logging.info(f"📦 Movendo arquivo...")
+    logging.info(f"   De: {origem}")
+    logging.info(f"   Para: {caminho_final}")
     
     # Remove arquivo antigo se existir
     if os.path.exists(caminho_final):
         try:
             os.remove(caminho_final)
-            print(f"   🗑️ Arquivo antigo removido")
+            logging.info(f"   🗑️ Arquivo antigo removido")
         except Exception as e:
-            print(f"   ⚠️ Não foi possível remover arquivo antigo: {e}")
+            logging.error(f"   ⚠️ Não foi possível remover arquivo antigo: {e}")
     
     # Move o arquivo
     if mover_arquivo_com_retry(origem, caminho_final):
-        print(f"✓ Arquivo salvo com sucesso!")
+        logging.info(f"✓ Arquivo salvo com sucesso!")
         return caminho_final
     else:
         raise Exception("Não foi possível mover o arquivo para o destino")
@@ -307,5 +308,5 @@ def mover_arquivo(destino, nome_arquivo):
 
 
 # Inicialização
-print(f"✓ Sistema de download carregado")
-print(f"📂 Pasta de downloads: {PASTA_DOWNLOADS}")
+logging.info(f"✓ Sistema de download carregado")
+logging.info(f"📂 Pasta de downloads: {PASTA_DOWNLOADS}")

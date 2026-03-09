@@ -4,10 +4,13 @@ Descrição: Baixa um CSV com os clientes cadastrados no Promax.
 Autor: Isac
 """
 
+import logging
+
 from function.abrir_rotinas import abrir_rotinas
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from function.funcoes_rotina import aguardar_tela_carregar
 from function.troca_janela import trocar_para_nova_janela
 import time
 import pyautogui
@@ -26,18 +29,18 @@ def executar(driver, **kwargs):
     """
     abrir_rotinas(driver, CODIGO_ROTINA)
 
-    print("Janelas abertas:", driver.window_handles)
-    print("Janela atual:", driver.current_window_handle)
+    logging.info(f"Janelas abertas: {driver.window_handles}")
+    logging.info(f"Janela atual: {driver.current_window_handle}")
 
     trocar_para_nova_janela(driver)
 
-    print("Janela depois da troca:", driver.current_window_handle)
+    logging.info(f"Janela depois da troca: {driver.current_window_handle}")
 
     driver.maximize_window()
 
     wait = WebDriverWait(driver, 20)
 
-    _aguardar_tela_carregar(wait)
+    aguardar_tela_carregar(wait)
 
     time.sleep(2)
     
@@ -52,7 +55,7 @@ def executar(driver, **kwargs):
         try:
             pos = pyautogui.locateOnScreen("images/0105070402_images/Todos.png", confidence= 0.8)
             if pos:
-                print("✅ Marcando checkbox TODOS...")
+                logging.info("✅ Marcando checkbox TODOS...")
                 print(pos)
                 # Clica na imagem para garantir o foco na janela antes de enviar teclas
                 time.sleep(1)
@@ -67,7 +70,7 @@ def executar(driver, **kwargs):
         try:
             pos = pyautogui.locateOnScreen("images/0105070402_images/Duplicados.png", confidence= 0.8)
             if pos:
-                print("✅ Marcando checkbox Duplicados...")
+                logging.info("✅ Marcando checkbox Duplicados...")
                 print(pos)
                 # Clica na imagem para garantir o foco na janela antes de enviar teclas
                 time.sleep(1)
@@ -83,7 +86,7 @@ def executar(driver, **kwargs):
             pyautogui.screenshot()
             pos = pyautogui.locateOnScreen("images/0105070402_images/AS.png", confidence= 0.8)
             if pos:
-                print("✅ Marcando o checkbox AS...")
+                logging.info("✅ Marcando o checkbox AS...")
                 print(pos)
                 # Clica na imagem para garantir o foco na janela antes de enviar teclas
                 time.sleep(1)
@@ -97,7 +100,7 @@ def executar(driver, **kwargs):
         try:
             pos = pyautogui.locateOnScreen("images/0105070402_images/Gerar_CSV.png", confidence= 0.8)
             if pos:
-                print("✅ Gerando CSV...")
+                logging.info("✅ Gerando CSV...")
                 print(pos)
                 # Clica na imagem para garantir o foco na janela antes de enviar teclas
                 time.sleep(1)
@@ -112,7 +115,7 @@ def executar(driver, **kwargs):
         try:
             pos = pyautogui.locateOnScreen("images/0105070402_images/CSV_gerado.png", confidence= 0.8)
             if pos:
-                print("✅ CSV Gerado!")
+                logging.info("✅ CSV Gerado!")
                 print(pos)
                 # Clica na imagem para garantir o foco na janela antes de enviar teclas
                 time.sleep(2)
@@ -122,7 +125,6 @@ def executar(driver, **kwargs):
                 break
         except pyautogui.ImageNotFoundException:
             pass  # imagem ainda não apareceu   
-
 
     time.sleep(2)
     # Garante que a janela principal esteja em foco novamente
@@ -136,33 +138,9 @@ def executar(driver, **kwargs):
     pyautogui.click(screen_w / 2, screen_h / 2)
     # =========================== Exportando para CSV ===================================== #
 
-   
-
-
-
     # Espera a barra de download aparecer
-    print("⏳ Aguardando barra de download...")
+    logging.info("⏳ Aguardando barra de download...")
     time.sleep(5)  # Tempo para a barra aparecer
 
     # Aqui o executor.py vai chamar confirmar_download_com_retry()
     # que usa o sistema de estratégias automaticamente
-
-
-# ========================
-# Funções auxiliares
-# ========================
-
-def _aguardar_tela_carregar(wait):
-    """
-    Garante que a tela da rotina abriu.
-    Ajuste o elemento para cada rotina.
-    """
-    wait.until(EC.invisibility_of_element_located((By.ID, "imgWait")))
-
-
-def atalho_alt(tecla):
-    """Helper para atalhos Alt+Tecla"""
-    time.sleep(0.5)
-    pyautogui.keyDown('alt')
-    pyautogui.press(tecla.lower())
-    pyautogui.keyUp('alt')

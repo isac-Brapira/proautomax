@@ -1,16 +1,52 @@
+from datetime import datetime 
+import pygetwindow as gw
+import logging
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import pygetwindow as gw
 from function.aceitar_alertas import aceitar_alertas
 from function.abrir_rotinas import abrir_rotinas
 from rotinas.loader import carregar_rotinas
 from rotinas.executor import executar_rotinas
-
 from dotenv import load_dotenv
 import os
 
+#Configurações de LOG 
+os.makedirs("logs",exist_ok = True)
+
+log_dir = "logs"
+max_logs = 5
+
+logs = sorted(
+    [os.path.join(log_dir, f) for f in os.listdir(log_dir)],
+    key=os.path.getmtime
+)
+
+while len(logs) >= max_logs:
+    os.remove(logs[0])
+    logs.pop(0)
+    
+data_execucao = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+arquivo_log = f"logs/automacao_{data_execucao}.log"
+
+
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+formatter = logging.Formatter("%(asctime)s | %(levelname)s | %(message)s")
+
+# salva no arquivo log
+file_handler = logging.FileHandler(arquivo_log, encoding="utf-8")
+file_handler.setFormatter(formatter)
+
+# exibe no terminal como um print
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(formatter)
+
+logger.addHandler(file_handler)
+logger.addHandler(console_handler)
 
 # Carrega as variáveis de ambiente do arquivo .env
 load_dotenv()
@@ -20,9 +56,10 @@ PROMAX_PASSWORD = os.getenv("PROMAX_PASSWORD")
 
 # Verifica se as credenciais foram carregadas corretamente
 if not PROMAX_USER or not PROMAX_PASSWORD:
-    raise ValueError("CREDENCIAIS DE LOGIN NÃO ENCONTRADAS NO .ENV\n")
+    logging.error("CREDENCIAIS DE LOGIN NÃO ENCONTRADAS NO .ENV")
+    raise ValueError("CREDENCIAIS DE LOGIN NÃO ENCONTRADAS NO .ENV")
 else:
-    print("\nCREDENCIAIS DE LOGIN ENCONTRADAS\n")
+    logging.info("CREDENCIAIS DE LOGIN ENCONTRADAS")
 
 # Configurações do Internet Explorer para usar o Edge
 ie_options = webdriver.IeOptions()

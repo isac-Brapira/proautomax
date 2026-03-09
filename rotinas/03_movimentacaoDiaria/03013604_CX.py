@@ -38,15 +38,17 @@ def executar(driver, **kwargs):
     pyautogui.FAILSAFE = True
     
 
-    print("⚙️ Configurando parâmetros da rotina 03013604 em caixa ...")
+    print("⚙️ Configurando parâmetros da rotina 03.01.36.04 em caixa ...")
 
     wait.until(EC.frame_to_be_available_and_switch_to_it((By.NAME, "rotina")))
     print("Janelas abertas:", driver.window_handles)
     print("Janela atual:", driver.current_window_handle)
 
+    time.sleep(2)
+    
     # Exporta o CSV
-    print("📤 Tentando usar o atalho Alt+V para visualizar...")
     atalho_alt("v")
+    print("📤 Tentando usar o atalho Alt+V para visualizar...")
 
     # Verifica se o botão do CSV aparece (sucesso do Alt+V)
     # Se não aparecer em 300s (5 min), assume falha e tenta clicar no visualizar manualmente

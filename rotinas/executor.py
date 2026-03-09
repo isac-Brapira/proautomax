@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import pyautogui
 # Importa a função completa de salvar, não apenas a que abre a janela
@@ -21,25 +22,25 @@ def executar_rotinas(driver, rotinas_registradas, caminho_json):
     promaxPrimeiraJanela = driver.current_window_handle
 
     if not os.path.exists(caminho_json):
-        print(f"❌ Erro: Arquivo de configuração não encontrado: {caminho_json}")
+        logging.error(f"❌ Erro: Arquivo de configuração não encontrado: {caminho_json}")
         return
 
     try:
         with open(caminho_json, encoding="utf-8") as f:
             config = json.load(f)
     except json.JSONDecodeError as e:
-        print(f"❌ Erro ao ler JSON: {e}")
+        logging.error(f"❌ Erro ao ler JSON: {e}")
         return
 
     total = len(config["execucao"])
-    print(f"📋 {total} rotina(s) para executar\n")
+    logging.info(f"📋 {total} rotina(s) para executar\n")
 
     for idx, item in enumerate(config["execucao"], 1):
 
         codigo = item["codigo"]
         
         if not item.get("ativo", True): # Default to True if missing for backward compatibility
-            print(f"⏭️ Rotina {codigo} ignorada (ativo=False)")
+            logging.warning(f"⏭️ Rotina {codigo} ignorada (ativo=False)")
             continue
         # CORREÇÃO: Removidas as vírgulas que transformavam strings em tuplas
         destino = item["destino"]
@@ -58,28 +59,28 @@ def executar_rotinas(driver, rotinas_registradas, caminho_json):
         
         descricao = item.get("descricao", codigo)
         
-        print(f"'{codigo}'")
+        logging.info(f"'{codigo}'")
         for r in rotinas_registradas:
-                print(f"'{r}'")
+                logging.info(f"'{r}'")
 
         if codigo not in rotinas_registradas:
-            print(f"❌ Erro: Rotina {codigo} não registrada")
+            logging.error(f"❌ Erro: Rotina {codigo} não registrada")
             continue
         
         
-        print("="*60)
-        print(f"▶ [{idx}/{total}] {descricao} (Código: {codigo})")
-        print(f"📄 Arquivo: {nome}")
-        print(f"📂 Destino: {destino}")
-        print("="*60)
+        logging.info("="*60)
+        logging.info(f"▶ [{idx}/{total}] {descricao} (Código: {codigo})")
+        logging.info(f"📄 Arquivo: {nome}")
+        logging.info(f"📂 Destino: {destino}")
+        logging.info("="*60)
 
         try:
             # 1. Executa a rotina (gera o relatório no navegador)
-            print("📤 Executando rotina...")
+            logging.info("📤 Executando rotina...")
             resultado = rotinas_registradas[codigo](driver, **params)
             # Adicionado retorno caso apareça caixa de diálogo "sem informações para listar"
             if resultado == "skip":
-                print('⏭️ Pulando rotina... \n')
+                logging.warning('⏭️ Pulando rotina... \n')
                 if driver.current_window_handle != promaxPrimeiraJanela:
                     driver.close()
                     driver.switch_to.window(promaxPrimeiraJanela)
@@ -88,7 +89,7 @@ def executar_rotinas(driver, rotinas_registradas, caminho_json):
             # Ela cuida de abrir o diálogo, digitar o caminho e validar o arquivo
             arquivo_final = salvar_arquivo(destino, nome)
 
-            print(f"✓ Concluído: {arquivo_final}\n")
+            logging.info(f"✓ Concluído: {arquivo_final}\n")
 
             pyautogui.moveTo(0, 0)
 
@@ -98,7 +99,7 @@ def executar_rotinas(driver, rotinas_registradas, caminho_json):
             driver.switch_to.window(promaxPrimeiraJanela)
 
         except Exception as e:
-            print(f"❌ Erro ao executar rotina {codigo}: {e}\n")
+            logging.error(f"❌ Erro ao executar rotina {codigo}: {e}")
             # Importante: traceback ajuda muito a debugar
             import traceback
             traceback.print_exc()
@@ -106,6 +107,6 @@ def executar_rotinas(driver, rotinas_registradas, caminho_json):
 
     
     driver.quit()
-    print("="*60)
-    print("✓ EXECUÇÃO FINALIZADA")
-    print("="*60)
+    logging.info("="*60)
+    logging.info("✓ EXECUÇÃO FINALIZADA")
+    logging.info("="*60)
