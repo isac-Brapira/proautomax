@@ -47,7 +47,7 @@ def executar(driver, **kwargs):
 
     data = wait.until(EC.presence_of_element_located((By.NAME, "data")))
 
-    driver.execute_script(f"arguments[0].value = '22/02/2026';", data)
+    driver.execute_script(f"arguments[0].value = '{data_ontem()}';", data)
     print(f"ROTINA {CODIGO_ROTINA}:⚙️ Data inicial configurada para {data_ontem()}")
     
     # Exporta o CSV
