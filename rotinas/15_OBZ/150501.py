@@ -65,20 +65,24 @@ def executar(driver, **kwargs):
 
     # CLICAR NO BOTÃO DE NBZ
     clicar_botao_imagem("images/nbz.png","NBZ",30)
+    time.sleep(1)
 
     # CLICAR NO BOTÃO DE DEPTO
     clicar_botao_imagem("images/depto.png","DEPTO",30)
+    time.sleep(1)
 
     # CLICAR NO BOTÃO DE PACOTE
     clicar_botao_imagem("images/pacote.png","PACOTE",30)
+    time.sleep(1)
 
     # CLICAR NO BOTÃO DE VBZ
     clicar_botao_imagem("images/vbz.png","VBZ",30)
+    time.sleep(1)
 
     # CLICAR NO BOTÃO DE CONTA
     clicar_botao_imagem("images/conta.png","CONTA",30)
+    time.sleep(1)
 
-    time.sleep(2)
 
     logging.info("📤 Tentando usar o atalho Alt+V para visualizar...")
     atalho_alt("v")
