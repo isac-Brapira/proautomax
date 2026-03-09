@@ -60,7 +60,10 @@ def executar(driver, **kwargs):
 
     print("📤 Tentando usar o atalho Alt+V para visualizar...")
     atalho_alt("v")
-
+    
+    if aceitar_alertas(driver):
+            print("⚠️  Alerta de erro detectado!")
+            return "skip"
     # Verifica se o botão do CSV aparece (sucesso do Alt+V)
     # Se não aparecer em 300s (5 min), assume falha e tenta clicar no visualizar manualmente
 
@@ -74,8 +77,8 @@ def executar(driver, **kwargs):
 
         if aceitar_alertas(driver):
             print("⚠️  Alerta de erro detectado!")
-        return "skip"
-    
+            return "skip"
+        
         # Espera novamente pelo resultado
         print("⏳ Aguardando processamento (2ª tentativa)...")
         try:
