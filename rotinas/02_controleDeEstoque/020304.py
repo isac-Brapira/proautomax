@@ -61,9 +61,11 @@ def executar(driver, **kwargs):
 
     time.sleep(15)
 
+    # Verifica se há algum alerta if alerta True ? skip : continue 
     if aceitar_alertas(driver):
         return "skip"
-# Verifica se o botão do CSV aparece (sucesso do Alt+V)
+    
+    # Verifica se o botão do CSV aparece (sucesso do Alt+V)
     # Se não aparecer em 300s (5 min), assume falha e tenta clicar no visualizar manualmente
     try:
         # Tenta encontrar o botão CSV que indica que o relatório carregou

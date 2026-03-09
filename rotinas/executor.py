@@ -35,12 +35,17 @@ def executar_rotinas(driver, rotinas_registradas, caminho_json):
     total = len(config["execucao"])
     logging.info(f"📋 {total} rotina(s) para executar\n")
 
+    rotinas_salvas = []
+    rotinas_erros = []
+    rotinas_ignoradas = []
+
     for idx, item in enumerate(config["execucao"], 1):
 
         codigo = item["codigo"]
         
         if not item.get("ativo", True): # Default to True if missing for backward compatibility
             logging.warning(f"⏭️ Rotina {codigo} ignorada (ativo=False)")
+            rotinas_ignoradas.append(codigo)
             continue
         # CORREÇÃO: Removidas as vírgulas que transformavam strings em tuplas
         destino = item["destino"]
@@ -81,6 +86,7 @@ def executar_rotinas(driver, rotinas_registradas, caminho_json):
             # Adicionado retorno caso apareça caixa de diálogo "sem informações para listar"
             if resultado == "skip":
                 logging.warning('⏭️ Pulando rotina... \n')
+                rotinas_ignoradas.append(codigo)
                 if driver.current_window_handle != promaxPrimeiraJanela:
                     driver.close()
                     driver.switch_to.window(promaxPrimeiraJanela)
@@ -90,6 +96,7 @@ def executar_rotinas(driver, rotinas_registradas, caminho_json):
             arquivo_final = salvar_arquivo(destino, nome)
 
             logging.info(f"✓ Concluído: {arquivo_final}\n")
+            rotinas_salvas.append(codigo)
 
             pyautogui.moveTo(0, 0)
 
@@ -100,13 +107,20 @@ def executar_rotinas(driver, rotinas_registradas, caminho_json):
 
         except Exception as e:
             logging.error(f"❌ Erro ao executar rotina {codigo}: {e}")
+            rotinas_erros.append(codigo)
             # Importante: traceback ajuda muito a debugar
             import traceback
             traceback.print_exc()
             continue
 
+    logging.info("="*60)
+    logging.info("📊 RESUMO DA EXECUÇÃO")
+    logging.info(f"✅ Foram {len(rotinas_salvas)} rotinas salvas com sucesso. {rotinas_salvas}")
+    logging.info(f"❌ Dentre elas {len(rotinas_erros)} resultaram em erro. {rotinas_erros}")
+    logging.info(f"⏭️ E {len(rotinas_ignoradas)} foram ignoradas. {rotinas_ignoradas}")
+    logging.info("="*60)
     
     driver.quit()
     logging.info("="*60)
-    logging.info("✓ EXECUÇÃO FINALIZADA")
+    logging.info("✓ EXECUÇÃO FINALIZADA 🍻")
     logging.info("="*60)
