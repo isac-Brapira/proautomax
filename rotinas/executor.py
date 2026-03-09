@@ -80,6 +80,9 @@ def executar_rotinas(driver, rotinas_registradas, caminho_json):
             # Adicionado retorno caso apareça caixa de diálogo "sem informações para listar"
             if resultado == "skip":
                 print('⏭️ Pulando rotina... \n')
+                if driver.current_window_handle != promaxPrimeiraJanela:
+                    driver.close()
+                    driver.switch_to.window(promaxPrimeiraJanela)
                 continue
             # 2. Salva o arquivo usando a função completa do download.py
             # Ela cuida de abrir o diálogo, digitar o caminho e validar o arquivo
