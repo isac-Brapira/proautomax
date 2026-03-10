@@ -11,7 +11,7 @@ from function.funcoes_rotina import aguardar_tela_carregar, atalho_alt
 from function.troca_janela import trocar_para_nova_janela
 from function.img_func import clicar_imagem, encontrar_imagem, CSV_BTN, VISUALIZAR_BTN
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.ui import Select, WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 import pyautogui
@@ -63,24 +63,65 @@ def executar(driver, **kwargs):
     driver.execute_script(f"arguments[0].value = '{ano_vigente()}';", data_inicial)
     logging.info(f"ROTINA {CODIGO_ROTINA}:⚙️ Ano configurado para {ano_vigente()}")
 
-    # CLICAR NO BOTÃO DE NBZ
-    clicar_botao_imagem("images/nbz.png","NBZ",30)
+    # Seleciona a opção "99 - TODOS"
+    select_nbz = Select(wait.until(EC.presence_of_element_located((By.NAME, "cdNbz"))))
+    select_nbz.select_by_value("99")
+    driver.execute_script("AdicionaNbz();")
+    lista = driver.find_element(By.NAME, "cdNbzLista")
+
+    if lista.find_elements(By.TAG_NAME, "option"):
+        logging.info("NBZ adicionada com sucesso")
+
     time.sleep(1)
 
-    # CLICAR NO BOTÃO DE DEPTO
-    clicar_botao_imagem("images/depto.png","DEPTO",30)
+    # Seleciona a opção "9999 -  Todos" porque é diferente do de cima? não me pergunte
+    select_nbz = Select(wait.until(EC.presence_of_element_located((By.NAME, "cdDepto"))))
+    select_nbz.select_by_value("9999")
+    driver.execute_script("AdicionaDepto();")
+    lista = driver.find_element(By.NAME, "cdDeptoLista")
+
+    if lista.find_elements(By.TAG_NAME, "option"):
+        logging.info("Depto adicionada com sucesso")
+    
     time.sleep(1)
 
-    # CLICAR NO BOTÃO DE PACOTE
-    clicar_botao_imagem("images/pacote.png","PACOTE",30)
+    # Seleciona opção "9999 - Todos" de pacote, e sim... muda novamente o código, virou um botão...
+    select_pacote = Select(wait.until(EC.presence_of_element_located((By.NAME, "cdPacote"))))
+    select_pacote.select_by_value("9999")
+    driver.execute_script("AdicionaPacote();")
+
+    lista = driver.find_element(By.NAME, "cdPacoteLista")
+    if lista.find_elements(By.TAG_NAME, "option"):
+        logging.info("Pacote adicionado com sucesso")
+    else:
+        logging.warning("Pacote não foi adicionado")
+
     time.sleep(1)
 
-    # CLICAR NO BOTÃO DE VBZ
-    clicar_botao_imagem("images/vbz.png","VBZ",30)
+    # Seleciona opção "9999 - Todos" de VBZ
+    select_vbz = Select(wait.until(EC.presence_of_element_located((By.NAME, "cdVbz"))))
+    select_vbz.select_by_value("9999")
+    driver.execute_script("AdicionaVbz();")
+
+    lista = driver.find_element(By.NAME, "cdVbzLista")
+    if lista.find_elements(By.TAG_NAME, "option"):
+        logging.info("VBZ adicionada com sucesso")
+    else:
+        logging.warning("VBZ não foi adicionada")
+
     time.sleep(1)
 
-    # CLICAR NO BOTÃO DE CONTA
-    clicar_botao_imagem("images/conta.png","CONTA",30)
+    # Seleciona opção "9999999999 - Todos" de Conta
+    select_vbz = Select(wait.until(EC.presence_of_element_located((By.NAME, "cdConta"))))
+    select_vbz.select_by_value("9999999999")
+    driver.execute_script("AdicionaConta();")
+
+    lista = driver.find_element(By.NAME, "cdContaLista")
+    if lista.find_elements(By.TAG_NAME, "option"):
+        logging.info("Conta adicionada com sucesso")
+    else:
+        logging.warning("Conta não foi adicionada")
+
     time.sleep(1)
 
 
@@ -112,26 +153,3 @@ def executar(driver, **kwargs):
     time.sleep(2)
     clicar_imagem(CSV_BTN)    
     logging.info("⏳ Aguardando download...")
-
-
-def clicar_botao_imagem(caminho, nome, timeout=30):
-    inicio = time.time()
-
-    while time.time() - inicio < timeout:
-
-        pos = pyautogui.locateOnScreen(caminho, confidence=0.8)
-
-        if pos:
-            logging.info(f"✅ Clicando no botão de {nome}...")
-
-            x = pos.left + pos.width - 10
-            y = pos.top + pos.height // 2
-
-            time.sleep(1)
-            pyautogui.click(x, y)
-            return
-
-        time.sleep(0.5)
-    msg = f"❌ Botão {nome} não encontrado."
-    logging.error(msg)
-    raise TimeoutError(msg)
