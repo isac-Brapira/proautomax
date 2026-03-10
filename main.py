@@ -12,10 +12,10 @@ from rotinas.executor import executar_rotinas
 from dotenv import load_dotenv
 import os
 
-#Configurações de LOG 
-os.makedirs("logs",exist_ok = True)
+# Configurações de LOG
+log_dir = r"\\192.168.1.213\Arquivos\Administrativo\TecInfo\DB_VENDAS\testeProauto\logs"
+os.makedirs(log_dir, exist_ok=True)
 
-log_dir = "logs"
 max_logs = 5
 
 logs = sorted(
@@ -26,22 +26,18 @@ logs = sorted(
 while len(logs) >= max_logs:
     os.remove(logs[0])
     logs.pop(0)
-    
+
 data_execucao = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-arquivo_log = f"logs/automacao_{data_execucao}.log"
-
-
+arquivo_log = os.path.join(log_dir, f"automacao_{data_execucao}.log")
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 formatter = logging.Formatter("%(asctime)s | %(levelname)s | %(message)s")
 
-# salva no arquivo log
 file_handler = logging.FileHandler(arquivo_log, encoding="utf-8")
 file_handler.setFormatter(formatter)
 
-# exibe no terminal como um print
 console_handler = logging.StreamHandler()
 console_handler.setFormatter(formatter)
 
