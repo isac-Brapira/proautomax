@@ -52,6 +52,7 @@ def executar(driver, **kwargs):
         }
     """, combo)
     logging.info("⚙️ Selecionando opção de preço médio de reposição...")
+    time.sleep(0.5)
 
     checkbox_vasilhame = driver.find_element("name", "checkVasilhame")
 
@@ -62,6 +63,7 @@ def executar(driver, **kwargs):
         if (cb.onchange) cb.onchange();
     """, checkbox_vasilhame)
     logging.info("⚙️ Revomendo flag de Vasilhame...")
+    time.sleep(0.5)
 
     checkbox_garrafeira = driver.find_element("name", "checkGarrafeira")
 
@@ -72,6 +74,7 @@ def executar(driver, **kwargs):
         if (cb.onchange) cb.onchange();
     """, checkbox_garrafeira)
     logging.info("⚙️ Revomendo flag de Garrafeira...")
+    time.sleep(0.5)
 
     checkbox_material = driver.find_element("name", "checkMaterial")
 
@@ -82,6 +85,7 @@ def executar(driver, **kwargs):
         if (cb.onchange) cb.onchange();
     """, checkbox_material)
     logging.info("⚙️ Revomendo flag de Material...")
+    time.sleep(0.5)
 
     driver.execute_script("""
         document.getElementsByName('cdDeposito')[0].value = '01';
@@ -93,6 +97,7 @@ def executar(driver, **kwargs):
     
     logging.info("📤 Tentando usar o atalho Alt+V para visualizar...")
     atalho_alt("v")
+    time.sleep(5)
 
     # Verifica se o botão do CSV aparece (sucesso do Alt+V)
     # Se não aparecer em 300s (5 min), assume falha e tenta clicar no visualizar manualmente
@@ -117,5 +122,4 @@ def executar(driver, **kwargs):
     # Clica no botão salvar para baixar
     time.sleep(2)
     clicar_imagem(SALVAR_BTN_2)
-
     logging.info("⏳ Aguardando download...")

@@ -46,5 +46,7 @@ def atalho_alt(tecla):
     """Helper para atalhos Alt+Tecla"""
     time.sleep(0.5)
     pyautogui.keyDown('alt')
+    time.sleep(0.25)
     pyautogui.press(tecla.lower())
+    time.sleep(0.25)
     pyautogui.keyUp('alt')

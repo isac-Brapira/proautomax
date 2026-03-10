@@ -51,6 +51,7 @@ def executar(driver, **kwargs):
     driver.execute_script("arguments[0].value = '01'; arguments[0].onchange();", select_quebra1)
 
     logging.info(f"ROTINA {CODIGO_ROTINA}:⚙️ Quebra 1 configurada para classificação numérica")
+    time.sleep(0.5)
 
     vencimento_final = wait.until(EC.presence_of_element_located((By.NAME, "fimVencimento")))
 
@@ -61,6 +62,7 @@ def executar(driver, **kwargs):
 
     logging.info("📤 Tentando usar o atalho Alt+V para visualizar...")
     atalho_alt("v")
+    time.sleep(5)
 
     try:
         # Tenta encontrar o botão CSV que indica que o relatório carregou
@@ -83,5 +85,4 @@ def executar(driver, **kwargs):
     # Clica no CSV para baixar
     time.sleep(2)
     clicar_imagem(CSV_BTN)
-
     logging.info("⏳ Aguardando download...")

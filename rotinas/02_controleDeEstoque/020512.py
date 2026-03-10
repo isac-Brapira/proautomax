@@ -62,6 +62,7 @@ def executar(driver, **kwargs):
 
     logging.info("📤 Tentando usar o atalho Alt+V para visualizar...")
     atalho_alt("v")
+    time.sleep(5)
     
     if aceitar_alertas(driver):
             return "skip"

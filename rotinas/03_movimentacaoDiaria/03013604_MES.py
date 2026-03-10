@@ -61,6 +61,7 @@ def executar(driver, **kwargs):
     # Exporta o CSV
     logging.info("📤 Tentando usar o atalho Alt+V para visualizar...")
     atalho_alt("v")
+    time.sleep(5)
 
     # Verifica se o botão do CSV aparece (sucesso do Alt+V)
     # Se não aparecer em 300s (5 min), assume falha e tenta clicar no visualizar manualmente
@@ -85,5 +86,4 @@ def executar(driver, **kwargs):
     # Clica no CSV para baixar
     time.sleep(2)
     clicar_imagem(CSV_BTN)
-
     logging.info("⏳ Aguardando download...")

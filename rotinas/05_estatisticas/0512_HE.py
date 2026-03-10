@@ -53,6 +53,7 @@ def executar(driver, **kwargs):
     driver.execute_script("arguments[0].value = '06'; arguments[0].onchange();", select_quebra1)
 
     logging.info(f"ROTINA {CODIGO_ROTINA}:⚙️ Quebra 1 configurada para Setor/Cliente (06)")
+    time.sleep(0.5)
 
     #Selecionando checkbox
     checkbox = wait.until(
@@ -71,6 +72,7 @@ def executar(driver, **kwargs):
     # Exporta o CSV
     logging.info("📤 Tentando usar o atalho Alt+V para visualizar...")
     atalho_alt("v")
+    time.sleep(5)
 
     try:
         # Tenta encontrar o botão CSV que indica que o relatório carregou

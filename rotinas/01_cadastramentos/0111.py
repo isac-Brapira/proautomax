@@ -51,6 +51,7 @@ def executar(driver, **kwargs):
     # Tenta usar o atalho Alt+V para abrir o menu Exportar / gera CSV
     atalho_alt('v')
     logging.info("Tentando usar o atalho Alt+V para abrir o menu Exportar / gera CSV...")
+    time.sleep(5)
  
     
     try:
