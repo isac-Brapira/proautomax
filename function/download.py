@@ -41,21 +41,45 @@ def confirmar_download():
     """
     time.sleep(2)
 
-    logging.info("⏳ Procurando botão Salvar...")
+    timeout = 60
+    inicio = time.time()
 
-    while True:
+    logging.info("⏳ Procurando botão Salvar...")
+    while time.time() - inicio < timeout:
+
         try:
-            pos = pyautogui.locateOnScreen(os.getenv("PATH_IMAGE_SAVE"), confidence= 0.8)
+            pos = pyautogui.locateOnScreen(
+                os.getenv("PATH_IMAGE_SAVE"),
+                confidence=0.8
+            )
+
             if pos:
                 logging.info("✅ Botão encontrado!")
-                # print(pos)
-                # Clica na imagem para garantir o foco na janela antes de enviar teclas
                 pyautogui.click(pyautogui.center(pos))
-                # Clica bem no começo da imagem para conseguir dar o tab
-                # pyautogui.click(pos.left + 2, pos.top + 2)
                 break
+
         except pyautogui.ImageNotFoundException:
-            pass  # imagem ainda não apareceu
+            pass  # continua procurando
+
+        time.sleep(1)
+
+    else:
+        logging.error("❌ Botão Salvar não encontrado dentro do tempo limite.")
+        raise TimeoutError("Imagem do botão salvar não apareceu.")
+
+    # while True:
+    #     try:
+    #         pos = pyautogui.locateOnScreen(os.getenv("PATH_IMAGE_SAVE"), confidence= 0.8)
+    #         if pos:
+    #             logging.info("✅ Botão encontrado!")
+    #             # print(pos)
+    #             # Clica na imagem para garantir o foco na janela antes de enviar teclas
+    #             pyautogui.click(pyautogui.center(pos))
+    #             # Clica bem no começo da imagem para conseguir dar o tab
+    #             # pyautogui.click(pos.left + 2, pos.top + 2)
+    #             break
+    #     except pyautogui.ImageNotFoundException:
+    #         pass  # imagem ainda não apareceu
 
     time.sleep(0.5)
 

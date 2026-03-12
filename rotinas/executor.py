@@ -113,12 +113,12 @@ def executar_rotinas(driver, rotinas_registradas, caminho_json):
             traceback.print_exc()
             continue
 
-    logging.info("*=*"*30)
+    logging.info("*=="*25)
     logging.info("📊 RESUMO DA EXECUÇÃO")
     logging.info(f"✅ Foram {len(rotinas_salvas)} rotinas salvas com sucesso. {rotinas_salvas}")
     logging.info(f"❌ Dentre elas {len(rotinas_erros)} resultaram em erro. {rotinas_erros}")
     logging.info(f"⏭️ E {len(rotinas_ignoradas)} foram ignoradas. {rotinas_ignoradas}")
-    logging.info("^=^"*30)
+    logging.info("^=="*25)
     
     driver.quit()
     logging.info("="*60)
