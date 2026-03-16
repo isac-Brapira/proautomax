@@ -68,28 +68,57 @@ def executar(driver, **kwargs):
 
     time.sleep(2)
 
-    # Exporta o CSV
-    logging.info("📤 Tentando usar o atalho Alt+V para visualizar...")
-    atalho_alt("v")
-    time.sleep(5)
+    # Testando clicar no botão visualizar com JavaScript
+    logging.info("📤 Executando Visualizar via JavaScript...")
 
-    # Verifica se o botão do CSV aparece (sucesso do Alt+V)
-    # Se não aparecer em 300s (5 min), assume falha e tenta clicar no visualizar manualmente
     try:
-        # Tenta encontrar o botão CSV que indica que o relatório carregou
-        logging.info("⏳ Aguardando processamento do relatório (Até 2 min)...")
-        encontrar_imagem(CSV_BTN, timeout=120) 
+        funcao_existe = driver.execute_script("return typeof Visualizar === 'function';")
+        if not funcao_existe:
+            logging.error("❌ Função Visualizar() não encontrada na página.")
+            return "skip"            
+
+        driver.execute_script("return Visualizar();")
+
+    except Exception as e:
+        logging.error(f"❌ Erro ao executar Visualizar(): {e}")
+        return       
+
+    try:
+        logging.info("⏳ Aguardando processamento do relatório (até 2 min)...")
+        encontrar_imagem(CSV_BTN, timeout=120)
+
     except TimeoutError:
-        logging.error("❌ Atalho Alt+V falhou ou demorou demais. Tentando clicar em Visualizar manualmente...")
-        clicar_imagem(VISUALIZAR_BTN, timeout=10) # Tenta clicar no botão visualizar
-        
-        # Espera novamente pelo resultado
-        logging.info("⏳ Aguardando processamento (2ª tentativa)...")
+        logging.warning("⚠️ Relatório demorou demais. Tentando novamente...")
+
         try:
-            encontrar_imagem(CSV_BTN, timeout=300)
+            driver.execute_script("return Visualizar();")
+            encontrar_imagem(CSV_BTN, timeout=180)
         except TimeoutError:
-            logging.error("❌ Falha crítica: Relatório não carregou.")
-            return
+            logging.error("❌ Falha crítica: relatório não foi gerado.")
+            return "skip"
+
+    # # Exporta o CSV
+    # logging.info("📤 Tentando usar o atalho Alt+V para visualizar...")
+    # atalho_alt("v")
+    # time.sleep(5)
+
+    # # Verifica se o botão do CSV aparece (sucesso do Alt+V)
+    # # Se não aparecer em 300s (5 min), assume falha e tenta clicar no visualizar manualmente
+    # try:
+    #     # Tenta encontrar o botão CSV que indica que o relatório carregou
+    #     logging.info("⏳ Aguardando processamento do relatório (Até 2 min)...")
+    #     encontrar_imagem(CSV_BTN, timeout=120) 
+    # except TimeoutError:
+    #     logging.error("❌ Atalho Alt+V falhou ou demorou demais. Tentando clicar em Visualizar manualmente...")
+    #     clicar_imagem(VISUALIZAR_BTN, timeout=10) # Tenta clicar no botão visualizar
+        
+    #     # Espera novamente pelo resultado
+    #     logging.info("⏳ Aguardando processamento (2ª tentativa)...")
+    #     try:
+    #         encontrar_imagem(CSV_BTN, timeout=300)
+    #     except TimeoutError:
+    #         logging.error("❌ Falha crítica: Relatório não carregou.")
+    #         return
 
     logging.info("⏳ Relatório gerado! Iniciando download...")
 

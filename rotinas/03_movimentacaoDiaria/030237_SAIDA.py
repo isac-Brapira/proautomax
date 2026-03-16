@@ -6,6 +6,7 @@ Autor: Carol e Isac
 
 import logging
 from function.abrir_rotinas import abrir_rotinas
+from function.aceitar_alertas import aceitar_alertas
 from function.funcoes_rotina import aguardar_tela_carregar, atalho_alt
 from function.troca_janela import trocar_para_nova_janela
 from function.img_func import clicar_imagem, encontrar_imagem, CSV_BTN, VISUALIZAR_BTN
@@ -105,6 +106,9 @@ def executar(driver, **kwargs):
 
     try:
         logging.info("⏳ Aguardando processamento do relatório (até 2 min)...")
+        # Verifica se há algum alerta if alerta True ? skip : continue 
+        if aceitar_alertas(driver):
+            return "skip"
         encontrar_imagem(CSV_BTN, timeout=120)
 
     except TimeoutError:

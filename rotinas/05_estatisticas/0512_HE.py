@@ -68,7 +68,8 @@ def executar(driver, **kwargs):
     logging.info(f"ROTINA {CODIGO_ROTINA}:⚙️ Checkbox hectolitro selecionada")
     
     time.sleep(2)
-
+    
+    # Testando clicar no botão visualizar com JavaScript
     logging.info("📤 Executando Visualizar via JavaScript...")
 
     try:
@@ -96,28 +97,7 @@ def executar(driver, **kwargs):
         except TimeoutError:
             logging.error("❌ Falha crítica: relatório não foi gerado.")
             return "skip"
-
-    # # Exporta o CSV
-    # logging.info("📤 Tentando usar o atalho Alt+V para visualizar...")
-    # atalho_alt("v")
-    # time.sleep(5)
-
-    # try:
-    #     # Tenta encontrar o botão CSV que indica que o relatório carregou
-    #     logging.info("⏳ Aguardando processamento do relatório (Até 2 min)...")
-    #     encontrar_imagem(CSV_BTN, timeout=120) 
-    # except TimeoutError:
-    #     logging.warning("❌ Atalho Alt+V falhou ou demorou demais. Tentando clicar em Visualizar manualmente...")
-    #     clicar_imagem(VISUALIZAR_BTN, timeout=10) # Tenta clicar no botão visualizar
-        
-    #     # Espera novamente pelo resultado
-    #     logging.info("⏳ Aguardando processamento (2ª tentativa)...")
-    #     try:
-    #         encontrar_imagem(CSV_BTN, timeout=300)
-    #     except TimeoutError:
-    #         logging.error("❌ Falha crítica: Relatório não carregou.")
-    #         return
-
+    
     logging.info("⏳ Relatório gerado! Iniciando download...")
 
     # Clica no CSV para baixar

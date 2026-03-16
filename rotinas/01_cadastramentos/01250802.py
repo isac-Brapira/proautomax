@@ -9,7 +9,7 @@ import logging
 from function.abrir_rotinas import abrir_rotinas
 from function.funcoes_rotina import aguardar_tela_carregar, atalho_alt
 from function.troca_janela import trocar_para_nova_janela
-from function.img_func import clicar_imagem, encontrar_imagem, CSV_BTN, VISUALIZAR_BTN
+from function.img_func import SALVAR_BTN, clicar_imagem, encontrar_imagem, CSV_BTN, VISUALIZAR_BTN
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -24,58 +24,57 @@ def executar(driver, **kwargs):
     Função principal da rotina.
     """
     abrir_rotinas(driver, CODIGO_ROTINA)
-    
-    logging.info(f"Janelas abertas: {driver.window_handles}")
-    logging.info(f"Janela atual: {driver.current_window_handle}")
-    
     trocar_para_nova_janela(driver)
-    
     driver.maximize_window()
-
+    
     wait = WebDriverWait(driver, 60)
-    
     aguardar_tela_carregar(wait)
-    
     time.sleep(5)
-
+    
     width, height = pyautogui.size()
     pyautogui.FAILSAFE = False
     pyautogui.moveTo(width / 2, height / 2)
     pyautogui.FAILSAFE = True
     
-
     logging.info("⚙️ Configurando parâmetros da rotina 01.25.08.02...")
-    # wait.until(EC.frame_to_be_available_and_switch_to_it((By.NAME, "rotina")))
-
-
+    
+    wait.until(EC.frame_to_be_available_and_switch_to_it((By.NAME, "rotina")))
+    logging.info(f"Janelas abertas: {driver.window_handles}")
+    logging.info(f"Janela atual: {driver.current_window_handle}")
+ 
     time.sleep(2)
+    
+    # Testando clicar no botão visualizar com JavaScript
+    logging.info("📤 Executando GeraPlanilha(); via JavaScript...")
 
-    logging.info("📤 Tentando usar o atalho Alt+V para visualizar...")
-    atalho_alt("v")
-    time.sleep(5)
-
-    # Verifica se o botão do CSV aparece (sucesso do Alt+V)
-    # Se não aparecer em 300s (5 min), assume falha e tenta clicar no visualizar manualmente
     try:
-        # Tenta encontrar o botão CSV que indica que o relatório carregou
-        logging.info("⏳ Aguardando processamento do relatório (Até 2 min)...")
-        encontrar_imagem(CSV_BTN, timeout=120) 
+        funcao_existe = driver.execute_script("return typeof GeraPlanilha === 'function';")
+        if not funcao_existe:
+            logging.error("❌ Função GeraPlanilha não encontrada na página.")
+            return "skip"            
+
+        driver.execute_script("return GeraPlanilha();")
+
+    except Exception as e:
+        logging.error(f"❌ Erro ao executar GeraPlanilha(): {e}")
+        return       
+
+    try:
+        logging.info("⏳ Aguardando processamento do relatório (até 2 min)...")
+        encontrar_imagem(SALVAR_BTN, timeout=120)
+
     except TimeoutError:
-        logging.warning("❌ Atalho Alt+V falhou ou demorou demais. Tentando clicar em Visualizar manualmente...")
-        clicar_imagem(VISUALIZAR_BTN, timeout=10) # Tenta clicar no botão visualizar
-        
-        # Espera novamente pelo resultado
-        logging.info("⏳ Aguardando processamento (2ª tentativa)...")
+        logging.warning("⚠️ Relatório demorou demais. Tentando novamente...")
+
         try:
-            encontrar_imagem(CSV_BTN, timeout=300)
+            driver.execute_script("return GeraPlanilha();")
+            encontrar_imagem(SALVAR_BTN, timeout=180)
         except TimeoutError:
-            logging.error("❌ Falha crítica: Relatório não carregou.")
-            return
+            logging.error("❌ Falha crítica: relatório não foi gerado.")
+            return "skip"
+    
 
     logging.info("⏳ Relatório gerado! Iniciando download...")
 
-    # Clica no CSV para baixar
-    time.sleep(2)
-    clicar_imagem(CSV_BTN)
-
     logging.info("⏳ Aguardando download...")
+    time.sleep(5)

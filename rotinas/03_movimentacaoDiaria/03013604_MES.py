@@ -10,6 +10,7 @@ from function.abrir_rotinas import abrir_rotinas
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from function.aceitar_alertas import aceitar_alertas
 from function.data_func import primeiro_dia_mes
 from function.funcoes_rotina import aguardar_tela_carregar, atalho_alt
 from function.img_func import VISUALIZAR_BTN, encontrar_imagem, clicar_imagem, CSV_BTN, SALVAR_BTN
@@ -74,6 +75,11 @@ def executar(driver, **kwargs):
 
     try:
         logging.info("⏳ Aguardando processamento do relatório (até 2 min)...")
+
+        # Verifica se há algum alerta if alerta True ? skip : continue 
+        if aceitar_alertas(driver):
+            return "skip"
+        
         encontrar_imagem(CSV_BTN, timeout=120)
 
     except TimeoutError:
