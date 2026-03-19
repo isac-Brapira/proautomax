@@ -99,6 +99,19 @@ def executar(driver, **kwargs):
             return "skip"            
 
         driver.execute_script("return Visualizar();")
+        
+        logging.info("⏳ Aguardando sair do 'Processando...'")
+
+        try:
+            WebDriverWait(driver, 600).until(
+                EC.invisibility_of_element_located(
+                    (By.XPATH, "//*[contains(text(),'Processando')]")
+                )
+            )
+        except TimeoutError:
+            logging.warning("⚠️ 'Processando...' não sumiu (pode não existir ou mudou texto)")
+
+        time.sleep(2)
 
     except Exception as e:
         logging.error(f"❌ Erro ao executar Visualizar(): {e}")
