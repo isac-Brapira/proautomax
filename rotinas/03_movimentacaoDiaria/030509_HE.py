@@ -51,6 +51,14 @@ def executar(driver, **kwargs):
     driver.execute_script("arguments[0].value = '07'; arguments[0].onchange();", select_quebra1)
 
     logging.info(f"ROTINA {CODIGO_ROTINA}:⚙️ Quebra 1 configurada para classificação Cliente")
+
+    radio_itens = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "input[type='radio'][name='fatorConversao'][value='H']")))
+
+    if not radio_itens.is_selected():
+
+      radio_itens.click()
+
+    logging.info(f"ROTINA {CODIGO_ROTINA}:⚙️ Itens configurados para Sim")
     
     time.sleep(2)
     
