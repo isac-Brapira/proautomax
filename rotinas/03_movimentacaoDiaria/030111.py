@@ -55,11 +55,6 @@ def executar(driver, **kwargs):
 
     time.sleep(2)
 
-    # # Exporta o CSV
-    # logging.info("📤 Tentando usar o atalho Alt+V para visualizar...")
-    # atalho_alt("v")
-    # time.sleep(5)
-
     # Testando clicar no botão visualizar com JavaScript
     logging.info("📤 Executando Visualizar via JavaScript...")
 
