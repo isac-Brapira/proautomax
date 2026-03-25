@@ -12,6 +12,7 @@ from function.funcoes_rotina import aguardar_tela_carregar, atalho_alt
 from function.troca_janela import trocar_para_nova_janela
 from function.img_func import clicar_imagem, encontrar_imagem, CSV_BTN, VISUALIZAR_BTN
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
@@ -119,8 +120,17 @@ def executar(driver, **kwargs):
         if not funcao_existe:
             logging.error("❌ Função Visualizar() não encontrada na página.")
             return "skip"            
-
-        driver.execute_script("return Visualizar();")
+        
+        print('caiu aqui antes do driver execute botão visualizar')
+        driver.execute_async_script("""
+            var callback = arguments[arguments.length - 1];
+            try {
+                Visualizar();
+                callback();
+            } catch(e) {
+                callback(e);
+            }
+            """)
         logging.info("⏳ Aguardando sair do 'Processando...'")
 
         try:
@@ -129,7 +139,9 @@ def executar(driver, **kwargs):
                     (By.XPATH, "//*[contains(text(),'Processando')]")
                 )
             )
-        except TimeoutError:
+            logging.info("✅ Texto de 'Processamento...' sumiu, continuando execução")
+
+        except TimeoutException:
             logging.warning("⚠️ 'Processando...' não sumiu (pode não existir ou mudou texto)")
 
         time.sleep(2)

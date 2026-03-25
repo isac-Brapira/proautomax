@@ -29,7 +29,7 @@ def encontrar_imagem(caminhoImagem, timeout=None):
         time.sleep(0.5)
 
 # Encontra a imagem e clica
-def clicar_imagem(caminhoImagem, timeout=60):
+def clicar_imagem(caminhoImagem, timeout=120):
     try:
         pos = encontrar_imagem(caminhoImagem, timeout=timeout)
         if pos:

@@ -88,14 +88,14 @@ def executar(driver, **kwargs):
         if aceitar_alertas(driver):
             return "skip"
         
-        encontrar_imagem(CSV_BTN, timeout=120)
+        encontrar_imagem(CSV_BTN, timeout=300)
 
     except TimeoutError:
         logging.warning("⚠️ Relatório demorou demais. Tentando novamente...")
 
         try:
             driver.execute_script("return Visualizar();")
-            encontrar_imagem(CSV_BTN, timeout=180)
+            encontrar_imagem(CSV_BTN, timeout=300)
         except TimeoutError:
             logging.error("❌ Falha crítica: relatório não foi gerado.")
             return "skip"
