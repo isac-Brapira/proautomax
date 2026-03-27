@@ -1,5 +1,6 @@
 import logging
 import time
+import traceback
 import pyautogui
 import os
 
@@ -10,7 +11,7 @@ SALVAR_BTN = os.getenv("PATH_IMAGE_SAVE")
 SALVAR_BTN_2 = os.getenv("PATH_IMAGE_SAVE_2")
 VISUALIZAR_BTN = os.getenv("PATH_IMAGE_VISUALIZAR")
 
-def encontrar_imagem(caminhoImagem, timeout=None, confidence=0.8):
+def encontrar_imagem(caminhoImagem, timeout=None, confidence=0.6):
     inicio = time.time()
     tentativas = 0
 
@@ -22,8 +23,8 @@ def encontrar_imagem(caminhoImagem, timeout=None, confidence=0.8):
                 logging.info(f"✅ Imagem encontrada: {caminhoImagem}")
                 return pos
 
-        except Exception as e:
-            logging.warning(f"⚠️ Erro ao procurar imagem: {e}")
+        except pyautogui.ImageNotFoundException:
+            pass
 
         tentativas += 1
 
