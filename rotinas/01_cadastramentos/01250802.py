@@ -57,7 +57,7 @@ def executar(driver, **kwargs):
 
     except Exception as e:
         logging.error(f"❌ Erro ao executar GeraPlanilha(): {e}")
-        return       
+        return "skip"        
 
     try:
         logging.info("⏳ Aguardando processamento do relatório (até 2 min)...")
