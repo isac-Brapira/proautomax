@@ -18,27 +18,7 @@ PASTA_DOWNLOADS =  os.getenv("PATH_USER") #str(Path.home() / "Downloads")
 
 
 def confirmar_download():
-    """
-    Confirma o download usando Tab 3x + Enter.
-    Esse é o fluxo que você já testou e funciona.
-    """
-    """ print("🔽 Confirmando download...")
     
-    time.sleep(2)  # Espera a barra de download aparecer
-    
-    # Tab 3x (navega até o botão Salvar)
-    print("   Tab 3x...")
-    send_keys("{TAB 3}")
-    time.sleep(0.5)
-    
-    # Enter (clica em Salvar)
-    print("   Enter...")
-    send_keys("{ENTER}")
-    time.sleep(1)
-    
-    print("✓ Download confirmado")
-
-    """
     time.sleep(2)
 
     timeout = 60
@@ -50,12 +30,36 @@ def confirmar_download():
         try:
             pos = pyautogui.locateOnScreen(
                 os.getenv("PATH_IMAGE_SAVE"),
-                confidence=0.8
+                confidence=0.7
             )
 
             if pos:
                 logging.info("✅ Botão encontrado!")
-                pyautogui.click(pyautogui.center(pos))
+
+                # 🔹 Garante foco na janela
+                # import pygetwindow as gw
+                # for w in gw.getWindowsWithTitle("Edge"):
+                #     w.activate()
+                #     break
+                
+                time.sleep(0.5)
+
+                # 🔹 Move com suavidade até o botão
+                # x, y = 
+                pyautogui.moveTo(pyautogui.center(pos), duration=0.3)
+
+                time.sleep(0.5)
+
+                # 🔹 Clique mais confiável (duplo leve)
+                pyautogui.click()
+                time.sleep(0.3)
+                pyautogui.click()
+
+                # 🔹 Backup (caso o clique falhe)
+                pyautogui.press("enter")
+
+                logging.info("💾 Clique realizado com sucesso")
+
                 break
 
         except pyautogui.ImageNotFoundException:
@@ -67,48 +71,11 @@ def confirmar_download():
         logging.error("❌ Botão Salvar não encontrado dentro do tempo limite.")
         raise TimeoutError("Imagem do botão salvar não apareceu.")
 
-    # while True:
-    #     try:
-    #         pos = pyautogui.locateOnScreen(os.getenv("PATH_IMAGE_SAVE"), confidence= 0.8)
-    #         if pos:
-    #             logging.info("✅ Botão encontrado!")
-    #             # print(pos)
-    #             # Clica na imagem para garantir o foco na janela antes de enviar teclas
-    #             pyautogui.click(pyautogui.center(pos))
-    #             # Clica bem no começo da imagem para conseguir dar o tab
-    #             # pyautogui.click(pos.left + 2, pos.top + 2)
-    #             break
-    #     except pyautogui.ImageNotFoundException:
-    #         pass  # imagem ainda não apareceu
-
     time.sleep(0.5)
 
     logging.info("🎯 Continuando execução...")
 
     time.sleep(2)
-
-
-
-    # TAB > TAB > TAB
-    # send_keys("{TAB}")
-    # time.sleep(0.2)
-
-    # send_keys("{TAB}")
-    # time.sleep(0.2)
-
-    # send_keys("{TAB}")
-    # time.sleep(0.2)
-
-    # print(" Apertou TAB 3x")
-
-    # ↓ > ↓
-    # send_keys("{DOWN}")
-    # time.sleep(0.2)
-
-    # send_keys("{DOWN}")
-    # time.sleep(0.2)
-
-    # print(" Apertou SETA PARA BAIXO 2x")
 
     # ENTER (executa salvar como)
     send_keys("{ENTER}")
