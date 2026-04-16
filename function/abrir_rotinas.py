@@ -1,3 +1,5 @@
+import logging
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
@@ -25,12 +27,12 @@ def abrir_rotinas(driver, codigo_rotina, timeout=20):
         time.sleep(1)  # Pequeno delay antes de chamar a função
 
         driver.execute_script("AtalhoMenu();")
-        print(f"[navegar_para_rotina] Navegação para o relatório '{codigo_rotina}' bem-sucedida.")
+        logging.info(f"[navegar_para_rotina] Navegação para o relatório '{codigo_rotina}' bem-sucedida.")
         
         # (Não voltamos pro default_content aqui pois o main.py
         #  chamará a função mudar_janela() em seguida.)
 
     except (TimeoutException, NoSuchElementException, NoSuchFrameException) as e:
-        print(f"[navegar_para_rotina] Erro ao navegar para o relatório {codigo_rotina}: {e}")
+        logging.error(f"[navegar_para_rotina] Erro ao navegar para o relatório {codigo_rotina}: {e}")
     except Exception as e:
-        print(f"[navegar_para_rotina] Erro inesperado ao navegar para {codigo_rotina}: {e}")
+        logging.error(f"[navegar_para_rotina] Erro inesperado ao navegar para {codigo_rotina}: {e}")

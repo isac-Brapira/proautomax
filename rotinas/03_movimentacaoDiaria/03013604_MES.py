@@ -1,25 +1,26 @@
 """
 Rotina: 03.01.36.04
-Descrição: Baixa um CSV com relatório de pedidos do dia em hectolitro do Promax.
+Descrição: Baixa um CSV com relatório de pedidos do dia em caixa do Promax.
 Autor: Carol
 """
 
 import logging
-import os
+
 from function.abrir_rotinas import abrir_rotinas
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from function.aceitar_alertas import aceitar_alertas
+from function.data_func import primeiro_dia_mes
 from function.funcoes_rotina import aguardar_tela_carregar, atalho_alt
-from function.img_func import VISUALIZAR_BTN, encontrar_imagem, clicar_imagem, CSV_BTN
+from function.img_func import VISUALIZAR_BTN, encontrar_imagem, clicar_imagem, CSV_BTN, SALVAR_BTN
 from function.troca_janela import trocar_para_nova_janela
 import time
 import pyautogui
 
 
 # Código da rotina no Promax
-CODIGO_ROTINA = "03013604_HE"
+CODIGO_ROTINA = "03013604_MES"
 
 
 def executar(driver, **kwargs):
@@ -41,25 +42,23 @@ def executar(driver, **kwargs):
     pyautogui.FAILSAFE = True
     
 
-    logging.info("⚙️ Configurando parâmetros da rotina 03.01.36.04 em hectolitro ...")
+    logging.info("⚙️ Configurando parâmetros da rotina 03.01.36.04 em caixa do mês inteiro...")
 
     wait.until(EC.frame_to_be_available_and_switch_to_it((By.NAME, "rotina")))
     logging.info(f"Janelas abertas: {driver.window_handles}")
     logging.info(f"Janela atual: {driver.current_window_handle}")
 
-    checkbox = wait.until(
-    EC.presence_of_element_located(
-        (By.CSS_SELECTOR, "input[type='checkbox'][name='idQtdeHecto'][value='S']")
-        )
-    )
+    # -------------------------
+    # Data inicial = primeiro dia do mês atual
+    # -------------------------   
 
-    if not checkbox.is_selected():
-        driver.execute_script("arguments[0].click();", checkbox)
+    data_inicial = wait.until(EC.presence_of_element_located((By.NAME, "dtInicial")))
 
-    logging.info(f"ROTINA {CODIGO_ROTINA}:⚙️ Checkbox de hectolitro selecionada")
+    driver.execute_script(f"arguments[0].value = '{primeiro_dia_mes()}';", data_inicial)
+    logging.info(f"ROTINA {CODIGO_ROTINA}:⚙️ Data inicial configurada para {primeiro_dia_mes()}")
 
     time.sleep(2)
-
+    
     logging.info("📤 Executando Visualizar via JavaScript...")
 
     try:
@@ -84,7 +83,7 @@ def executar(driver, **kwargs):
 
     except Exception as e:
         logging.error(f"❌ Erro ao executar Visualizar(): {e}")
-        return "skip"            
+        return "skip"       
 
     try:
         logging.info("⏳ Aguardando processamento do relatório (até 2 min)...")

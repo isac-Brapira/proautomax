@@ -5,3 +5,4 @@ __pycache__/
 .downloads/
 .function/downloads_bkp.py
 .function/downloads._strategies.py
+logs/

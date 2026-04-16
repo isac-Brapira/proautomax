@@ -1,3 +1,5 @@
+import logging
+
 from selenium.webdriver.support.ui import WebDriverWait
 
 def trocar_para_nova_janela(driver, timeout=10):
@@ -11,7 +13,7 @@ def trocar_para_nova_janela(driver, timeout=10):
         if handle != janela_atual:
             driver.switch_to.window(handle)
             return handle
-
+    logging.error("Nenhuma nova janela encontrada")
     raise Exception("Nenhuma nova janela encontrada")
 
 def voltar_para_janela(driver, handle):

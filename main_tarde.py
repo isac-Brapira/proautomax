@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 import os
 
 # Configurações de LOG
-log_dir = r"\\192.168.1.213\Arquivos\Administrativo\TecInfo\DB_VENDAS\testeProauto\logs"
+log_dir = r"\\192.168.1.213\Arquivos\Administrativo\TecInfo\DB_VENDAS\testeProauto\logs_tarde"
 os.makedirs(log_dir, exist_ok=True)
 
 max_logs = 5
@@ -113,4 +113,4 @@ btn.click()
 aceitar_alertas(driver)
 
 rotinas = carregar_rotinas()
-executar_rotinas(driver, rotinas, "rotinas.json")
+executar_rotinas(driver, rotinas, "rotinas_tarde.json")

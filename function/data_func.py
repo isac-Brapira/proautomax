@@ -4,7 +4,7 @@ hoje = datetime.today()
 MESES = {
     1: "JANEIRO",
     2: "FEVEREIRO",
-    3: "MARCO",
+    3: "MARÇO",
     4: "ABRIL",
     5: "MAIO",
     6: "JUNHO",
@@ -28,6 +28,11 @@ def data_ontem():
 def primeiro_dia_mes():
     primeiro_dia = hoje.replace(day=1)
     data_formatada = primeiro_dia.strftime('%d/%m/%Y')
+    return data_formatada
+
+def primeiro_dia_ano():
+    primeiro_dia_ano = hoje.replace(month=1, day=1)
+    data_formatada = primeiro_dia_ano.strftime('%d/%m/%Y')
     return data_formatada
 
 def gerar_nome_mes_vigente():
