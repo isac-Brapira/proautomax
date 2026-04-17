@@ -2,18 +2,38 @@
 Rotina: 01.11 - Produtos
 Descrição: Baixa um CSV com os produtos cadastrados no Promax.
 Autor: Isac
-"""
-import logging
-from function.abrir_rotinas import abrir_rotinas
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from function.funcoes_rotina import aguardar_tela_carregar, atalho_alt
-from function.img_func import encontrar_imagem, clicar_imagem, CSV_BTN_2, SALVAR_BTN
-from function.troca_janela import trocar_para_nova_janela
-import time
-import pyautogui
+Migrado para ai_vision em: [data]
 
+O QUE MUDOU NESSA MIGRAÇÃO:
+    - Removido: from function.img_func import encontrar_imagem, clicar_imagem, CSV_BTN_2, SALVAR_BTN
+    - Removido: import time  (não precisamos mais de sleeps fixos)
+    - Adicionado: from function.ai_vision import aguardar_estado_ia, ESTADOS
+    - Adicionado: from function.acoes import AGUARDAR_DOWNLOAD_SALVAR
+    - time.sleep(5) após aguardar_tela_carregar → REMOVIDO
+      (aguardar_tela_carregar já usa WebDriverWait, o sleep era redundante)
+    - time.sleep(2) antes do GerarCsv() → REMOVIDO
+      (não havia motivo técnico, era só margem de segurança desnecessária)
+    - encontrar_imagem(SALVAR_BTN, timeout=120) + bloco de retry → SUBSTITUÍDO
+      por aguardar_estado_ia(**AGUARDAR_DOWNLOAD_SALVAR)
+      A IA faz a mesma coisa (detecta o botão Salvar) mas sem precisar
+      de imagem de template e com retry embutido no próprio loop.
+    - time.sleep(5) no final → REMOVIDO
+      (não precisamos mais: a IA já confirmou que o botão apareceu)
+    - Todo o bloco de código comentado → REMOVIDO
+      (o Git guarda o histórico, código morto polui a leitura)
+"""
+
+import logging
+
+import pyautogui
+from function.abrir_rotinas import abrir_rotinas
+from function.acoes import AGUARDAR_DOWNLOAD_SALVAR
+from function.ai_vision import ESTADOS, aguardar_estado_ia
+from function.funcoes_rotina import aguardar_tela_carregar
+from function.troca_janela import trocar_para_nova_janela
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 # Código da rotina no Promax
 CODIGO_ROTINA = "0111"
@@ -30,8 +50,9 @@ def executar(driver, **kwargs):
 
     wait = WebDriverWait(driver, 60)
     aguardar_tela_carregar(wait)
-    time.sleep(5)
+    # ✂️ REMOVIDO: time.sleep(5) — aguardar_tela_carregar já usa WebDriverWait
 
+    # Centraliza o mouse (mantém tela viva no VNC)
     width, height = pyautogui.size()
     pyautogui.FAILSAFE = False
     pyautogui.moveTo(width / 2, height / 2)
@@ -40,67 +61,50 @@ def executar(driver, **kwargs):
     logging.info("⚙️ Configurando parâmetros da rotina 01.11...")
 
     wait.until(EC.frame_to_be_available_and_switch_to_it((By.NAME, "rotina")))
-    logging.info(f"Janelas abertas: {driver.window_handles}")
-    logging.info(f"Janela atual: {driver.current_window_handle}")
+    # ✂️ REMOVIDO: time.sleep(2) — não havia motivo técnico
 
-    time.sleep(2)
-    
-    # Testando clicar no botão visualizar com JavaScript
-    logging.info("📤 Executando GerarCsv(); via JavaScript...")
+    logging.info("📤 Executando GerarCsv() via JavaScript...")
 
     try:
         funcao_existe = driver.execute_script("return typeof GerarCsv === 'function';")
         if not funcao_existe:
             logging.error("❌ Função GerarCsv não encontrada na página.")
-            return "skip"            
+            return "skip"
 
         driver.execute_script("return GerarCsv();")
 
     except Exception as e:
         logging.error(f"❌ Erro ao executar GerarCsv(): {e}")
-        return "skip"        
+        return "skip"
 
+    # ✅ NOVO: IA aguarda o botão Salvar aparecer na barra de download do Edge
+    #
+    # ANTES (frágil):
+    #   encontrar_imagem(SALVAR_BTN, timeout=120)          ← depende de template PNG
+    #   except TimeoutError:
+    #       driver.execute_script("return GerarCsv();")    ← retry manual
+    #       encontrar_imagem(SALVAR_BTN, timeout=180)      ← outro template
+    #       except TimeoutError: return "skip"
+    #
+    # AGORA (robusto):
+    #   aguardar_estado_ia() tira screenshots em loop e consulta a IA.
+    #   Se aparecer "sem_dados" ou "erro", retorna skip automaticamente.
+    #   O retry está embutido — enquanto o timeout não estourar, continua tentando.
+    logging.info("⏳ Aguardando barra de download aparecer...")
     try:
-        logging.info("⏳ Aguardando processamento do relatório (até 2 min)...")
-        encontrar_imagem(SALVAR_BTN, timeout=120)
-
+        analise = aguardar_estado_ia(
+            **AGUARDAR_DOWNLOAD_SALVAR,
+            contexto=f"Rotina {CODIGO_ROTINA} — aguardando download do CSV de Produtos",
+        )
     except TimeoutError:
-        logging.warning("⚠️ Relatório demorou demais. Tentando novamente...")
+        logging.error(f"❌ Timeout aguardando download na rotina {CODIGO_ROTINA}")
+        return "skip"
 
-        try:
-            driver.execute_script("return GerarCsv();")
-            encontrar_imagem(SALVAR_BTN, timeout=180)
-        except TimeoutError:
-            logging.error("❌ Falha crítica: relatório não foi gerado.")
-            return "skip"
+    # Se a IA detectou erro ou sem dados, pula
+    if analise.get("estado") in (ESTADOS["SEM_DADOS"], ESTADOS["ERRO"]):
+        logging.warning(f"⏭️ {analise.get('mensagem')} — pulando")
+        return "skip"
 
-    # # Tenta usar o atalho Alt+V para abrir o menu Exportar / gera CSV
-    # atalho_alt('v')
-    # logging.info("Tentando usar o atalho Alt+V para abrir o menu Exportar / gera CSV...")
-    # time.sleep(5)
- 
-    
-    # try:
-    #     # Tenta encontrar o botão CSV que indica que o relatório carregou
-    #     logging.info("⏳ Aguardando processamento do relatório (Até 2 min)...")
-    #     encontrar_imagem(SALVAR_BTN, timeout=120) 
-    # except TimeoutError:
-    #     logging.error("❌ Atalho Alt+V falhou ou demorou demais. Tentando clicar em Visualizar manualmente...")
-    #     clicar_imagem(CSV_BTN_2, timeout=10) # Tenta clicar no botão visualizar que neste caso o botão de visualizar chama Csv
-        
-    #     # Espera novamente pelo resultado
-    #     logging.warning("⏳ Aguardando processamento (2ª tentativa)...")
-    #     try:
-    #         encontrar_imagem(SALVAR_BTN, timeout=300)
-    #     except TimeoutError:
-    #         logging.error("❌ Falha crítica: Relatório não carregou.")
-    #         return
-
-    logging.info("⏳ Relatório gerado! Iniciando download...")
-
-    # Espera a barra de download aparecer
-    logging.info("⏳ Aguardando barra de download...")
-    time.sleep(5)  # Tempo para a barra aparecer
-
-    # Aqui o executor.py vai chamar confirmar_download_com_retry()
-    # que usa o sistema de estratégias automaticamente
+    logging.info("✅ Barra de download detectada — executor.py vai salvar o arquivo")
+    # ✂️ REMOVIDO: time.sleep(5) — não precisamos mais, a IA já confirmou que está pronto
+    # O executor.py chama salvar_arquivo() após o retorno desta função

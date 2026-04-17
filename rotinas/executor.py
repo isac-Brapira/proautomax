@@ -1,28 +1,36 @@
+"""
+executor.py — atualizado com suporte a IA
+==========================================
+Mudanças em relação à versão anterior:
+    - Log de debug das rotinas registradas removido (não polui mais o log)
+    - diagnosticar_e_decidir() chamado automaticamente quando uma rotina falha
+    - Resumo final mantido
+"""
+
 import json
 import logging
 import os
+import traceback
+
 import pyautogui
-# Importa a função completa de salvar, não apenas a que abre a janela
-# Se o arquivo download.py estiver numa pasta "function", mude para: from function.download import salvar_arquivo
-from function.download import salvar_arquivo 
+from function.download import salvar_arquivo
 from function.data_func import ano_vigente, gerar_nome_mes_vigente
+from function.ai_vision import diagnosticar_e_decidir, relatorio_uso_tokens
 
 
 def executar_rotinas(driver, rotinas_registradas, caminho_json):
     """
     Executa as rotinas definidas no arquivo JSON.
-    
-    Args:
-        driver: WebDriver do Selenium
-        rotinas_registradas: Dicionário com as rotinas carregadas
-        caminho_json: Caminho do arquivo rotinas.json
-    """
-    # Verifica se o arquivo existe antes de tentar abrir
 
+    Args:
+        driver:               WebDriver do Selenium
+        rotinas_registradas:  Dicionário com as rotinas carregadas
+        caminho_json:         Caminho do arquivo rotinas.json
+    """
     promaxPrimeiraJanela = driver.current_window_handle
 
     if not os.path.exists(caminho_json):
-        logging.error(f"❌ Erro: Arquivo de configuração não encontrado: {caminho_json}")
+        logging.error(f"❌ Arquivo de configuração não encontrado: {caminho_json}")
         return
 
     try:
@@ -33,7 +41,8 @@ def executar_rotinas(driver, rotinas_registradas, caminho_json):
         return
 
     total = len(config["execucao"])
-    logging.info(f"📋 {total} rotina(s) para executar\n")
+    ativos = sum(1 for item in config["execucao"] if item.get("ativo", True))
+    logging.info(f"📋 {total} rotina(s) no JSON — {ativos} ativa(s)\n")
 
     rotinas_salvas = []
     rotinas_erros = []
@@ -42,85 +51,106 @@ def executar_rotinas(driver, rotinas_registradas, caminho_json):
     for idx, item in enumerate(config["execucao"], 1):
 
         codigo = item["codigo"]
-        
-        if not item.get("ativo", True): # Default to True if missing for backward compatibility
-            logging.warning(f"⏭️ Rotina {codigo} ignorada (ativo=False)")
+
+        if not item.get("ativo", True):
+            logging.info(f"⏭️  [{idx}/{total}] '{codigo}' ignorada (ativo=False)")
             rotinas_ignoradas.append(codigo)
             continue
-        # CORREÇÃO: Removidas as vírgulas que transformavam strings em tuplas
-        destino = item["destino"]
-        
-        params = item.get("params", {})
-
-        if params.get("nomeMes") == "MES_ATUAL":
-            nome_mes_vigente = gerar_nome_mes_vigente()
-            nome = f"{nome_mes_vigente}.csv"
-
-        elif params.get("anoVigente") == "ANO_VIGENTE":
-            nome = f"{codigo}_{ano_vigente()}.csv"
-
-        else:
-            nome = item.get("nome", f"{codigo}.csv")
-        
-        descricao = item.get("descricao", codigo)
-        
-        logging.info(f"'{codigo}'")
-        for r in rotinas_registradas:
-                logging.info(f"'{r}'")
 
         if codigo not in rotinas_registradas:
-            logging.error(f"❌ Erro: Rotina {codigo} não registrada")
+            logging.error(f"❌ Rotina '{codigo}' não registrada no loader")
+            rotinas_erros.append(codigo)
             continue
-        
-        
-        logging.info("="*60)
-        logging.info(f"▶ [{idx}/{total}] {descricao} (Código: {codigo})")
-        logging.info(f"📄 Arquivo: {nome}")
-        logging.info(f"📂 Destino: {destino}")
-        logging.info("="*60)
+
+        # Resolve o nome do arquivo de destino
+        params = item.get("params", {})
+        if params.get("nomeMes") == "MES_ATUAL":
+            nome = f"{gerar_nome_mes_vigente()}.csv"
+        elif params.get("anoVigente") == "ANO_VIGENTE":
+            nome = f"{codigo}_{ano_vigente()}.csv"
+        else:
+            nome = item.get("nome", f"{codigo}.csv")
+
+        destino  = item["destino"]
+        descricao = item.get("descricao", codigo)
+
+        logging.info("=" * 60)
+        logging.info(f"▶  [{idx}/{total}] {descricao}")
+        logging.info(f"   Código:  {codigo}")
+        logging.info(f"   Arquivo: {nome}")
+        logging.info(f"   Destino: {destino}")
+        logging.info("=" * 60)
 
         try:
-            # 1. Executa a rotina (gera o relatório no navegador)
+            # 1. Executa a rotina (navega e gera o relatório)
             logging.info("📤 Executando rotina...")
             resultado = rotinas_registradas[codigo](driver, **params)
-            # Adicionado retorno caso apareça caixa de diálogo "sem informações para listar"
-            if resultado == "skip":
-                logging.warning('⏭️ Pulando rotina... \n')
-                rotinas_ignoradas.append(codigo)
-                if driver.current_window_handle != promaxPrimeiraJanela:
-                    driver.close()
-                    driver.switch_to.window(promaxPrimeiraJanela)
-                continue
-            # 2. Salva o arquivo usando a função completa do download.py
-            # Ela cuida de abrir o diálogo, digitar o caminho e validar o arquivo
-            arquivo_final = salvar_arquivo(destino, nome)
 
+            # Rotina sinalizou para pular (sem dados, erro esperado, etc.)
+            if resultado == "skip":
+                logging.warning(f"⏭️  Rotina '{codigo}' pulada (retornou skip)\n")
+                rotinas_ignoradas.append(codigo)
+                _fechar_e_voltar(driver, promaxPrimeiraJanela)
+                continue
+
+            # 2. Salva o arquivo
+            arquivo_final = salvar_arquivo(destino, nome)
             logging.info(f"✓ Concluído: {arquivo_final}\n")
             rotinas_salvas.append(codigo)
 
             pyautogui.moveTo(0, 0)
-
-
-            driver.close()
-
-            driver.switch_to.window(promaxPrimeiraJanela)
+            _fechar_e_voltar(driver, promaxPrimeiraJanela)
 
         except Exception as e:
-            logging.error(f"❌ Erro ao executar rotina {codigo}: {e}")
-            rotinas_erros.append(codigo)
-            # Importante: traceback ajuda muito a debugar
-            import traceback
+            logging.error(f"❌ Erro ao executar '{codigo}': {e}")
             traceback.print_exc()
+
+            # 🤖 IA analisa a tela e sugere o que fazer
+            logging.info("🤖 Consultando IA para diagnóstico...")
+            try:
+                diagnostico = diagnosticar_e_decidir(driver, contexto_rotina=codigo)
+                acao_ia = diagnostico.get("acao", "skip")
+
+                if acao_ia == "continuar":
+                    logging.info("🤖 IA sugere continuar — tentando salvar mesmo assim...")
+                    try:
+                        arquivo_final = salvar_arquivo(destino, nome)
+                        logging.info(f"✓ Salvo após diagnóstico IA: {arquivo_final}\n")
+                        rotinas_salvas.append(codigo)
+                    except Exception as e2:
+                        logging.error(f"❌ Falha mesmo após diagnóstico IA: {e2}")
+                        rotinas_erros.append(codigo)
+                else:
+                    logging.warning(f"🤖 IA sugere '{acao_ia}' — pulando rotina")
+                    rotinas_erros.append(codigo)
+
+            except Exception as e_ia:
+                logging.error(f"❌ Falha no diagnóstico IA: {e_ia}")
+                rotinas_erros.append(codigo)
+
+            _fechar_e_voltar(driver, promaxPrimeiraJanela)
             continue
 
-    logging.info("*=="*25)
+    # Resumo
+    logging.info("*==" * 25)
     logging.info("📊 RESUMO DA EXECUÇÃO")
-    logging.info(f"✅ Foram {len(rotinas_salvas)} rotinas salvas com sucesso. {rotinas_salvas}")
-    logging.info(f"❌ Dentre elas {len(rotinas_erros)} resultaram em erro. {rotinas_erros}")
-    logging.info(f"⏭️ E {len(rotinas_ignoradas)} foram ignoradas. {rotinas_ignoradas}")
-    logging.info("^=="*25)
-    
+    logging.info(f"✅ Salvas com sucesso:  {len(rotinas_salvas)}  → {rotinas_salvas}")
+    logging.info(f"❌ Com erro:            {len(rotinas_erros)} → {rotinas_erros}")
+    logging.info(f"⏭️  Ignoradas:           {len(rotinas_ignoradas)} → {rotinas_ignoradas}")
+    logging.info("^==" * 25)
+
+    relatorio_uso_tokens()
     driver.quit()
-    logging.info("="*60)
+    logging.info("=" * 60)
     logging.info("✓ EXECUÇÃO FINALIZADA 🍻")
-    logging.info("="*60)
+    logging.info("=" * 60)
+
+
+def _fechar_e_voltar(driver, janela_principal):
+    """Fecha a janela atual e volta para a janela principal do Promax."""
+    try:
+        if driver.current_window_handle != janela_principal:
+            driver.close()
+            driver.switch_to.window(janela_principal)
+    except Exception as e:
+        logging.warning(f"⚠️  Erro ao fechar janela: {e}")
