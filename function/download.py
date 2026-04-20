@@ -9,8 +9,9 @@ import time
 import shutil
 from pathlib import Path
 from pywinauto.keyboard import send_keys
-import pyautogui
 from dotenv import load_dotenv
+from function.ai_vision import clicar_elemento_ia
+from function.acoes import CLICAR_DOWNLOAD_SALVAR
 
 load_dotenv()
 # Pasta Downloads padrão do Windows
@@ -18,71 +19,20 @@ PASTA_DOWNLOADS =  os.getenv("PATH_USER") #str(Path.home() / "Downloads")
 
 
 def confirmar_download():
-    
     time.sleep(2)
-
-    timeout = 60
-    inicio = time.time()
-
     logging.info("⏳ Procurando botão Salvar...")
-    while time.time() - inicio < timeout:
 
-        try:
-            pos = pyautogui.locateOnScreen(
-                os.getenv("PATH_IMAGE_SAVE"),
-                confidence=0.7
-            )
-
-            if pos:
-                logging.info("✅ Botão encontrado!")
-
-                # 🔹 Garante foco na janela
-                # import pygetwindow as gw
-                # for w in gw.getWindowsWithTitle("Edge"):
-                #     w.activate()
-                #     break
-                
-                time.sleep(0.5)
-
-                # 🔹 Move com suavidade até o botão
-                # x, y = 
-                pyautogui.moveTo(pyautogui.center(pos), duration=0.3)
-
-                time.sleep(0.5)
-
-                # 🔹 Clique mais confiável (duplo leve)
-                pyautogui.click()
-                time.sleep(0.3)
-                pyautogui.click()
-
-                # 🔹 Backup (caso o clique falhe)
-                pyautogui.press("enter")
-
-                logging.info("💾 Clique realizado com sucesso")
-
-                break
-
-        except pyautogui.ImageNotFoundException:
-            pass  # continua procurando
-
-        time.sleep(1)
-
-    else:
-        logging.error("❌ Botão Salvar não encontrado dentro do tempo limite.")
-        raise TimeoutError("Imagem do botão salvar não apareceu.")
-
-    time.sleep(0.5)
+    # Tenta clicar no botão Salvar da barra de download
+    if not clicar_elemento_ia(**CLICAR_DOWNLOAD_SALVAR):
+        logging.error("❌ Botão Salvar não encontrado.")
+        raise TimeoutError("Botão Salvar não apareceu.")
 
     logging.info("🎯 Continuando execução...")
 
-    time.sleep(2)
-
-    # ENTER (executa salvar como)
+    # Confirma o Salvar como
+    time.sleep(0.5)
     send_keys("{ENTER}")
     time.sleep(0.5)
-
-    logging.info(" Apertou ENTER")
-
     logging.info("💾 Opção 'Salvar como' acionada!")
 
 def aguardar_novo_arquivo(timeout=120):

@@ -134,18 +134,39 @@ def resetar_contador():
 # Core: Screenshot + Chamada à API
 # ===========================================================================
 
+# Fator de escala do último screenshot.
+# A IA recebe a imagem reduzida (1280px) e devolve coordenadas relativas a ela.
+# Precisamos multiplicar por _escala_x/_escala_y para chegar na posição real da tela.
+_escala_x: float = 1.0
+_escala_y: float = 1.0
+
+
 def tirar_screenshot() -> str:
     """
     Tira screenshot da tela inteira e retorna como base64 PNG.
     Reduz para 1280px de largura para economizar tokens.
+
+    IMPORTANTE: armazena _escala_x/_escala_y para que clicar_elemento_ia()
+    converta coordenadas da IA (espaço da imagem reduzida) para a tela real.
     """
-    screenshot = pyautogui.screenshot()
+    global _escala_x, _escala_y
+
+    screenshot   = pyautogui.screenshot()
+    largura_real = screenshot.width
+    altura_real  = screenshot.height
 
     largura_max = 1280
-    if screenshot.width > largura_max:
-        proporcao = largura_max / screenshot.width
-        nova_altura = int(screenshot.height * proporcao)
-        screenshot = screenshot.resize((largura_max, nova_altura))
+    if largura_real > largura_max:
+        proporcao    = largura_max / largura_real
+        nova_largura = largura_max
+        nova_altura  = int(altura_real * proporcao)
+        screenshot   = screenshot.resize((nova_largura, nova_altura))
+
+        _escala_x = largura_real / nova_largura   # ex: 1920/1280 = 1.5
+        _escala_y = altura_real  / nova_altura
+    else:
+        _escala_x = 1.0
+        _escala_y = 1.0
 
     buffer = BytesIO()
     screenshot.save(buffer, format="PNG", optimize=True)
@@ -358,11 +379,17 @@ def clicar_elemento_ia(
         coords = analise.get("coordenadas")
 
         if coords and analise.get("confianca", 0) >= 6:
-            x, y = coords.get("x"), coords.get("y")
-            if x and y:
-                logging.info(f"🎯 Elemento encontrado em ({x}, {y}) — clicando")
+            x_img, y_img = coords.get("x"), coords.get("y")
+            if x_img and y_img:
+                # Converte coordenadas da imagem reduzida para a tela real
+                x_real = int(x_img * _escala_x)
+                y_real = int(y_img * _escala_y)
+                logging.info(
+                    f"🎯 Elemento em ({x_img},{y_img}) imagem "
+                    f"→ ({x_real},{y_real}) tela real (escala {_escala_x:.2f}x) — clicando"
+                )
                 time.sleep(0.3)
-                pyautogui.moveTo(x, y, duration=0.2)
+                pyautogui.moveTo(x_real, y_real, duration=0.2)
                 time.sleep(0.2)
                 pyautogui.click()
                 logging.info("✅ Clique realizado")
@@ -374,6 +401,39 @@ def clicar_elemento_ia(
 
     logging.error(f"❌ Elemento não encontrado em {timeout}s: '{descricao[:60]}'")
     return False
+
+
+def focar_janela_promax(titulo_parcial: str = "PromaxWEB") -> bool:
+    """
+    Traz a janela do Promax para o foco usando pygetwindow.
+
+    Chame isso:
+      - Após fechar_popups_inicio() no main.py
+      - No início de cada rotina, antes de abrir_rotinas()
+      - Sempre que suspeitar que a janela perdeu o foco
+
+    Args:
+        titulo_parcial: Parte do título da janela do Promax.
+
+    Returns:
+        True se encontrou e focou, False se não encontrou.
+    """
+    try:
+        import pygetwindow as gw
+        janelas = [w for w in gw.getAllWindows() if titulo_parcial in w.title]
+        if janelas:
+            janela = janelas[0]
+            janela.restore()   # garante que não está minimizada
+            janela.activate()
+            time.sleep(0.5)
+            logging.info(f"🪟 Janela '{janela.title}' focada com sucesso")
+            return True
+        else:
+            logging.warning(f"⚠️  Janela com '{titulo_parcial}' não encontrada")
+            return False
+    except Exception as e:
+        logging.warning(f"⚠️  Erro ao focar janela: {e}")
+        return False
 
 
 def fechar_popups_inicio(driver, contexto: str, max_tentativas: int = 10) -> bool:
@@ -395,17 +455,17 @@ def fechar_popups_inicio(driver, contexto: str, max_tentativas: int = 10) -> boo
     from selenium.webdriver.support import expected_conditions as EC
     from selenium.common.exceptions import TimeoutException
 
-    logging.info("🔍 Verificando popups de inicialização...")
+    logging.info("🤖🔍 Verificando popups de inicialização...")
 
     for tentativa in range(1, max_tentativas + 1):
-        logging.info(f"   Ciclo {tentativa}/{max_tentativas}")
+        logging.info(f"🤖:   Ciclo {tentativa}/{max_tentativas}")
 
         # 1. Alert JS (rápido, sem custo de API)
         try:
             alert = WebDriverWait(driver, 2).until(EC.alert_is_present())
             texto = alert.text
             alert.accept()
-            logging.info(f"   ✅ Alert JS fechado: '{texto}'")
+            logging.info(f"🤖:   ✅ Alert JS fechado: '{texto}'")
             time.sleep(0.5)
             continue
         except TimeoutException:
@@ -426,13 +486,13 @@ def fechar_popups_inicio(driver, contexto: str, max_tentativas: int = 10) -> boo
         )
 
         if estado == ESTADOS["PRONTO"]:
-            logging.info("✅ Promax pronto — sem popups")
+            logging.info("🤖: ✅ Promax pronto — sem popups")
             return True
 
         if estado == ESTADOS["ALERTA"]:
             fechou = _fechar_popup_visual(analise)
             if not fechou:
-                logging.warning("   ⚠️  Sem coordenadas — tentando Enter/Escape")
+                logging.warning("🤖:   ⚠️  Sem coordenadas — tentando Enter/Escape")
                 pyautogui.press("enter")
                 time.sleep(0.5)
                 pyautogui.press("escape")
@@ -442,7 +502,7 @@ def fechar_popups_inicio(driver, contexto: str, max_tentativas: int = 10) -> boo
 
         time.sleep(1)
 
-    logging.warning(f"⚠️  Ainda havia popups após {max_tentativas} ciclos")
+    logging.warning(f"🤖:   ⚠️  Ainda havia popups após {max_tentativas} ciclos")
     return False
 
 
@@ -485,10 +545,12 @@ def _fechar_popup_visual(analise: dict) -> bool:
     """Clica no botão de fechar usando coordenadas da IA. Fallback: Enter."""
     coords = analise.get("coordenadas")
     if coords:
-        x, y = coords.get("x"), coords.get("y")
-        if x and y:
-            logging.info(f"   🖱️  Clicando em ({x}, {y})")
-            pyautogui.click(x, y)
+        x_img, y_img = coords.get("x"), coords.get("y")
+        if x_img and y_img:
+            x_real = int(x_img * _escala_x)
+            y_real = int(y_img * _escala_y)
+            logging.info(f"   🖱️  Clicando em ({x_img},{y_img}) → ({x_real},{y_real}) tela real")
+            pyautogui.click(x_real, y_real)
             time.sleep(0.5)
             return True
 

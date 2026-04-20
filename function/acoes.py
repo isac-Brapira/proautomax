@@ -115,8 +115,12 @@ CLICAR_CSV = {
     # Clica no botão CSV pequeno na barra de ferramentas do relatório
     # Presente na maioria das rotinas após o relatório carregar
     "descricao": (
-        "botão pequeno com o texto 'CSV' na barra de ferramentas do relatório Promax. "
-        "É um botão pequeno, geralmente no topo da página, ao lado de outros botões de exportação."
+        "botão com o texto 'CSV' (pode aparecer como 'CSV', 'Csv' ou 'csv') "
+        "na barra de ferramentas horizontal do relatório Promax. "
+        "Essa barra fica logo abaixo do cabeçalho azul da página e contém os botões: "
+        "Pode também aparecer na parte inferior da tela"
+        "O botão CSV é pequeno, branco com borda cinza, e fica entre o 'Salvar' e o 'PDF'. "
+        "NÃO é o botão 'Salvar', NÃO é a barra de download do Edge na parte inferior da tela."
     ),
     "timeout": 30,
 }
@@ -198,12 +202,13 @@ CLICAR_OK_CSV_GERADO_0105070402 = {
 CONTEXTO_POPUPS_INICIO = (
     "O sistema Promax acabou de fazer login. "
     "Às vezes aparecem popups ou dialogs de configuração inicial que precisam ser fechados. "
+    "Geralmente são janelas que aparecem no meio da tela, com um botão de fechar ou confirmar. "
     "Podem ser: \n"
     "  - Popups com filtros/dropdowns (Conta, Depto, NBZ, VBZ, Pacote) com opção 'Todos'\n"
     "  - Alertas JS do sistema (mensagens de aviso)\n"
     "  - Janelas de boas-vindas ou notificações\n"
-    "  - Qualquer dialog com botão OK, Fechar, Confirmar ou X\n"
-    "Se a tela principal do Promax estiver limpa (menu lateral visível, sem popups), "
+    "  - Qualquer dialog com botão OK, Fechar, Confirmar\n"
+    "Se a tela principal do Promax estiver limpa (tela toda branca, sem pop-ups visíveis ou menu lateral de navegação e menu lateral direito com campo de busca), "
     "a inicialização está concluída."
 )
 
