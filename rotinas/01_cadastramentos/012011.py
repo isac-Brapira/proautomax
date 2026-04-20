@@ -9,10 +9,10 @@ from function.abrir_rotinas import abrir_rotinas
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from function.funcoes_rotina import aguardar_tela_carregar, atalho_alt
-from function.img_func import VISUALIZAR_BTN, encontrar_imagem, clicar_imagem, CSV_BTN
+from function.funcoes_rotina import aguardar_tela_carregar
+from function.ai_vision import ESTADOS, aguardar_estado_ia, clicar_elemento_ia, focar_janela_promax
+from function.acoes import CLICAR_CSV, AGUARDAR_CSV
 from function.troca_janela import trocar_para_nova_janela
-import time
 import pyautogui
 
 
@@ -25,13 +25,13 @@ def executar(driver, **kwargs):
     Função principal da rotina.    
     """
 
+    focar_janela_promax()  # garante que o Promax está em foco antes de interagir
     abrir_rotinas(driver, CODIGO_ROTINA)
     trocar_para_nova_janela(driver)
     driver.maximize_window()
 
     wait = WebDriverWait(driver, 60)
     aguardar_tela_carregar(wait)
-    time.sleep(5)
 
     width, height = pyautogui.size()
     pyautogui.FAILSAFE = False
@@ -42,8 +42,6 @@ def executar(driver, **kwargs):
     logging.info("⚙️ Configurando parâmetros da rotina 01.20.11...")
 
     wait.until(EC.frame_to_be_available_and_switch_to_it((By.NAME, "rotina")))
-    logging.info(f"Janelas abertas: {driver.window_handles}")
-    logging.info(f"Janela atual: {driver.current_window_handle}")
 
     # Não me pergunte o porque, é o promax...
     driver.execute_script("""
@@ -66,9 +64,7 @@ def executar(driver, **kwargs):
 
     logging.info(f"ROTINA {CODIGO_ROTINA}:⚙️ Checkbox de situação Todos marcada...")
 
-    time.sleep(2)
-
-    # Testando clicar no botão visualizar com JavaScript
+    # Testando clicar no botão visualizar com JavaScript ==============================================================
     logging.info("📤 Executando Visualizar via JavaScript...")
 
     try:
@@ -82,48 +78,29 @@ def executar(driver, **kwargs):
     except Exception as e:
         logging.error(f"❌ Erro ao executar Visualizar(): {e}")
         return "skip"        
+    # ===========================================================================
 
     try:
         logging.info("⏳ Aguardando processamento do relatório (até 2 min)...")
-        encontrar_imagem(CSV_BTN, timeout=120)
+        analise = aguardar_estado_ia(
+            **AGUARDAR_CSV,
+            contexto=f"Rotina {CODIGO_ROTINA} — aguardando processamento do relatório", 
+        )
 
-    except TimeoutError:
-        logging.warning("⚠️ Relatório demorou demais. Tentando novamente...")
+        if analise.get("estado") in (ESTADOS["SEM_DADOS"], ESTADOS["ERRO"]):
+            logging.warning(f"⏭️  Rotina '{CODIGO_ROTINA}' pulada (IA detectou estado {analise.get('mensagem')})\n")
 
-        try:
-            driver.execute_script("return Visualizar();")
-            encontrar_imagem(CSV_BTN, timeout=180)
-        except TimeoutError:
-            logging.error("❌ Falha crítica: relatório não foi gerado.")
             return "skip"
+    except TimeoutError:
+        logging.warning(f"❌ Timeout aguardando download na rotina {CODIGO_ROTINA}")
+        return "skip"
 
-    # # Exporta o CSV
-    # logging.info("📤 Tentando usar o atalho Alt+V para visualizar...")
-    # atalho_alt("v")
-    # time.sleep(5)
-
-    # # Verifica se o botão do CSV aparece (sucesso do Alt+V)
-    # # Se não aparecer em 300s (5 min), assume falha e tenta clicar no visualizar manualmente
-    # try:
-    #     # Tenta encontrar o botão CSV que indica que o relatório carregou
-    #     logging.info("⏳ Aguardando processamento do relatório (Até 2 min)...")
-    #     encontrar_imagem(CSV_BTN, timeout=120) 
-    # except TimeoutError:
-    #     logging.error("❌ Atalho Alt+V falhou ou demorou demais. Tentando clicar em Visualizar manualmente...")
-    #     clicar_imagem(VISUALIZAR_BTN, timeout=10) # Tenta clicar no botão visualizar
-        
-    #     # Espera novamente pelo resultado
-    #     logging.info("⏳ Aguardando processamento (2ª tentativa)...")
-    #     try:
-    #         encontrar_imagem(CSV_BTN, timeout=300)
-    #     except TimeoutError:
-    #         logging.error("❌ Falha crítica: Relatório não carregou.")
-    #         return
-
+    
     logging.info("⏳ Relatório gerado! Iniciando download...")
 
     # Clica no CSV para baixar
-    time.sleep(2)
-    clicar_imagem(CSV_BTN)
-
+    if not clicar_elemento_ia(**CLICAR_CSV):
+        logging.error(f"❌ Falha ao clicar para baixar CSV na rotina {CODIGO_ROTINA}")
+        return "skip"
+    
     logging.info("⏳ Aguardando download...")
