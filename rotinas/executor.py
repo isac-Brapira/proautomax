@@ -16,6 +16,7 @@ import pyautogui
 from function.download import salvar_arquivo
 from function.data_func import ano_vigente, gerar_nome_mes_vigente
 from function.ai_vision import diagnosticar_e_decidir, relatorio_uso_tokens
+from function.teams_notify import notificar_inicio, notificar_fim, notificar_erro_critico
 
 
 def executar_rotinas(driver, rotinas_registradas, caminho_json):
@@ -43,6 +44,8 @@ def executar_rotinas(driver, rotinas_registradas, caminho_json):
     total = len(config["execucao"])
     ativos = sum(1 for item in config["execucao"] if item.get("ativo", True))
     logging.info(f"📋 {total} rotina(s) no JSON — {ativos} ativa(s)\n")
+
+    notificar_inicio(caminho_json)
 
     rotinas_salvas = []
     rotinas_erros = []
@@ -139,7 +142,15 @@ def executar_rotinas(driver, rotinas_registradas, caminho_json):
     logging.info(f"⏭️  Ignoradas:           {len(rotinas_ignoradas)} → {rotinas_ignoradas}")
     logging.info("^==" * 25)
 
-    relatorio_uso_tokens()
+    uso = relatorio_uso_tokens()
+
+    notificar_fim(
+        salvas=rotinas_salvas,
+        erros=rotinas_erros,
+        ignoradas=rotinas_ignoradas,
+        custo_usd=uso.get("custo_usd", 0.0),
+    )
+
     driver.quit()
     logging.info("=" * 60)
     logging.info("✓ EXECUÇÃO FINALIZADA 🍻")

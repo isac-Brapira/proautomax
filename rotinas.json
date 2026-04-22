@@ -6,7 +6,7 @@
             "destino": "E:\\Users\\Isac\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\DataBeer - Documentos\\01 Cadastramentos",
             "nome": "01.11.csv",
             "descricao": "01.11 - Produtos",
-            "ativo": true
+            "ativo": false
         },
         {
             "codigo": "0105070402",
@@ -22,7 +22,7 @@
             "destino": "E:\\Users\\Isac\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\DataBeer - Documentos\\01 Cadastramentos",
             "nome": "01.20.11.csv",
             "descricao": "01.20.11 Visita do Vendedor",
-            "ativo": false
+            "ativo": true
         },
         {
             "codigo": "01250802",

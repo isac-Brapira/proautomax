@@ -7,6 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from function.abrir_rotinas import abrir_rotinas
 from function.ai_vision import fechar_popups_inicio, focar_janela_promax
+from function.teams_notify import notificar_erro_critico
 from function.acoes import CONTEXTO_POPUPS_INICIO
 from rotinas.loader import carregar_rotinas
 from rotinas.executor import executar_rotinas
@@ -99,5 +100,10 @@ fechar_popups_inicio(driver, contexto=CONTEXTO_POPUPS_INICIO)
 # ✅ Garante que o foco voltou para o Promax após fechar os popups
 focar_janela_promax()
 
-rotinas = carregar_rotinas()
-executar_rotinas(driver, rotinas, "rotinas.json")
+try:
+    rotinas = carregar_rotinas()
+    executar_rotinas(driver, rotinas, "rotinas.json")
+except Exception as e:
+    logging.error(f"🔴 Erro crítico na execução: {e}")
+    notificar_erro_critico(str(e))
+    raise
