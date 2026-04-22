@@ -10,6 +10,7 @@ Mudanças em relação à versão anterior:
 import json
 import logging
 import os
+import time
 import traceback
 
 import pyautogui
@@ -45,7 +46,17 @@ def executar_rotinas(driver, rotinas_registradas, caminho_json):
     ativos = sum(1 for item in config["execucao"] if item.get("ativo", True))
     logging.info(f"📋 {total} rotina(s) no JSON — {ativos} ativa(s)\n")
 
-    notificar_inicio(caminho_json)
+    # Coleta descrições das rotinas ativas para mostrar na notificação de início
+    rotinas_ativas_descricao = [
+        item.get("descricao", item["codigo"])
+        for item in config["execucao"]
+        if item.get("ativo", True)
+    ]
+
+    notificar_inicio(caminho_json, rotinas_ativas=rotinas_ativas_descricao)
+
+    # Timer de execução — calculado no fim para mostrar na notificação
+    _tempo_inicio = time.time()
 
     rotinas_salvas = []
     rotinas_erros = []
@@ -144,11 +155,15 @@ def executar_rotinas(driver, rotinas_registradas, caminho_json):
 
     uso = relatorio_uso_tokens()
 
+    tempo_total = int(time.time() - _tempo_inicio)
+    logging.info(f"⏱️  Tempo total de execução: {tempo_total}s")
+
     notificar_fim(
         salvas=rotinas_salvas,
         erros=rotinas_erros,
         ignoradas=rotinas_ignoradas,
         custo_usd=uso.get("custo_usd", 0.0),
+        tempo_segundos=tempo_total,
     )
 
     driver.quit()

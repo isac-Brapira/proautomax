@@ -60,19 +60,29 @@ def _enviar(payload: dict) -> bool:
         return False
 
 
-def notificar_inicio(json_ativo: str = "rotinas.json") -> bool:
+def notificar_inicio(json_ativo: str = "rotinas.json", rotinas_ativas: list = []) -> bool:
     """
     Envia mensagem de início da automação.
 
     Args:
-        json_ativo: Nome do arquivo JSON sendo executado.
+        json_ativo:      Nome do arquivo JSON sendo executado.
+        rotinas_ativas:  Lista de descrições das rotinas com ativo=True.
 
     Exemplo de mensagem no Teams:
         🤖 Automação iniciada
         📋 rotinas.json | 20/04/2026 16:41
+        📌 Rotinas que vão rodar (2):
+        • 03.01.11 Rel. Crítica/Resumo de Pedido
+        • 12.06.01 - Rel. Títulos Pendentes
     """
     agora = datetime.now().strftime("%d/%m/%Y %H:%M")
-    
+
+    linhas = []
+    if rotinas_ativas:
+        linhas.append(f"📌 **Rotinas que vão rodar ({len(rotinas_ativas)}):**")
+        for r in rotinas_ativas:
+            linhas.append(f"• {r}")
+
     payload = {
         "@type": "MessageCard",
         "@context": "http://schema.org/extensions",
@@ -81,6 +91,7 @@ def notificar_inicio(json_ativo: str = "rotinas.json") -> bool:
         "sections": [{
             "activityTitle": "🤖 Automação iniciada",
             "activitySubtitle": f"📋 {json_ativo}  |  {agora}",
+            "activityText": "\n\n".join(linhas) if linhas else "",
             "markdown": True,
         }]
     }
@@ -88,26 +99,41 @@ def notificar_inicio(json_ativo: str = "rotinas.json") -> bool:
     return _enviar(payload)
 
 
+def _formatar_tempo(segundos: int) -> str:
+    """Formata segundos em texto legível. Ex: 52s → '52 segundos', 744s → '12 minutos e 24 segundos'"""
+    if segundos < 60:
+        return f"{segundos} segundo{'s' if segundos != 1 else ''}"
+    minutos = segundos // 60
+    seg_restantes = segundos % 60
+    texto = f"{minutos} minuto{'s' if minutos != 1 else ''}"
+    if seg_restantes > 0:
+        texto += f" e {seg_restantes} segundo{'s' if seg_restantes != 1 else ''}"
+    return texto
+
+
 def notificar_fim(
-    salvas: list[str],
-    erros: list[str],
-    ignoradas: list[str],
+    salvas: list,
+    erros: list,
+    ignoradas: list,
     custo_usd: float = 0.0,
+    tempo_segundos: int = 0,
 ) -> bool:
     """
     Envia mensagem de conclusão com o resumo da execução.
 
     Args:
-        salvas:    Lista de códigos de rotinas salvas com sucesso.
-        erros:     Lista de códigos de rotinas que falharam.
-        ignoradas: Lista de códigos de rotinas ignoradas (ativo=False ou skip).
-        custo_usd: Custo estimado da sessão em USD (vem do relatorio_uso_tokens).
+        salvas:          Lista de códigos de rotinas salvas com sucesso.
+        erros:           Lista de códigos de rotinas que falharam.
+        ignoradas:       Lista de códigos de rotinas ignoradas (ativo=False ou skip).
+        custo_usd:       Custo estimado da sessão em USD (vem do relatorio_uso_tokens).
+        tempo_segundos:  Tempo total de execução em segundos.
 
     Exemplo de mensagem no Teams:
         ✅ Automação finalizada — 14 salvas · 2 com erro · 4 ignoradas
         ✅ Salvas (14): 030111, 120601, ...
         ❌ Com erro (2): 0421, 020304
-        Custo IA: $0.032 USD
+        💰 Custo IA: $0.032 USD
+        ⏱️ Tempo de execução: 12 minutos e 24 segundos
     """
     total_salvas   = len(salvas)
     total_erros    = len(erros)
@@ -139,6 +165,9 @@ def notificar_fim(
 
     if custo_usd > 0:
         linhas.append(f"💰 **Custo IA:** ${custo_usd:.4f} USD")
+
+    if tempo_segundos > 0:
+        linhas.append(f"⏱️ **Tempo de execução:** {_formatar_tempo(tempo_segundos)}")
 
     agora = datetime.now().strftime("%d/%m/%Y %H:%M")
     linhas.append(f"🕐 {agora}")

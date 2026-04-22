@@ -98,8 +98,8 @@ AGUARDAR_TODOS_0105070402 = {
 AGUARDAR_CSV_GERADO_0105070402 = {
     # Aguarda o popup "CSV gerado com Sucesso!" aparecer
     "estados_esperados": ["alerta", "erro"],
-    "timeout": 120,
-    "intervalo": 3,
+    "timeout": 300,
+    "intervalo": 10,
     "pergunta": (
         "Apareceu um popup/dialog com a mensagem 'CSV gerado com Sucesso!' ou similar? "
         "É uma janela pequena do sistema com um botão 'OK'."
@@ -154,24 +154,32 @@ CLICAR_SALVAR_BOTAO_PAGINA = {
 
 CLICAR_TODOS_0105070402 = {
     "descricao": (
-        "checkbox ou opção 'Todos' no formulário de filtro de clientes do Promax. "
-        "Deve ser marcado/clicado para selecionar todos os registros."
+        "Fica em uma seção chamada 'Preferências' ao lado esquerdo da tela."
+        "checkbox com o label 'Todos' no formulário de filtro do Promax. "
+        "É o PRIMEIRO checkbox da lista, fica no TOPO do formulário. "
+        "Tem um quadrado verde e esta escrito 'Todos' ao lado direito. "
+        "NÃO é o botão 'Gerar CSV', NÃO é o checkbox 'Duplicados', NÃO é o checkbox 'AS'."
     ),
     "timeout": 20,
 }
 
 CLICAR_DUPLICADOS_0105070402 = {
     "descricao": (
-        "checkbox 'Duplicados' no formulário de filtro de clientes do Promax. "
-        "Fica abaixo do checkbox 'Todos'."
+        "Fica em uma seção chamada 'Preferências' ao lado esquerdo da tela."
+        "checkbox com o label 'Duplicados' no formulário de filtro do Promax. "
+        "É o SÉTIMO checkbox da lista. "
+        "Tem um quadrado cinza vazio e esta escrito 'Duplicados' ao lado direito. "
+        "NÃO é o botão 'Gerar CSV', NÃO é o checkbox 'Todos', NÃO é o checkbox 'AS'."
     ),
     "timeout": 20,
 }
 
 CLICAR_AS_0105070402 = {
     "descricao": (
-        "checkbox 'AS' no formulário de filtro de clientes do Promax. "
-        "É um checkbox de seleção de tipo de cliente, fica no formulário de filtros."
+        "checkbox com o label 'AS' no formulário de 'Cliente' do Promax. "
+        "Fica dentro de uma seção chamada 'Cliente', no lado direito da tela. "
+        "É o SEGUNDO checkbox da lista, fica ABAIXO do checkbox 'Rota'. "
+        "NÃO é o botão 'Gerar CSV', NÃO é o checkbox 'Todos', NÃO é o checkbox 'Duplicados'."
     ),
     "timeout": 20,
 }
@@ -179,7 +187,8 @@ CLICAR_AS_0105070402 = {
 CLICAR_GERAR_CSV_0105070402 = {
     "descricao": (
         "botão 'Gerar CSV' no formulário do Promax. "
-        "É um botão escuro/azul com o texto 'Gerar CSV', usado para iniciar a geração do arquivo."
+        "É um botão escuro/azul com o texto branco 'Gerar CSV', fica na parte inferior do formulário, no lado direito. "
+        "NÃO é um checkbox, NÃO é o botão 'Salvar', NÃO é o botão 'CSV' do toolbar."
     ),
     "timeout": 20,
 }

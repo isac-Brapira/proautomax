@@ -10,6 +10,8 @@ from function.abrir_rotinas import abrir_rotinas
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from function.ai_vision import ESTADOS, aguardar_estado_ia, clicar_elemento_ia, focar_janela_promax
+from function.acoes import AGUARDAR_TODOS_0105070402, AGUARDAR_CSV_GERADO_0105070402, CLICAR_TODOS_0105070402, CLICAR_GERAR_CSV_0105070402, CLICAR_AS_0105070402, CLICAR_OK_CSV_GERADO_0105070402, CLICAR_DUPLICADOS_0105070402
 from function.funcoes_rotina import aguardar_tela_carregar
 from function.troca_janela import trocar_para_nova_janela
 import time
@@ -23,124 +25,70 @@ CODIGO_ROTINA = "0105070402"
 
 
 def executar(driver, **kwargs):
-    """
-    Função principal da rotina.
-    Tudo começa por aqui.
-    """
+
+    focar_janela_promax()
     abrir_rotinas(driver, CODIGO_ROTINA)
-
-    logging.info(f"Janelas abertas: {driver.window_handles}")
-    logging.info(f"Janela atual: {driver.current_window_handle}")
-
     trocar_para_nova_janela(driver)
-
-    logging.info(f"Janela depois da troca: {driver.current_window_handle}")
-
     driver.maximize_window()
 
     wait = WebDriverWait(driver, 20)
-
     aguardar_tela_carregar(wait)
 
-    time.sleep(2)
-    
     width, height = pyautogui.size()
     pyautogui.FAILSAFE = False
     pyautogui.moveTo(width / 2, height / 2)
     pyautogui.FAILSAFE = True
-    
-    # =========================== Navegação dentro da rotina =============================== #
 
-    while True:
-        try:
-            pos = pyautogui.locateOnScreen("images/0105070402_images/Todos.png", confidence= 0.8)
-            if pos:
-                logging.info("✅ Marcando checkbox TODOS...")
-                print(pos)
-                # Clica na imagem para garantir o foco na janela antes de enviar teclas
-                time.sleep(1)
-                pyautogui.click(pyautogui.center(pos))
-                # Clica bem no começo da imagem para conseguir dar o tab
-                # pyautogui.click(pos.left + 2, pos.top + 2)
-                break
-        except pyautogui.ImageNotFoundException:
-            pass  # imagem ainda não apareceu
-
-    while True:
-        try:
-            pos = pyautogui.locateOnScreen("images/0105070402_images/Duplicados.png", confidence= 0.8)
-            if pos:
-                logging.info("✅ Marcando checkbox Duplicados...")
-                print(pos)
-                # Clica na imagem para garantir o foco na janela antes de enviar teclas
-                time.sleep(1)
-                pyautogui.click(pyautogui.center(pos))
-                # Clica bem no começo da imagem para conseguir dar o tab
-                # pyautogui.click(pos.left + 2, pos.top + 2)
-                break
-        except pyautogui.ImageNotFoundException:
-            pass  # imagem ainda não apareceu        
-
-    while True:
-        try:
-            pyautogui.screenshot()
-            pos = pyautogui.locateOnScreen("images/0105070402_images/AS.png", confidence= 0.8)
-            if pos:
-                logging.info("✅ Marcando o checkbox AS...")
-                print(pos)
-                # Clica na imagem para garantir o foco na janela antes de enviar teclas
-                time.sleep(1)
-                # Clica no lado esquerdo da imagem (onde deve estar o checkbox)
-                pyautogui.click(pos.left + 10, pos.top + pos.height / 2)
-                break
-        except pyautogui.ImageNotFoundException:
-            pass  # imagem ainda não apareceu
-
-    while True:
-        try:
-            pos = pyautogui.locateOnScreen("images/0105070402_images/Gerar_CSV.png", confidence= 0.8)
-            if pos:
-                logging.info("✅ Gerando CSV...")
-                print(pos)
-                # Clica na imagem para garantir o foco na janela antes de enviar teclas
-                time.sleep(1)
-                # Clica no lado esquerdo da imagem (onde deve estar o checkbox)
-                pyautogui.click(pos.left + 10, pos.top + pos.height / 2)
-                
-                break
-        except pyautogui.ImageNotFoundException:
-            pass  # imagem ainda não apareceu
-
-    while True:
-        try:
-            pos = pyautogui.locateOnScreen("images/0105070402_images/CSV_gerado.png", confidence= 0.8)
-            if pos:
-                logging.info("✅ CSV Gerado!")
-                print(pos)
-                # Clica na imagem para garantir o foco na janela antes de enviar teclas
-                time.sleep(2)
-                # Clica no lado esquerdo da imagem (onde deve estar o checkbox)
-                pyautogui.keyDown("enter")
-                pyautogui.keyUp("enter")
-                break
-        except pyautogui.ImageNotFoundException:
-            pass  # imagem ainda não apareceu   
-
-    time.sleep(2)
-    # Garante que a janela principal esteja em foco novamente
+    # Aguarda o formulário com os checkboxes aparecer
     try:
-        driver.switch_to.window(driver.current_window_handle)
-    except Exception:
-        pass
-    
-    # Clica no centro da tela para garantir o foco no sistema operacional
-    screen_w, screen_h = pyautogui.size()
-    pyautogui.click(screen_w / 2, screen_h / 2)
-    # =========================== Exportando para CSV ===================================== #
+        analise = aguardar_estado_ia(
+            **AGUARDAR_TODOS_0105070402,
+            contexto=f"Rotina {CODIGO_ROTINA} — aguardando formulário de filtros",
+        )
+        if analise.get("estado") in (ESTADOS["SEM_DADOS"], ESTADOS["ERRO"]):
+            return "skip"
+    except TimeoutError:
+        logging.error(f"❌ Timeout aguardando formulário na rotina {CODIGO_ROTINA}")
+        return "skip"
 
-    # Espera a barra de download aparecer
+    # Clica nos checkboxes e no botão em sequência
+    logging.info("🔘 Interagindo com o formulário de filtros...")
+    logging.info(" Clicando no checkbox 'Todos'")
+    if not clicar_elemento_ia(**CLICAR_TODOS_0105070402):
+        logging.warning("⚠️ Não consegui clicar em 'Todos'")
+        return "skip"
+
+    logging.info(" Clicando no checkbox 'Duplicados'")
+    if not clicar_elemento_ia(**CLICAR_DUPLICADOS_0105070402):
+        logging.warning("⚠️ Não consegui clicar em 'Duplicados'")
+        return "skip"
+
+    logging.info(" Clicando no checkbox 'AS'")
+    if not clicar_elemento_ia(**CLICAR_AS_0105070402):
+        logging.warning("⚠️ Não consegui clicar em 'AS'")
+        return "skip"
+
+    logging.info(" Clicando no botão 'Gerar CSV'")
+    if not clicar_elemento_ia(**CLICAR_GERAR_CSV_0105070402):
+        logging.warning("⚠️ Não consegui clicar em 'Gerar CSV'")
+        return "skip"
+
+    # Aguarda o popup "CSV gerado com Sucesso!"
+    try:
+        analise = aguardar_estado_ia(
+            **AGUARDAR_CSV_GERADO_0105070402,
+            contexto=f"Rotina {CODIGO_ROTINA} — aguardando popup de confirmação",
+        )
+        if analise.get("estado") in (ESTADOS["SEM_DADOS"], ESTADOS["ERRO"]):
+            return "skip"
+    except TimeoutError:
+        logging.error(f"❌ Timeout aguardando popup de confirmação na rotina {CODIGO_ROTINA}")
+        return "skip"
+
+    # Clica em OK no popup
+    if not clicar_elemento_ia(**CLICAR_OK_CSV_GERADO_0105070402):
+        logging.warning("⚠️ Não consegui clicar em OK")
+        return "skip"
+
     logging.info("⏳ Aguardando barra de download...")
-    time.sleep(5)  # Tempo para a barra aparecer
-
-    # Aqui o executor.py vai chamar confirmar_download_com_retry()
-    # que usa o sistema de estratégias automaticamente
+    # executor.py chama salvar_arquivo() após o retorno
