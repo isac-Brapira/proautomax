@@ -163,6 +163,7 @@ def executar_rotinas(driver, rotinas_registradas, caminho_json):
         erros=rotinas_erros,
         ignoradas=rotinas_ignoradas,
         custo_usd=uso.get("custo_usd", 0.0),
+        custo_brl=uso.get("custo_brl_aprox", 0.0),
         tempo_segundos=tempo_total,
     )
 

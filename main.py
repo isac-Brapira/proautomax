@@ -66,6 +66,8 @@ ie_options.initial_browser_url = "https://brapira.promaxcloud.com.br"
 service = webdriver.IeService(executable_path=r".\drivers\IEDriverServer.exe")
 driver  = webdriver.Ie(service=service, options=ie_options)
 
+driver.maximize_window()
+
 # Foco na janela
 window_title = "PromaxWEB"
 for window in gw.getAllTitles():

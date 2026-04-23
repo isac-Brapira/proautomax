@@ -116,6 +116,7 @@ def notificar_fim(
     erros: list,
     ignoradas: list,
     custo_usd: float = 0.0,
+    custo_brl: float = 0.0,
     tempo_segundos: int = 0,
 ) -> bool:
     """
@@ -132,7 +133,7 @@ def notificar_fim(
         ✅ Automação finalizada — 14 salvas · 2 com erro · 4 ignoradas
         ✅ Salvas (14): 030111, 120601, ...
         ❌ Com erro (2): 0421, 020304
-        💰 Custo IA: $0.032 USD
+        💰 Custo IA: $0.032 USD (R$ 0.1824 BRL)
         ⏱️ Tempo de execução: 12 minutos e 24 segundos
     """
     total_salvas   = len(salvas)
@@ -164,7 +165,7 @@ def notificar_fim(
         linhas.append(f"⏭️ **Ignoradas ({total_ignoradas}):** {', '.join(ignoradas)}")
 
     if custo_usd > 0:
-        linhas.append(f"💰 **Custo IA:** ${custo_usd:.4f} USD")
+        linhas.append(f"💰 **Custo IA:** ${custo_usd:.4f} USD (R$ {custo_brl:.4f} BRL)")
 
     if tempo_segundos > 0:
         linhas.append(f"⏱️ **Tempo de execução:** {_formatar_tempo(tempo_segundos)}")

@@ -10,12 +10,11 @@ from function.abrir_rotinas import abrir_rotinas
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from function.aceitar_alertas import aceitar_alertas
 from function.data_func import data_ontem
-from function.funcoes_rotina import aguardar_tela_carregar, atalho_alt
-from function.img_func import CSV_BTN, VISUALIZAR_BTN, clicar_imagem, encontrar_imagem
+from function.funcoes_rotina import aguardar_tela_carregar
+from function.ai_vision import ESTADOS, clicar_elemento_ia, aguardar_estado_ia, focar_janela_promax
+from function.acoes import AGUARDAR_CSV, CLICAR_BOTAO_VISUALIZAR, CLICAR_CSV
 from function.troca_janela import trocar_para_nova_janela
-import time
 import pyautogui
 
 
@@ -29,13 +28,12 @@ def executar(driver, **kwargs):
     """
 
     abrir_rotinas(driver, CODIGO_ROTINA)
+    focar_janela_promax()
     trocar_para_nova_janela(driver)
     driver.maximize_window()
 
     wait = WebDriverWait(driver, 60)
     aguardar_tela_carregar(wait)
-    time.sleep(5)
-
     width, height = pyautogui.size()
     pyautogui.FAILSAFE = False
     pyautogui.moveTo(width / 2, height / 2)
@@ -45,15 +43,12 @@ def executar(driver, **kwargs):
     logging.info("⚙️ Configurando parâmetros da rotina 02.03.04 ...")
 
     wait.until(EC.frame_to_be_available_and_switch_to_it((By.NAME, "rotina")))
-    logging.info(f"Janelas abertas: {driver.window_handles}")
-    logging.info(f"Janela atual: {driver.current_window_handle}")
 
     data = wait.until(EC.presence_of_element_located((By.NAME, "data")))
 
     driver.execute_script(f"arguments[0].value = '{data_ontem()}';", data)
     logging.info(f"ROTINA {CODIGO_ROTINA}:⚙️ Data inicial configurada para {data_ontem()}")
     
-    time.sleep(2)
 
     # Testando clicar no botão visualizar com JavaScript
     logging.info("📤 Executando Visualizar via JavaScript...")
@@ -62,48 +57,54 @@ def executar(driver, **kwargs):
         funcao_existe = driver.execute_script("return typeof Visualizar === 'function';")
         if not funcao_existe:
             logging.error("❌ Função Visualizar() não encontrada na página.")
-            return "skip"            
 
         driver.execute_script("return Visualizar();")
-        logging.info("⏳ Aguardando sair do 'Processando...'")
+        
+            # Usando IA para clicar no botão Visualizar
 
-        try:
-            WebDriverWait(driver, 600).until(
-                EC.invisibility_of_element_located(
-                    (By.XPATH, "//*[contains(text(),'Processando')]")
-                )
-            )
-        except TimeoutError:
-            logging.warning("⚠️ 'Processando...' não sumiu (pode não existir ou mudou texto)")
-
-    except Exception as e:
-        logging.error(f"❌ Erro ao executar Visualizar(): {e}")
-        return "skip"       
+            
+    except TimeoutError:
+        logging.warning("⏳ Tempo esgotado para encontrar a função Visualizar(). Pulando...")
+        return "skip"
 
     try:
-        logging.info("⏳ Aguardando processamento do relatório (até 2 min)...")
-        time.sleep(15)
+        analise = aguardar_estado_ia(
+    estados_esperados=["csv_disponivel", "sem_dados", "erro"],  # ← sem "alerta"
+    timeout=300,
+    intervalo=5,
+    pergunta=AGUARDAR_CSV["pergunta"],
+    contexto=f"Rotina {CODIGO_ROTINA} — aguardando processamento do relatório",
+    descricao_adicional=(
+        "O relatório foi disparado e pode aparecer um dialog de 'Processando...' "
+        "durante a geração — isso é normal e NÃO é um erro. "
+        "Aguarde até o botão CSV aparecer na toolbar. "
+        "Se a tela mostrar apenas campos de filtro sem CSV, está processando."
+        "Caso apareca um pop-up escrito 'Processando...' não é necessário fechar ou executar alguma ação, apenas aguarde até que o relatório seja gerado e o botão CSV apareça na tela. "
+    )
+)
 
-        # Verifica se há algum alerta if alerta True ? skip : continue 
-        if aceitar_alertas(driver):
-            return "skip"
+        if analise.get("estado") in (ESTADOS["SEM_DADOS"], ESTADOS["ERRO"]):
+            logging.warning(f"⚠️ Relatório processado com estado: {analise.get('estado')}. Solicitando click pela IA.")
+
+           
+            if not clicar_elemento_ia(**CLICAR_BOTAO_VISUALIZAR):
+                logging.error("❌ Falha ao clicar no botão Visualizar via IA.")
+                return "skip"
+            
         
-        encontrar_imagem(CSV_BTN, timeout=300)
-
     except TimeoutError:
-        logging.warning("⚠️ Relatório demorou demais. Tentando novamente...")
-
-        try:
-            driver.execute_script("return Visualizar();")
-            encontrar_imagem(CSV_BTN, timeout=300)
-        except TimeoutError:
-            logging.error("❌ Falha crítica: relatório não foi gerado.")
-            return "skip"
-
-    logging.info("⏳ Relatório gerado! Iniciando download...")
+        logging.warning(f"⏳ Tempo esgotado aguardando processamento do relatório na rotina {CODIGO_ROTINA}. Pulando...")
+        
+        return "skip"
     
-    # Clica no CSV para baixar
-    time.sleep(2)
-    clicar_imagem(CSV_BTN)
+
+
+        
+    if not clicar_elemento_ia(**CLICAR_CSV, descricao_adicional="É o botão CSV que fica na toolbar, no canto superior direito da tela, com um fundo cinza claro, escrito em preto 'CSV'."
+                              "Ele fica entre o botão 'Salvar' e o botão 'PDF'"
+                              "NÃO é o botão 'Voltar'"):
+        logging.error("❌ Falha ao clicar no botão CSV via IA.")
+        return "skip"
+
 
     logging.info("⏳ Aguardando download...")
