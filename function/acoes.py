@@ -147,6 +147,16 @@ CLICAR_SALVAR_BOTAO_PAGINA = {
     "timeout": 30,
 }
 
+CLICAR_BOTAO_VISUALIZAR = {
+    # Clica no botão "Visualizar" que gera o relatório (usado em várias rotinas)
+    "descricao": (
+        "botão 'Visualizar' no formulário do Promax. "
+        "É um botão cinza com o texto preto 'Visualizar', fica na parte inferior do formulário, no lado direito. "
+        "NÃO é o botão 'Gerar CSV', NÃO é o botão 'Salvar', NÃO é o botão 'CSV' do toolbar."
+    ),
+    "timeout": 30,
+}
+
 
 # ---------------------------------------------------------------------------
 # Rotina 0105070402 — ações específicas em sequência

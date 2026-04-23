@@ -350,6 +350,7 @@ def clicar_elemento_ia(
     descricao: str,
     timeout: int = 30,
     screenshot_b64: str | None = None,
+    descricao_adicional: str = "",
 ) -> bool:
     """
     Pede para a IA localizar um elemento por descrição e clica nele.
@@ -365,6 +366,11 @@ def clicar_elemento_ia(
         True se clicou, False se não encontrou.
     """
     inicio = time.time()
+
+    descricao_completa = descricao
+    if descricao_adicional:
+        descricao_completa = f"{descricao} Informação adicional para esse uso específico: {descricao_adicional}"
+
     pergunta = (
         f"Encontre este elemento na tela: '{descricao}'. "
         f"Se visível, retorne as coordenadas exatas (x, y) do centro do elemento. "
@@ -475,7 +481,8 @@ def fechar_popups_inicio(driver, contexto: str, max_tentativas: int = 10) -> boo
         pergunta = (
             f"{contexto}\n\n"
             "Agora: a tela está limpa e pronta para uso (pronto), "
-            "ou ainda há algum popup/dialog aberto (alerta)?"
+            "ou ainda há algum popup/dialog aberto (alerta)?" \
+            "Lembrando que a parte onde aparece 'Gerenciador de Arquivos', 'Atalho' e 'Pesquisa' não é um pop-up, é a tela principal do Promax. O botão 'Ok' não precisa ser precionado"
         )
         analise = analisar_tela(pergunta)
         estado = analise.get("estado")
