@@ -278,6 +278,7 @@ def aguardar_estado_ia(
     intervalo: int = 3,
     pergunta: str = "Qual é o estado atual da tela?",
     contexto: str = "",
+    descricao_adicional: str = "",
 ) -> dict:
     """
     Loop de análise: tira screenshots e consulta a IA até um estado esperado aparecer.
@@ -301,7 +302,11 @@ def aguardar_estado_ia(
     ultimo_log = 0
     tentativa = 0
 
-    pergunta_completa = f"{pergunta} {contexto}".strip()
+    pergunta_completa = pergunta
+    if descricao_adicional:
+        pergunta_completa = f"{pergunta} Informação adicional para esse uso específico: {descricao_adicional}"
+
+    pergunta_completa = f"{pergunta_completa} {contexto}".strip()
     logging.info(f"👁️  Aguardando: {estados_esperados} | timeout={timeout}s | intervalo={intervalo}s")
 
     while time.time() - inicio < timeout:
@@ -372,7 +377,7 @@ def clicar_elemento_ia(
         descricao_completa = f"{descricao} Informação adicional para esse uso específico: {descricao_adicional}"
 
     pergunta = (
-        f"Encontre este elemento na tela: '{descricao}'. "
+        f"Encontre este elemento na tela: '{descricao_completa}'. "
         f"Se visível, retorne as coordenadas exatas (x, y) do centro do elemento. "
         f"Se não estiver visível, retorne estado 'desconhecido'."
     )
