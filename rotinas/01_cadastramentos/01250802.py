@@ -10,6 +10,8 @@ from function.abrir_rotinas import abrir_rotinas
 from function.funcoes_rotina import aguardar_tela_carregar, atalho_alt
 from function.troca_janela import trocar_para_nova_janela
 from function.img_func import SALVAR_BTN, clicar_imagem, encontrar_imagem, CSV_BTN, VISUALIZAR_BTN
+from function.ai_vision import ESTADOS, clicar_elemento_ia, aguardar_estado_ia, focar_janela_promax
+from function.acoes import AGUARDAR_DOWNLOAD_SALVAR, CLICAR_DOWNLOAD_SALVAR, CLICAR_CSV, AGUARDAR_CSV
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -25,6 +27,7 @@ def executar(driver, **kwargs):
     """
     abrir_rotinas(driver, CODIGO_ROTINA)
     trocar_para_nova_janela(driver)
+    focar_janela_promax
     driver.maximize_window()
     
     wait = WebDriverWait(driver, 60)
@@ -39,8 +42,6 @@ def executar(driver, **kwargs):
     logging.info("⚙️ Configurando parâmetros da rotina 01.25.08.02...")
     
     wait.until(EC.frame_to_be_available_and_switch_to_it((By.NAME, "rotina")))
-    logging.info(f"Janelas abertas: {driver.window_handles}")
-    logging.info(f"Janela atual: {driver.current_window_handle}")
  
     time.sleep(2)
     
@@ -57,24 +58,18 @@ def executar(driver, **kwargs):
 
     except Exception as e:
         logging.error(f"❌ Erro ao executar GeraPlanilha(): {e}")
-        return "skip"        
+        logging.info("Solicitando IA para clicar no botão CSV...")
 
-    try:
-        logging.info("⏳ Aguardando processamento do relatório (até 2 min)...")
-        encontrar_imagem(SALVAR_BTN, timeout=120)
+        if not clicar_elemento_ia(**CLICAR_CSV):
+            logging.error("❌ Falha ao clicar no botão CSV via IA.")
+            return "skip"  
 
-    except TimeoutError:
-        logging.warning("⚠️ Relatório demorou demais. Tentando novamente...")
-
-        try:
-            driver.execute_script("return GeraPlanilha();")
-            encontrar_imagem(SALVAR_BTN, timeout=180)
-        except TimeoutError:
-            logging.error("❌ Falha crítica: relatório não foi gerado.")
-            return "skip"
+        logging.info("⏳ Aguardando relatório ser gerado após clique no CSV...")
     
 
-    logging.info("⏳ Relatório gerado! Iniciando download...")
+    if not clicar_elemento_ia(**CLICAR_DOWNLOAD_SALVAR):
+        logging.error("❌ Falha ao clicar no botão Salvar do download via IA.")
+        return "skip"
 
     logging.info("⏳ Aguardando download...")
     time.sleep(5)
