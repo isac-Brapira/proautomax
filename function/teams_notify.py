@@ -165,7 +165,7 @@ def notificar_fim(
         linhas.append(f"⏭️ **Ignoradas ({total_ignoradas}):** {', '.join(ignoradas)}")
 
     if custo_usd > 0:
-        linhas.append(f"💰 **Custo IA:** ${custo_usd:.4f} USD (R$ {custo_brl:.4f} BRL)")
+        linhas.append(f"💰 **Custo IA:** \\${custo_usd:.4f} USD (R\\$ {custo_brl:.4f} BRL)")
 
     if tempo_segundos > 0:
         linhas.append(f"⏱️ **Tempo de execução:** {_formatar_tempo(tempo_segundos)}")
