@@ -38,7 +38,7 @@
             "destino": "E:\\Users\\Isac\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\DataBeer - Documentos\\02 Controle de Estoque",
             "nome": "02.03.04.csv",
             "descricao": "02.03.04 - Rel. Saldo da Grade",
-            "ativo": true
+            "ativo": false
         },
         {
             "codigo": "020512",
@@ -118,7 +118,7 @@
             "destino": "E:\\Users\\Isac\\BRAPIRA COMERCIO DE BEBIDAS LTDA\\DataBeer - Documentos\\03 Movimentacao Diaria\\030237SAIDA\\2026",
             "nome": "03.02.37.csv",
             "descricao": "03.02.37 - Rel. Notas Fiscais Plus de SAÍDA",
-            "ativo": false
+            "ativo": true
         },
         {
             "codigo": "030237_ENTRADA",

@@ -136,6 +136,18 @@ CLICAR_DOWNLOAD_SALVAR = {
     "timeout": 30,
 }
 
+FECHAR_ALERTA = {
+    # Fecha um alerta ou popup genérico que pode aparecer durante a execução (usado em várias rotinas)
+    "descricao": (
+        "botão de fechar ou confirmar em um popup ou alerta que apareceu na tela. "
+        "Pode ser um 'X' no canto da janela, ou um botão com texto como 'OK', 'Fechar', 'Confirmar'. "
+        "O popup pode estar no centro da tela e conter uma mensagem de aviso ou erro."
+        "NÃO é um botão do formulário, NÃO é o botão 'Salvar' ou 'CSV'."
+        "NÃO é a janela de processamento do relatório (que pode ter um texto 'Processando...' e não deve ser fechado)."
+        ),
+    "timeout": 30,
+}
+
 CLICAR_SALVAR_BOTAO_PAGINA = {
     # Clica no botão "Salvar" que fica dentro do corpo da página (rotina 0421)
     # Diferente da barra de download — é um botão de formulário
