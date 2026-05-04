@@ -7,7 +7,6 @@ Autor: Isac
 import logging
 
 from function.abrir_rotinas import abrir_rotinas
-from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from function.ai_vision import ESTADOS, aguardar_estado_ia, clicar_elemento_ia, focar_janela_promax

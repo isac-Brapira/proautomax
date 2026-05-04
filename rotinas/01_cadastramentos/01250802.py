@@ -7,11 +7,10 @@ Autor: Carol
 import logging
 
 from function.abrir_rotinas import abrir_rotinas
-from function.funcoes_rotina import aguardar_tela_carregar, atalho_alt
+from function.funcoes_rotina import aguardar_tela_carregar
 from function.troca_janela import trocar_para_nova_janela
-from function.img_func import SALVAR_BTN, clicar_imagem, encontrar_imagem, CSV_BTN, VISUALIZAR_BTN
-from function.ai_vision import ESTADOS, clicar_elemento_ia, aguardar_estado_ia, focar_janela_promax
-from function.acoes import AGUARDAR_DOWNLOAD_SALVAR, CLICAR_DOWNLOAD_SALVAR, CLICAR_CSV, AGUARDAR_CSV
+from function.ai_vision import clicar_elemento_ia, focar_janela_promax
+from function.acoes import CLICAR_DOWNLOAD_SALVAR, CLICAR_CSV
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -27,7 +26,7 @@ def executar(driver, **kwargs):
     """
     abrir_rotinas(driver, CODIGO_ROTINA)
     trocar_para_nova_janela(driver)
-    focar_janela_promax
+    focar_janela_promax()
     driver.maximize_window()
     
     wait = WebDriverWait(driver, 60)
