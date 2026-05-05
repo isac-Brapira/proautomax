@@ -102,6 +102,9 @@ def executar(driver, **kwargs):
                 "Esta rotina não usa o botão CSV do toolbar. "
                 "Após processar, aparece um botão 'Salvar' dentro do corpo da página. "
                 "NÃO é a barra de download do Edge."
+                "É um botão dentro da própria página"
+                "É um botão cinza, com escrito preto 'Salvar' (não é o botão azul da barra de download do Edge)."
+                "Fica ao lado do botão 'CSV', que está desabilitado"
             )
         )
     except TimeoutError:
