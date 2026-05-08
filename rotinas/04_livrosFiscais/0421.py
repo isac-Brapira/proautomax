@@ -116,7 +116,13 @@ def executar(driver, **kwargs):
         return "skip"
 
     logging.info("✅ Relatório gerado! Clicando em Salvar...")
-    if not clicar_elemento_ia(**CLICAR_SALVAR_BOTAO_PAGINA):
+    if not clicar_elemento_ia(**CLICAR_SALVAR_BOTAO_PAGINA, descricao_adicional=(
+               "Esta rotina não usa o botão CSV do toolbar. "
+                "Após processar, aparece um botão 'Salvar' dentro do corpo da página. "
+                "NÃO é a barra de download do Edge."
+                "É um botão dentro da própria página"
+                "É um botão cinza, com escrito preto 'Salvar' (não é o botão azul da barra de download do Edge)."
+                "Fica ao lado do botão 'CSV', que está desabilitado")):
         logging.error("❌ Falha ao clicar no botão Salvar")
         return "skip"
 

@@ -58,7 +58,7 @@ def executar(driver, **kwargs):
         analise = aguardar_estado_ia(
             estados_esperados=["csv_disponivel", "sem_dados", "erro"],
             timeout=300,
-            intervalo=4,
+            intervalo=10,
             pergunta=AGUARDAR_CSV["pergunta"],
             contexto=f"Rotina {CODIGO_ROTINA} — aguardando relatório de apuração de CDP",
         )
