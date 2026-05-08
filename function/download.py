@@ -52,11 +52,11 @@ def confirmar_download():
 
                 # 🔹 Clique mais confiável (duplo leve)
                 pyautogui.click()
-                time.sleep(0.3)
+                time.sleep(0.1)
                 pyautogui.click()
 
                 # 🔹 Backup (caso o clique falhe)
-                pyautogui.press("enter")
+                # pyautogui.press("enter")
 
                 logging.info("💾 Clique realizado com sucesso")
 
