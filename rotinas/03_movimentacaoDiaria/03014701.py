@@ -64,6 +64,19 @@ def executar(driver, **kwargs):
             return "skip"            
 
         driver.execute_script("return Visualizar();")
+        
+        logging.info("⏳ Aguardando sair do 'Processando...'")
+
+        try:
+            WebDriverWait(driver, 600).until(
+                EC.invisibility_of_element_located(
+                    (By.XPATH, "//*[contains(text(),'Processando')]")
+                )
+            )
+        except TimeoutError:
+            logging.warning("⚠️ 'Processando...' não sumiu (pode não existir ou mudou texto)")
+
+        time.sleep(2)
 
     except Exception as e:
         logging.error(f"❌ Erro ao executar Visualizar(): {e}")
@@ -82,28 +95,6 @@ def executar(driver, **kwargs):
         except TimeoutError:
             logging.error("❌ Falha crítica: relatório não foi gerado.")
             return "skip"
-
-    # logging.info("📤 Tentando usar o atalho Alt+V para visualizar...")
-    # atalho_alt("V")
-    # time.sleep(5)
-
-    # # Verifica se o botão do CSV aparece (sucesso do Alt+V)
-    # # Se não aparecer em 300s (5 min), assume falha e tenta clicar no visualizar manualmente
-    # try:
-    #     # Tenta encontrar o botão CSV que indica que o relatório carregou
-    #     logging.info("⏳ Aguardando processamento do relatório (Até 2 min)...")
-    #     encontrar_imagem(CSV_BTN, timeout=120) 
-    # except TimeoutError:
-    #     logging.warning("❌ Atalho Alt+V falhou ou demorou demais. Tentando clicar em Visualizar manualmente...")
-    #     clicar_imagem(VISUALIZAR_BTN, timeout=10) # Tenta clicar no botão visualizar
-        
-    #     # Espera novamente pelo resultado
-    #     logging.info("⏳ Aguardando processamento (2ª tentativa)...")
-    #     try:
-    #         encontrar_imagem(CSV_BTN, timeout=300)
-    #     except TimeoutError:
-    #         logging.error("❌ Falha crítica: Relatório não carregou.")
-    #         return
 
     logging.info("⏳ Relatório gerado! Iniciando download...")
     
