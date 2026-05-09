@@ -52,8 +52,6 @@ def confirmar_download():
 
                 # 🔹 Clique mais confiável (duplo leve)
                 pyautogui.click()
-                time.sleep(0.1)
-                pyautogui.click()
 
                 # 🔹 Backup (caso o clique falhe)
                 # pyautogui.press("enter")
@@ -78,12 +76,12 @@ def confirmar_download():
     time.sleep(2)
 
     # ENTER (executa salvar como)
-    send_keys("{ENTER}")
+    # send_keys("{ENTER}")
     time.sleep(0.5)
 
-    logging.info(" Apertou ENTER")
+    # logging.info(" Apertou ENTER")
 
-    logging.info("💾 Opção 'Salvar como' acionada!")
+    # logging.info("💾 Opção 'Salvar como' acionada!")
 
 def aguardar_novo_arquivo(timeout=120):
     logging.info(f"⏳ Aguardando arquivo INF...")
