@@ -11,7 +11,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from function.data_func import primeiro_dia_ano
-from function.img_func import CSV_BTN, VISUALIZAR_BTN, clicar_imagem, encontrar_imagem
+from function.img_func import CSV_BTN, aguardar_processamento, clicar_imagem, encontrar_imagem
 from function.troca_janela import trocar_para_nova_janela
 from function.funcoes_rotina import aguardar_tela_carregar, atalho_alt, selecionar_selectedbox
 import time
@@ -65,22 +65,11 @@ def executar(driver, **kwargs):
 
         driver.execute_script("return Visualizar();")
         
-        logging.info("⏳ Aguardando sair do 'Processando...'")
-
-        try:
-            WebDriverWait(driver, 600).until(
-                EC.invisibility_of_element_located(
-                    (By.XPATH, "//*[contains(text(),'Processando')]")
-                )
-            )
-        except TimeoutError:
-            logging.warning("⚠️ 'Processando...' não sumiu (pode não existir ou mudou texto)")
-
-        time.sleep(2)
-
+        aguardar_processamento()        
+            
     except Exception as e:
-        logging.error(f"❌ Erro ao executar Visualizar(): {e}")
-        return "skip"       
+            logging.error(f"❌ Erro ao executar Visualizar(): {e}")
+            return "skip"       
 
     try:
         logging.info("⏳ Aguardando processamento do relatório (até 2 min)...")
