@@ -10,6 +10,7 @@ CSV_BTN_2 = os.getenv("PATH_IMAGE_CSV_2")
 SALVAR_BTN = os.getenv("PATH_IMAGE_SAVE")
 SALVAR_BTN_2 = os.getenv("PATH_IMAGE_SAVE_2")
 VISUALIZAR_BTN = os.getenv("PATH_IMAGE_VISUALIZAR")
+PROCESSANDO_IMG = os.getenv("PATH_IMAGE_PROCESSANDO")
 
 def encontrar_imagem(caminhoImagem, timeout=None, confidence=0.6):
     inicio = time.time()
@@ -20,7 +21,9 @@ def encontrar_imagem(caminhoImagem, timeout=None, confidence=0.6):
             pos = pyautogui.locateOnScreen(caminhoImagem, confidence=confidence)
 
             if pos:
-                logging.info(f"✅ Imagem encontrada: {caminhoImagem}")
+                
+                if "processando" not in caminhoImagem.lower():
+                    logging.info(f"✅ Imagem encontrada: {caminhoImagem}")
                 return pos
 
         except pyautogui.ImageNotFoundException:
@@ -79,4 +82,41 @@ def clicar_imagem(caminhoImagem, timeout=120):
             logging.info("Botão clicado!")
     except TimeoutError:
         logging.error(f"❌ Não foi possível encontrar/clicar na imagem: {caminhoImagem}")
+        
+def aguardar_processamento():
+    logging.info("⏳ Verificando processamento visual...")
+    try:
+
+        # espera a tela de processamento aparecer
+        encontrar_imagem(PROCESSANDO_IMG, timeout=15)
+
+        logging.info("⏳ Processamento detectado")
+
+        # agora espera ela SUMIR
+        inicio = time.time()
+        ultimo_log = 0
+
+        while True:
+
+            try:                    
+                encontrar_imagem(PROCESSANDO_IMG, timeout=2)
+                agora = time.time()
+
+                # ainda existe
+                if agora - ultimo_log > 15:
+                    logging.info("🐢 Ainda processando...")
+                    ultimo_log = agora
+
+            except TimeoutError:
+                # sumiu
+                break
+
+            if time.time() - inicio > 600:
+                raise TimeoutError("Processamento demorou demais")
+
+        logging.info("✅ Processamento finalizado")
+
+    except TimeoutError:
+
+        logging.info("ℹ️ Tela de processamento não apareceu")
     
